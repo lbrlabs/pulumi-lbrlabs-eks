@@ -1,0 +1,16 @@
+name: lbrlabs-eks-yaml
+runtime: yaml
+description: A minimal Pulumi YAML program
+resources:
+  vpc:
+    type: awsx:ec2:Vpc
+    properties:
+      cidrBlock: "172.16.0.0/16"
+  cluster:
+    type: lbrlabs-eks:index:Cluster
+    properties:
+      vpcId: ${vpc.vpcId}
+      clusterSubnetIds: ${vpc.publicSubnetIds}
+      systemNodeSubnetIds: ${vpc.privateSubnetIds}
+outputs:
+  kubeconfig: ${cluster.kubeconfig}

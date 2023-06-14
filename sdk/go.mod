@@ -1,6 +1,6 @@
-module github.com/pulumi/pulumi-xyz/sdk
+module github.com/lbrlabs/pulumi-lbrlabs-eks/sdk
 
-go 1.17
+go 1.20
 
 require (
 	github.com/blang/semver v3.5.1+incompatible

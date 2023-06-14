@@ -1,39 +1,67 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json
 ---
-name: xyz
+name: lbrlabs-eks
+displayName: lbrlabs-eks
+publisher: lbrlabs
+pluginDownloadURL: "github://api.github.com/lbrlabs"
+description: "A batteries included EKS cluster following best practices."
+keywords:
+  - eks
+  - kubernetes
+  - aws
+  - lbrlabs
+repository: "https://github.com/lbrlabs/pulumi-lbrlabs-eks"
 resources:
-  xyz:index:StaticPage:
+  lbrlabs-eks:index:Cluster:
     isComponent: true
     inputProperties:
-      indexContent:
+      vpcId:
         type: string
-        description: The HTML content for index.html.
+        description: The VPC ID to create the cluster in.
+      clusterSubnetIds:
+        type: array
+        items:
+          type: string
+      systemNodeSubnetIds:
+        type: array
+        items:
+          type: string
     requiredInputs:
-      - indexContent
+      - vpcId
+      - clusterSubnetIds
+      - systemNodeSubnetIds
     properties:
-      bucket:
-        "$ref": "/aws/v4.0.0/schema.json#/resources/aws:s3%2Fbucket:Bucket"
-        description: The bucket resource.
-      websiteUrl:
-        type: string
-        description: The website URL.
+      kubeconfig:
+        "type": string
+        "description": The kubeconfig for this cluster.
+      controlPlane:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2Fcluster:Cluster"
+      oidcProvider:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2FopenIdConnectProvider:OpenIdConnectProvider"
+      systemNodes:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
     required:
-      - bucket
-      - websiteUrl
+      - controlPlane
+      - oidcProvider
+      - kubeconfig
+      - systemNodes
 language:
   csharp:
     packageReferences:
       Pulumi: 3.*
-      Pulumi.Aws: 4.*
+      Pulumi.Aws: 5.*
+    rootNamespace: Lbrlabs.PulumiPackage
   go:
     generateResourceContainerTypes: true
-    importBasePath: github.com/pulumi/pulumi-xyz/sdk/go/xyz
+    importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks
   nodejs:
     dependencies:
-      "@pulumi/aws": "^4.0.0"
+      "@pulumi/aws": "^5.0.0"
     devDependencies:
       typescript: "^3.7.0"
+    packageName: "@lbrlabs/pulumi-eks"
   python:
+    packageName: "lbrlabs_pulumi_eks"
     requires:
       pulumi: ">=3.0.0,<4.0.0"
-      pulumi-aws: ">=4.0.0,<5.0.0"
+      pulumi-aws: ">=5.0.0,<6.0.0"
