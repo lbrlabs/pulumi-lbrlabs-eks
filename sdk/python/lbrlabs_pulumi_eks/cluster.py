@@ -17,7 +17,8 @@ class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 vpc_id: pulumi.Input[str]):
+                 vpc_id: pulumi.Input[str],
+                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Cluster resource.
         :param pulumi.Input[str] vpc_id: The VPC ID to create the cluster in.
@@ -25,6 +26,8 @@ class ClusterArgs:
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
         pulumi.set(__self__, "vpc_id", vpc_id)
+        if system_node_instance_types is not None:
+            pulumi.set(__self__, "system_node_instance_types", system_node_instance_types)
 
     @property
     @pulumi.getter(name="clusterSubnetIds")
@@ -56,6 +59,15 @@ class ClusterArgs:
     def vpc_id(self, value: pulumi.Input[str]):
         pulumi.set(self, "vpc_id", value)
 
+    @property
+    @pulumi.getter(name="systemNodeInstanceTypes")
+    def system_node_instance_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        return pulumi.get(self, "system_node_instance_types")
+
+    @system_node_instance_types.setter
+    def system_node_instance_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "system_node_instance_types", value)
+
 
 class Cluster(pulumi.ComponentResource):
     @overload
@@ -63,6 +75,7 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -96,6 +109,7 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -112,6 +126,7 @@ class Cluster(pulumi.ComponentResource):
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
+            __props__.__dict__["system_node_instance_types"] = system_node_instance_types
             if system_node_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'system_node_subnet_ids'")
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids

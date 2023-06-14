@@ -65,6 +65,14 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
             set => _clusterSubnetIds = value;
         }
 
+        [Input("systemNodeInstanceTypes")]
+        private InputList<string>? _systemNodeInstanceTypes;
+        public InputList<string> SystemNodeInstanceTypes
+        {
+            get => _systemNodeInstanceTypes ?? (_systemNodeInstanceTypes = new InputList<string>());
+            set => _systemNodeInstanceTypes = value;
+        }
+
         [Input("systemNodeSubnetIds", required: true)]
         private InputList<string>? _systemNodeSubnetIds;
         public InputList<string> SystemNodeSubnetIds

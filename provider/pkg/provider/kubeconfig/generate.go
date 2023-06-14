@@ -74,6 +74,7 @@ func Generate(name string, clusterEndpoint pulumi.StringOutput, certData pulumi.
 			},
 		},
 		Kind: "Config",
+		CurrentContext: name,
 		Users: []Users{
 			{
 				Name: name,

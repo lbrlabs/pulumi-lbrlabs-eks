@@ -50,6 +50,7 @@ export class Cluster extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'vpcId'");
             }
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
+            resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
             resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
             resourceInputs["vpcId"] = args ? args.vpcId : undefined;
             resourceInputs["controlPlane"] = undefined /*out*/;
@@ -72,6 +73,7 @@ export class Cluster extends pulumi.ComponentResource {
  */
 export interface ClusterArgs {
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    systemNodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
     systemNodeSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * The VPC ID to create the cluster in.

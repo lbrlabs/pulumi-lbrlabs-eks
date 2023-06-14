@@ -4,18 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/irsa"
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/kubeconfig"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/kms"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
+	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
+	storagev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/storage/v1"
+	tls "github.com/pulumi/pulumi-tls/sdk/v4/go/tls"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
-	VpcId               pulumi.StringInput      `pulumi:"vpcId"`
-	ClusterSubnetIds    pulumi.StringArrayInput `pulumi:"clusterSubnetIds"`
-	SystemNodeSubnetIds pulumi.StringArrayInput `pulumi:"systemNodeSubnetIds"`
+	VpcId               pulumi.StringInput       `pulumi:"vpcId"`
+	ClusterSubnetIds    pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
+	SystemNodeSubnetIds pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
+	SystemInstanceTypes *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
+	ClusterVersion      pulumi.StringPtrInput    `pulumi:"clusterVersion"`
 }
 
 // The Cluster component resource.
@@ -75,6 +82,14 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching cluster policy: %w", err)
 	}
 
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-policy-vpc", name), &iam.RolePolicyAttachmentArgs{
+		Role:      role.Name,
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"),
+	}, pulumi.Parent(role))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cluster policy for VPC: %w", err)
+	}
+
 	// clusterSecurityGroup, err := ec2.NewSecurityGroup(ctx, fmt.Sprintf("%s-cluster-sg", name), &ec2.SecurityGroupArgs{
 	// 	VpcId: args.VpcId,
 	// 	RevokeRulesOnDelete: pulumi.Bool(true),
@@ -92,12 +107,45 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cluster kms key: %w", err)
 	}
 
+	keyPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+		Statements: iam.GetPolicyDocumentStatementArray{
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowAccessToKmsKey"),
+				Actions: pulumi.StringArray{
+					pulumi.String("kms:Encrypt"),
+					pulumi.String("kms:Decrypt"),
+					pulumi.String("kms:ListGrants"),
+					pulumi.String("kms:DescribeKey"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					kmsKey.Arn,
+				},
+			},
+		},
+	})
+
+	clusterKmsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cluster-kms-policy", name), &iam.PolicyArgs{
+		Description: pulumi.String("KMS key policy for EKS cluster secrets"),
+		Policy:      keyPolicyDocument.Json(),
+	}, pulumi.Parent(role))
+	if err != nil {
+		return nil, fmt.Errorf("error creating KMS key policy: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-policy-kms", name), &iam.RolePolicyAttachmentArgs{
+		Role:      role.Name,
+		PolicyArn: clusterKmsPolicy.Arn,
+	}, pulumi.Parent(role))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cluster policy for KMS: %w", err)
+	}
+
 	controlPlane, err := eks.NewCluster(ctx, name, &eks.ClusterArgs{
 		RoleArn: role.Arn,
+		Version: args.ClusterVersion,
 		VpcConfig: &eks.ClusterVpcConfigArgs{
-			//VpcId:     args.VpcId.ToStringPtrOutput(),
 			SubnetIds: args.ClusterSubnetIds,
-			//ClusterSecurityGroupId: clusterSecurityGroup.ID(),
 		},
 		EncryptionConfig: &eks.ClusterEncryptionConfigArgs{
 			Resources: pulumi.StringArray{
@@ -119,13 +167,17 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)
 	}
 
+	cert := tls.GetCertificateOutput(ctx, tls.GetCertificateOutputArgs{
+		Url: controlPlane.Identities.Index(pulumi.Int(0)).Oidcs().Index(pulumi.Int(0)).Issuer().Elem(),
+	}, pulumi.Parent(component))
+
 	oidcProvider, err := iam.NewOpenIdConnectProvider(ctx, fmt.Sprintf("%s-oidc-provider", name), &iam.OpenIdConnectProviderArgs{
 		ClientIdLists: pulumi.StringArray{
 			pulumi.String("sts.amazonaws.com"),
 		},
 		Url: controlPlane.Identities.Index(pulumi.Int(0)).Oidcs().Index(pulumi.Int(0)).Issuer().Elem(),
 		ThumbprintLists: pulumi.StringArray{
-			pulumi.String("990f4193972f2becf12ddeda5237f9c952f20d9e"),
+			cert.Certificates().Index(pulumi.Int(0)).Sha1Fingerprint(),
 		},
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
@@ -162,13 +214,7 @@ func NewCluster(ctx *pulumi.Context,
 	if err != nil {
 		return nil, fmt.Errorf("error attaching system node worker policy: %w", err)
 	}
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-cni-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"),
-		Role:      systemNodeRole.Name,
-	}, pulumi.Parent(systemNodeRole))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching system node cni policy: %w", err)
-	}
+
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
 		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
 		Role:      systemNodeRole.Name,
@@ -177,23 +223,37 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
 	}
 
+	var instanceTypes pulumi.StringArrayInput
+
+	if args.SystemInstanceTypes == nil {
+		instanceTypes = pulumi.StringArray{
+			pulumi.String("t3.medium"),
+		}
+	} else {
+		instanceTypes = *args.SystemInstanceTypes
+	}
+
 	systemNodes, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &eks.NodeGroupArgs{
-		ClusterName: controlPlane.Name,
-		SubnetIds:   args.SystemNodeSubnetIds,
-		NodeRoleArn: systemNodeRole.Arn,
+		ClusterName:   controlPlane.Name,
+		SubnetIds:     args.SystemNodeSubnetIds,
+		NodeRoleArn:   systemNodeRole.Arn,
+		InstanceTypes: instanceTypes,
+		Labels: pulumi.StringMap{
+			"node.lbrlabs.com/system": pulumi.String("system"),
+		},
 		Taints: eks.NodeGroupTaintArray{
 			eks.NodeGroupTaintArgs{
 				Effect: pulumi.String("NO_SCHEDULE"),
-				Key:    pulumi.String("node-role.kubernetes.io/system"),
+				Key:    pulumi.String("node.lbrlabs.com/system"),
 				Value:  pulumi.String("true"),
 			},
 		},
 		ScalingConfig: &eks.NodeGroupScalingConfigArgs{
-			MinSize: pulumi.Int(1),
-			MaxSize: pulumi.Int(10),
+			MinSize:     pulumi.Int(1),
+			MaxSize:     pulumi.Int(10),
 			DesiredSize: pulumi.Int(1),
 		},
-	}, pulumi.Parent(controlPlane), pulumi.IgnoreChanges([]string{"scalingConfig"}))
+	}, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup provider: %w", err)
 	}
@@ -201,7 +261,7 @@ func NewCluster(ctx *pulumi.Context,
 	coreDnsConfig, err := json.Marshal(map[string]interface{}{
 		"tolerations": []map[string]interface{}{
 			{
-				"key":      "node-role.kubernetes.io/system",
+				"key":      "node.lbrlabs.com/system",
 				"operator": "Equal",
 				"value":    "true",
 				"effect":   "NoSchedule",
@@ -212,32 +272,144 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error marshalling coredns config: %w", err)
 	}
 
-	coreDns, err := eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), &eks.AddonArgs{
-		AddonName: pulumi.String("coredns"),
-		ClusterName: controlPlane.Name,
-		ResolveConflicts: pulumi.String("OVERWRITE"),
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), &eks.AddonArgs{
+		AddonName:           pulumi.String("coredns"),
+		ClusterName:         controlPlane.Name,
+		ResolveConflicts:    pulumi.String("OVERWRITE"),
 		ConfigurationValues: pulumi.String(coreDnsConfig),
-	}, pulumi.Parent(controlPlane))
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
 	}
 
-	vpcCni, err := eks.NewAddon(ctx, fmt.Sprintf("%s-vpc-cni", name), &eks.AddonArgs{
-		AddonName: pulumi.String("vpc-cni"),
-		ClusterName: controlPlane.Name,
-		ResolveConflicts: pulumi.String("OVERWRITE"),
+	vpcCsiRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-vpc-csi-role", name), &irsa.IamServiceAccountRoleArgs{
+		OidcProviderArn:    oidcProvider.Arn,
+		OidcProviderUrl:    oidcProvider.Url,
+		Namespace:          pulumi.String("kube-system"),
+		ServiceAccountName: pulumi.String("aws-node"),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
-		return nil, fmt.Errorf("error installing vpc cnu: %w", err)
+		return nil, fmt.Errorf("error creating iam service account role for VPC CSI: %w", err)
 	}
 
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-vpc-csi-policy", name), &iam.RolePolicyAttachmentArgs{
+		Role:      vpcCsiRole.Role.Name,
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"),
+	}, pulumi.Parent(vpcCsiRole))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cni policy to role: %w", err)
+	}
 
-	_ = coreDns
-	_ = vpcCni
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-vpc-cni", name), &eks.AddonArgs{
+		AddonName:             pulumi.String("vpc-cni"),
+		ClusterName:           controlPlane.Name,
+		ResolveConflicts:      pulumi.String("OVERWRITE"),
+		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing vpc cni: %w", err)
+	}
+
+	ebsCsiRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-ebs-csi-role", name), &irsa.IamServiceAccountRoleArgs{
+		OidcProviderArn:    oidcProvider.Arn,
+		OidcProviderUrl:    oidcProvider.Url,
+		Namespace:          pulumi.String("kube-system"),
+		ServiceAccountName: pulumi.String("ebs-csi-controller-sa"),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-ebs-csi-policy", name), &iam.RolePolicyAttachmentArgs{
+		Role:      ebsCsiRole.Role.Name,
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"),
+	}, pulumi.Parent(ebsCsiRole))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching EBS policy to role: %w", err)
+	}
+
+	ebsCsiConfig, err := json.Marshal(map[string]interface{}{
+		"controller": map[string]interface{}{
+			"tolerations": []map[string]interface{}{
+				{
+					"key":      "node.lbrlabs.com/system",
+					"operator": "Equal",
+					"value":    "true",
+					"effect":   "NoSchedule",
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling EBS CSI config: %w", err)
+	}
+
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), &eks.AddonArgs{
+		AddonName:             pulumi.String("aws-ebs-csi-driver"),
+		ClusterName:           controlPlane.Name,
+		ResolveConflicts:      pulumi.String("OVERWRITE"),
+		ServiceAccountRoleArn: ebsCsiRole.Role.Arn,
+		ConfigurationValues:   pulumi.String(ebsCsiConfig),
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing EBS csi: %w", err)
+	}
 
 	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)
 	if err != nil {
 		return nil, fmt.Errorf("error generating kubeconfig: %w", err)
+	}
+
+	provider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-provider", name), &kubernetes.ProviderArgs{
+		Kubeconfig: kc,
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating kubernetes provider: %w", err)
+	}
+
+	serverSideProvider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-ssa-provider", name), &kubernetes.ProviderArgs{
+		Kubeconfig:            kc,
+		EnableServerSideApply: pulumi.Bool(true),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating server side apply kubernetes provider: %w", err)
+	}
+
+	// FIXME: this is a workaround for EKS creating a broken default storage class
+	// FIXME: what we likely want to do here in future is delete this
+	_, err = storagev1.NewStorageClass(ctx, fmt.Sprintf("%s-gp2-storage-class", name), &storagev1.StorageClassArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name: pulumi.String("gp2"),
+			Annotations: pulumi.StringMap{
+				"pulumi.com/patchForce":                       pulumi.String("true"),
+				"storageclass.kubernetes.io/is-default-class": pulumi.String("false"),
+			},
+		},
+		VolumeBindingMode: pulumi.String("WaitForFirstConsumer"),
+		Provisioner:       pulumi.String("kubernetes.io/aws-ebs"),
+		ReclaimPolicy:     pulumi.String("Delete"),
+	}, pulumi.Parent(serverSideProvider), pulumi.Provider(serverSideProvider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating gp2 storage class: %w", err)
+	}
+
+	_, err = storagev1.NewStorageClass(ctx, fmt.Sprintf("%s-gp3-storage-class", name), &storagev1.StorageClassArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name: pulumi.String("gp3"),
+			Annotations: pulumi.StringMap{
+				"storageclass.kubernetes.io/is-default-class": pulumi.String("true"),
+			},
+		},
+		Provisioner:       pulumi.String("ebs.csi.aws.com"),
+		VolumeBindingMode: pulumi.String("WaitForFirstConsumer"),
+		ReclaimPolicy:     pulumi.String("Delete"),
+		Parameters: pulumi.StringMap{
+			"csi.storage.k8s.io/fstype": pulumi.String("ext4"),
+			"type":                      pulumi.String("gp3"),
+		},
+	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
+	if err != nil {
+		return nil, fmt.Errorf("error creating gp3 storage class: %w", err)
 	}
 
 	component.ControlPlane = controlPlane
@@ -249,7 +421,7 @@ func NewCluster(ctx *pulumi.Context,
 		"controlPlane": controlPlane,
 		"oidcProvider": oidcProvider,
 		"systemNodes":  systemNodes,
-		"kubeconfig": kc,
+		"kubeconfig":   kc,
 	}); err != nil {
 		return nil, err
 	}

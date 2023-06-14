@@ -26,6 +26,10 @@ resources:
         type: array
         items:
           type: string
+      systemNodeInstanceTypes:
+        type: array
+        items:
+          type: string
     requiredInputs:
       - vpcId
       - clusterSubnetIds
