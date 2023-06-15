@@ -20,5 +20,6 @@ resources:
       clusterSubnetIds: ${vpc.publicSubnetIds}
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
       systemNodeInstanceTypes: [ "t3.large" ]
+      systemNodeDesiredCount: 4
 outputs:
   kubeconfig: ${cluster.kubeconfig}

@@ -10,19 +10,25 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/kms"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
+	//corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
+	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
 	storagev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/storage/v1"
+
 	tls "github.com/pulumi/pulumi-tls/sdk/v4/go/tls"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
-	VpcId               pulumi.StringInput       `pulumi:"vpcId"`
-	ClusterSubnetIds    pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
-	SystemNodeSubnetIds pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
-	SystemInstanceTypes *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
-	ClusterVersion      pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	VpcId                   pulumi.StringInput       `pulumi:"vpcId"`
+	ClusterSubnetIds        pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
+	SystemNodeSubnetIds     pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
+	SystemNodeInstanceTypes *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
+	SystemNodeMaxCount      *pulumi.IntInput         `pulumi:"systemNodeMaxCount"`
+	SystemNodeMinCount      *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
+	SystemNodeDesiredCount  *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
+	ClusterVersion          pulumi.StringPtrInput    `pulumi:"clusterVersion"`
 }
 
 // The Cluster component resource.
@@ -225,12 +231,33 @@ func NewCluster(ctx *pulumi.Context,
 
 	var instanceTypes pulumi.StringArrayInput
 
-	if args.SystemInstanceTypes == nil {
+	if args.SystemNodeInstanceTypes == nil {
 		instanceTypes = pulumi.StringArray{
 			pulumi.String("t3.medium"),
 		}
 	} else {
-		instanceTypes = *args.SystemInstanceTypes
+		instanceTypes = *args.SystemNodeInstanceTypes
+	}
+
+	var systemNodeMaxCount pulumi.IntInput
+	if args.SystemNodeMaxCount == nil {
+		systemNodeMaxCount = pulumi.Int(10)
+	} else {
+		systemNodeMaxCount = *args.SystemNodeMaxCount
+	}
+
+	var systemNodeMinCount pulumi.IntInput
+	if args.SystemNodeMinCount == nil {
+		systemNodeMinCount = pulumi.Int(1)
+	} else {
+		systemNodeMinCount = *args.SystemNodeMinCount
+	}
+
+	var systemNodeDesiredCount pulumi.IntInput
+	if args.SystemNodeDesiredCount == nil {
+		systemNodeDesiredCount = pulumi.Int(1)
+	} else {
+		systemNodeDesiredCount = *args.SystemNodeDesiredCount
 	}
 
 	systemNodes, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &eks.NodeGroupArgs{
@@ -249,9 +276,9 @@ func NewCluster(ctx *pulumi.Context,
 			},
 		},
 		ScalingConfig: &eks.NodeGroupScalingConfigArgs{
-			MinSize:     pulumi.Int(1),
-			MaxSize:     pulumi.Int(10),
-			DesiredSize: pulumi.Int(1),
+			MaxSize:     systemNodeMaxCount,
+			MinSize:     systemNodeMinCount,
+			DesiredSize: systemNodeDesiredCount,
 		},
 	}, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
 	if err != nil {
@@ -305,7 +332,7 @@ func NewCluster(ctx *pulumi.Context,
 		ClusterName:           controlPlane.Name,
 		ResolveConflicts:      pulumi.String("OVERWRITE"),
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
-	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(vpcCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
 	}
@@ -350,7 +377,7 @@ func NewCluster(ctx *pulumi.Context,
 		ResolveConflicts:      pulumi.String("OVERWRITE"),
 		ServiceAccountRoleArn: ebsCsiRole.Role.Arn,
 		ConfigurationValues:   pulumi.String(ebsCsiConfig),
-	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
 	}
@@ -411,6 +438,124 @@ func NewCluster(ctx *pulumi.Context,
 	if err != nil {
 		return nil, fmt.Errorf("error creating gp3 storage class: %w", err)
 	}
+
+	nginxIngressExternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-ext", name), &helm.ReleaseArgs{
+		Chart:     pulumi.String("ingress-nginx"),
+		Namespace: pulumi.String("kube-system"),
+		RepositoryOpts: &helm.RepositoryOptsArgs{
+			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
+		},
+		Values: pulumi.Map{
+			"controller": pulumi.Map{
+				"admissionWebhooks": pulumi.Map{
+					"patch": pulumi.Map{
+						"tolerations": pulumi.MapArray{
+							pulumi.Map{
+								"key":      pulumi.String("node.lbrlabs.com/system"),
+								"operator": pulumi.String("Equal"),
+								"value":    pulumi.String("true"),
+								"effect":   pulumi.String("NoSchedule"),
+							},
+						},
+					},
+				},
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+				"ingressClassResource": pulumi.Map{
+					"name":    pulumi.String("external"),
+					"default":         pulumi.Bool(true),
+					"controllerValue": pulumi.String("k8s.io/ingress-nginx/external"),
+				},
+				"ingressClass": pulumi.String("external"),
+				"service": pulumi.Map{
+					"annotations": pulumi.Map{
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+					},
+				},
+			},
+			"defaultBackend": pulumi.Map{
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+			},
+		},
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
+	}
+
+	nginxIngressInternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-int", name), &helm.ReleaseArgs{
+		Chart:     pulumi.String("ingress-nginx"),
+		Namespace: pulumi.String("kube-system"),
+		RepositoryOpts: &helm.RepositoryOptsArgs{
+			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
+		},
+		Values: pulumi.Map{
+			"controller": pulumi.Map{
+				"admissionWebhooks": pulumi.Map{
+					"patch": pulumi.Map{
+						"tolerations": pulumi.MapArray{
+							pulumi.Map{
+								"key":      pulumi.String("node.lbrlabs.com/system"),
+								"operator": pulumi.String("Equal"),
+								"value":    pulumi.String("true"),
+								"effect":   pulumi.String("NoSchedule"),
+							},
+						},
+					},
+				},
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+				"ingressClassResource": pulumi.Map{
+					"name":    pulumi.String("internal"),
+					"default":         pulumi.Bool(true),
+					"controllerValue": pulumi.String("k8s.io/ingress-nginx/internal"),
+				},
+				"ingressClass": pulumi.String("internal"),
+				"service": pulumi.Map{
+					"annotations": pulumi.Map{
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-internal": pulumi.Bool(true),
+						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+					},
+				},
+			},
+			"defaultBackend": pulumi.Map{
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+			},
+		},
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
+	}
+
+	_ = nginxIngressExternal
+	_ = nginxIngressInternal
 
 	component.ControlPlane = controlPlane
 	component.OidcProvider = oidcProvider

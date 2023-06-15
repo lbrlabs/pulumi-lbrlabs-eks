@@ -70,7 +70,7 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 
 	role, err := iam.NewRole(ctx, name, &iam.RoleArgs{
 		AssumeRolePolicy: trustDocument.Json(),
-	})
+	}, pulumi.Parent(component))
 
 	if err != nil {
 		return nil, fmt.Errorf("error creating trust IAM role: %w", err)
