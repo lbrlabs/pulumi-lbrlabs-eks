@@ -65,6 +65,12 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
             set => _clusterSubnetIds = value;
         }
 
+        /// <summary>
+        /// The initial number of nodes in the system autoscaling group.
+        /// </summary>
+        [Input("systemNodeDesiredCount")]
+        public Input<double>? SystemNodeDesiredCount { get; set; }
+
         [Input("systemNodeInstanceTypes")]
         private InputList<string>? _systemNodeInstanceTypes;
         public InputList<string> SystemNodeInstanceTypes
@@ -72,6 +78,18 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
             get => _systemNodeInstanceTypes ?? (_systemNodeInstanceTypes = new InputList<string>());
             set => _systemNodeInstanceTypes = value;
         }
+
+        /// <summary>
+        /// The maximum number of nodes in the system autoscaling group.
+        /// </summary>
+        [Input("systemNodeMaxCount")]
+        public Input<double>? SystemNodeMaxCount { get; set; }
+
+        /// <summary>
+        /// The minimum number of nodes in the system autoscaling group.
+        /// </summary>
+        [Input("systemNodeMinCount")]
+        public Input<double>? SystemNodeMinCount { get; set; }
 
         [Input("systemNodeSubnetIds", required: true)]
         private InputList<string>? _systemNodeSubnetIds;

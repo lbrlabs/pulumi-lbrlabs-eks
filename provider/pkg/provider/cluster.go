@@ -10,7 +10,8 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/kms"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
-	//corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
+	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions"
+	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
 	storagev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/storage/v1"
@@ -468,14 +469,14 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 				"ingressClassResource": pulumi.Map{
-					"name":    pulumi.String("external"),
+					"name":            pulumi.String("external"),
 					"default":         pulumi.Bool(true),
 					"controllerValue": pulumi.String("k8s.io/ingress-nginx/external"),
 				},
 				"ingressClass": pulumi.String("external"),
 				"service": pulumi.Map{
 					"annotations": pulumi.Map{
-						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 					},
 				},
@@ -525,15 +526,15 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 				"ingressClassResource": pulumi.Map{
-					"name":    pulumi.String("internal"),
+					"name":            pulumi.String("internal"),
 					"default":         pulumi.Bool(true),
 					"controllerValue": pulumi.String("k8s.io/ingress-nginx/internal"),
 				},
 				"ingressClass": pulumi.String("internal"),
 				"service": pulumi.Map{
 					"annotations": pulumi.Map{
-						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports": pulumi.String("https"),
-						"service.beta.kubernetes.io/aws-load-balancer-internal": pulumi.Bool(true),
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 					},
 				},
@@ -556,6 +557,261 @@ func NewCluster(ctx *pulumi.Context,
 
 	_ = nginxIngressExternal
 	_ = nginxIngressInternal
+
+	externalDNSRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &irsa.IamServiceAccountRoleArgs{
+		OidcProviderArn:    oidcProvider.Arn,
+		OidcProviderUrl:    oidcProvider.Url,
+		Namespace:          pulumi.String("kube-system"),
+		ServiceAccountName: pulumi.String("external-dns"),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating iam service account role for external dns: %w", err)
+	}
+
+	externalDNSPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+		Statements: iam.GetPolicyDocumentStatementArray{
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
+				Actions: pulumi.StringArray{
+					pulumi.String("route53:ChangeResourceRecordSets"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					pulumi.String("arn:aws:route53:::hostedzone/*"),
+				},
+			},
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowAccessToRoute53RecordSets"),
+				Actions: pulumi.StringArray{
+					pulumi.String("route53:ListHostedZones"),
+					pulumi.String("route53:ListResourceRecordSets"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					pulumi.String("*"),
+				},
+			},
+		},
+	})
+
+	externalDNSPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-external-dns-policy", name), &iam.PolicyArgs{
+		Description: pulumi.String("Policy for external-dns to modify route53 "),
+		Policy:      externalDNSPolicyDocument.Json(),
+	}, pulumi.Parent(role))
+	if err != nil {
+		return nil, fmt.Errorf("error creating external DNS policy: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-external-dns-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
+		Role:      externalDNSRole.Role.Name,
+		PolicyArn: externalDNSPolicy.Arn,
+	}, pulumi.Parent(externalDNSRole.Role))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cluster policy for external dns: %w", err)
+	}
+
+	externalDNSServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-external-dns-service-account", name), &corev1.ServiceAccountArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name:      pulumi.String("external-dns"),
+			Namespace: pulumi.String("kube-system"),
+			Annotations: pulumi.StringMap{
+				"eks.amazonaws.com/role-arn": externalDNSRole.Role.Arn,
+			},
+		},
+	}, pulumi.Parent(externalDNSRole), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating external dns service account: %w", err)
+	}
+
+	externalDNS, err := helm.NewRelease(ctx, fmt.Sprintf("%s-external-dns", name), &helm.ReleaseArgs{
+		Chart:     pulumi.String("external-dns"),
+		Namespace: pulumi.String("kube-system"),
+		RepositoryOpts: &helm.RepositoryOptsArgs{
+			Repo: pulumi.String("https://kubernetes-sigs.github.io/external-dns/"),
+		},
+		Values: pulumi.Map{
+			"serviceAccount": pulumi.Map{
+				"create": pulumi.Bool(false),
+				"name":   externalDNSServiceAccount.Metadata.Name(),
+			},
+			"tolerations": pulumi.MapArray{
+				pulumi.Map{
+					"key":      pulumi.String("node.lbrlabs.com/system"),
+					"operator": pulumi.String("Equal"),
+					"value":    pulumi.String("true"),
+					"effect":   pulumi.String("NoSchedule"),
+				},
+			},
+		},
+	}, pulumi.Parent(externalDNSServiceAccount), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing external dns helm release: %w", err)
+	}
+
+	_ = externalDNS
+
+	certManagerRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &irsa.IamServiceAccountRoleArgs{
+		OidcProviderArn:    oidcProvider.Arn,
+		OidcProviderUrl:    oidcProvider.Url,
+		Namespace:          pulumi.String("kube-system"),
+		ServiceAccountName: pulumi.String("cert-manager"),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating iam service account role for cert manager: %w", err)
+	}
+
+	certManagerPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+		Statements: iam.GetPolicyDocumentStatementArray{
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowAccessToRoute53Changess"),
+				Actions: pulumi.StringArray{
+					pulumi.String("route53:GetChange"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					pulumi.String("arn:aws:route53:::change/*"),
+				},
+			},
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
+				Actions: pulumi.StringArray{
+					pulumi.String("route53:ChangeResourceRecordSets"),
+					pulumi.String("route53:ListResourceRecordSets"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					pulumi.String("arn:aws:route53:::hostedzone/*"),
+				},
+			},
+			iam.GetPolicyDocumentStatementArgs{
+				Sid: pulumi.String("AllowListingHostedZones"),
+				Actions: pulumi.StringArray{
+					pulumi.String("route53:ListHostedZonesByName"),
+				},
+				Effect: pulumi.String("Allow"),
+				Resources: pulumi.StringArray{
+					pulumi.String("*"),
+				},
+			},
+		},
+	})
+
+	certManagerPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cert-manager-policy", name), &iam.PolicyArgs{
+		Description: pulumi.String("Policy for cert-manager to modify route53 "),
+		Policy:      certManagerPolicyDocument.Json(),
+	}, pulumi.Parent(role))
+	if err != nil {
+		return nil, fmt.Errorf("error creating cert manager DNS policy: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-cert-manager-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
+		Role:      certManagerRole.Role.Name,
+		PolicyArn: certManagerPolicy.Arn,
+	}, pulumi.Parent(certManagerPolicy))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cluster policy for cert manager: %w", err)
+	}
+
+	certManagerServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-cert-manager-service-account", name), &corev1.ServiceAccountArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name:      pulumi.String("cert-manager"),
+			Namespace: pulumi.String("kube-system"),
+			Annotations: pulumi.StringMap{
+				"eks.amazonaws.com/role-arn": certManagerRole.Role.Arn,
+			},
+		},
+	}, pulumi.Parent(certManagerRole), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating cert manager service account: %w", err)
+	}
+
+	certManager, err := helm.NewRelease(ctx, fmt.Sprintf("%s-cert-manager", name), &helm.ReleaseArgs{
+		Chart:     pulumi.String("cert-manager"),
+		Namespace: pulumi.String("kube-system"),
+		RepositoryOpts: &helm.RepositoryOptsArgs{
+			Repo: pulumi.String("https://charts.jetstack.io"),
+		},
+		Values: pulumi.Map{
+			"serviceAccount": pulumi.Map{
+				"create": pulumi.Bool(false),
+				"name":   certManagerServiceAccount.Metadata.Name(),
+			},
+			"securityContext": pulumi.Map{
+				"fsGroup": pulumi.Int(1001),
+			},
+			"tolerations": pulumi.MapArray{
+				pulumi.Map{
+					"key":      pulumi.String("node.lbrlabs.com/system"),
+					"operator": pulumi.String("Equal"),
+					"value":    pulumi.String("true"),
+					"effect":   pulumi.String("NoSchedule"),
+				},
+			},
+			"startupapicheck": pulumi.Map{
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+			},
+			"webhook": pulumi.Map{
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+			},
+			"cainjector": pulumi.Map{
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+			},
+			"installCrds": pulumi.Bool(true),
+		},
+	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing cert manager helm release: %w", err)
+	}
+
+	_ = certManager
+
+	clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
+		ApiVersion: pulumi.String("cert-manager.io/v1"),
+		Kind:       pulumi.String("ClusterIssuer"),
+		OtherFields: map[string]interface{}{
+			"spec": map[string]interface{}{
+				"acme": map[string]interface{}{
+					"email":  pulumi.String("lee@leebriggs.co.uk"),
+					"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
+					"privateKeySecretRef": map[string]interface{}{
+						"name": pulumi.String("letsencrypt"),
+					},
+					"solvers": []interface{}{
+						map[string]interface{}{
+							"dns01": map[string]interface{}{
+								"route53": map[string]interface{}{
+									"role": certManagerRole.Role.Arn,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}, pulumi.Parent(certManager), pulumi.Provider(provider))
+
+	_ = clusterIssuer
 
 	component.ControlPlane = controlPlane
 	component.OidcProvider = oidcProvider

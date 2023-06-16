@@ -1,166 +1,83 @@
-# Pulumi Component Provider Boilerplate (Go)
+# Pulumi LBr Labs EKS 
 
-This repo is a boilerplate showing how to create a Pulumi component provider written in Go. You can search-replace `xyz` with the name of your desired provider as a starting point for creating a component provider for your component resources.
+This repo provides a [multi-language](https://www.pulumi.com/blog/pulumiup-pulumi-packages-multi-language-components/) component that creates a "batteries included" cluster ready for you to attach your EKS nodes to.
 
-## Background
-This repository is part of the [guide for authoring and publishing a Pulumi Package](https://www.pulumi.com/docs/guides/pulumi-packages/how-to-author).
+> :warning: **This is a work in progress**
 
-Learn about the concepts behind [Pulumi Packages](https://www.pulumi.com/docs/guides/pulumi-packages/#pulumi-packages) and, more specifically, [Pulumi Components](https://www.pulumi.com/docs/intro/concepts/resources/components/)
+It creates:
 
-## Sample xyz Component Provider
+- an EKS cluster with [CloudTrail logging enabled](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.htmleks), and [secret encryption enabled](https://docs.aws.amazon.com/eks/latest/userguide/enable-kms.html)
+- A node group designed to run "system" workloads with a taint
+- The [AWS EBS CSI Addon](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+- The [AWS VPC CBI Addon](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+- The CoreDNS Addon
+- An internal and external [NGINX ingress controller](https://github.com/kubernetes/ingress-nginx) with relevant ingress classes
+- [External DNS](https://github.com/kubernetes-sigs/external-dns), with an IAM role that can modify Route53 domains using IAM Roles for service accounts
+- [Cert Manager](https://cert-manager.io/), with an IAM role that can modify Route53 domains using IAM Roles for service accounts
 
-An example `StaticPage` [component resource](https://www.pulumi.com/docs/intro/concepts/resources/#components) is available in `provider/pkg/provider/staticPage.go`. This component creates a static web page hosted in an AWS S3 Bucket. There is nothing special about `StaticPage` -- it is a typical component resource written in Go.
+It is designed to be an opinionated implementation of EKS, without the overhead of having to install all of the things required for your cluster to be functional.
 
-The component provider makes component resources available to other languages. The implementation is in `provider/pkg/provider/provider.go`. Each component resource in the provider must have an implementation in the `Construct` function to create an instance of the requested component resource and return its `URN` and state (outputs). There is an initial implementation that demonstrates an implementation of `Construct` for the example `StaticPage` component.
+## Examples
 
-A code generator is available which generates SDKs in TypeScript, Python, Go and .NET which are also checked in to the `sdk` folder. The SDKs are generated from a schema in `schema.yaml`. This file should be kept aligned with the component resources supported by the component provider implementation.
+Examples for all languages are in the [examples](examples/) directory. 
 
-An example of using the `StaticPage` component in TypeScript is in `examples/simple`.
+Note, you need to create a VPC, and also add your worker nodes. 
 
-Note that the generated provider plugin (`pulumi-resource-xyz`) must be on your `PATH` to be used by Pulumi deployments. If creating a provider for distribution to other users, you should ensure they install this plugin to their `PATH`.
+## FAQs
 
-## Prerequisites
+### Can you add support for X
 
-- Go 1.17
-- Pulumi CLI
-- Node.js (to build the Node.js SDK)
-- Yarn (to build the Node.js SDK)
-- Python 3.6+ (to build the Python SDK)
-- .NET Core SDK (to build the .NET SDK)
+Add an issue, but this is mainly designed to be useful for workloads I run, so I reserve the right to refuse.
 
-## Build and Test
+### Can you make X optional?
 
-```bash
-# Build and install the provider (plugin copied to $GOPATH/bin)
-make install_provider
+I have no plans to make any of the batteries included optional at this time
 
-# Regenerate SDKs
-make generate
+## Installing
 
-# Test Node.js SDK
-$ make install_nodejs_sdk
-$ cd examples/simple
-$ yarn install
-$ yarn link @pulumi/xyz
-$ pulumi stack init test
-$ pulumi config set aws:region us-east-1
-$ pulumi up
+This package is available in many languages in the standard packaging formats.
+
+### Node.js (Java/TypeScript)
+
+To use from JavaScript or TypeScript in Node.js, install using either `npm`:
+
+```
+$ npm install @lbrlabs/pulumi-eks
 ```
 
-## Naming
+or `yarn`:
 
-The `xyz` provider's plugin binary must be named `pulumi-resource-xyz` (in the format `pulumi-resource-<provider>`).
-
-While the provider plugin must follow this naming convention, the SDK package naming can be customized. TODO explain.
-
-## Configuring CI and releases
-
-1. Follow the instructions laid out in the [deployment templates](./deployment-templates/README-DEPLOYMENT.md).
-
-## Example component
-
-Let's look at the example `StaticPage` component resource in more detail.
-
-### Schema
-
-The example `StaticPage` component resource is defined in `schema.yaml`:
-
-```yaml
-resources:
-  xyz:index:StaticPage:
-    isComponent: true
-    inputProperties:
-      indexContent:
-        type: string
-        description: The HTML content for index.html.
-    requiredInputs:
-      - indexContent
-    properties:
-      bucket:
-        "$ref": "/aws/v4.0.0/schema.json#/resources/aws:s3%2Fbucket:Bucket"
-        description: The bucket resource.
-      websiteUrl:
-        type: string
-        description: The website URL.
-    required:
-      - bucket
-      - websiteUrl
+```
+$ yarn add @lbrlabs/pulumi-eks
 ```
 
-The component resource's type token is `xyz:index:StaticPage` in the format of `<package>:<module>:<type>`. In this case, it's in the `xyz` package and `index` module. This is the same type token passed to `RegisterComponentResource` inside the implementation of `NewStaticPage` in `provider/pkg/provider/staticPage.go`, and also the same token referenced in `Construct` in `provider/pkg/provider/provider.go`.
+### Python
 
-This component has a required `indexContent` input property typed as `string`, and two required output properties: `bucket` and `websiteUrl`. Note that `bucket` is typed as the `aws:s3/bucket:Bucket` resource from the `aws` provider (in the schema the `/` is escaped as `%2F`).
+To use from Python, install using `pip`:
 
-Since this component returns a type from the `aws` provider, each SDK must reference the associated Pulumi `aws` SDK for the language. For the .NET, Node.js, and Python SDKs, dependencies are specified in the `language` section of the schema:
-
-```yaml
-language:
-  csharp:
-    packageReferences:
-      Pulumi: 3.*
-      Pulumi.Aws: 4.*
-  go:
-    generateResourceContainerTypes: true
-    importBasePath: github.com/pulumi/pulumi-xyz/sdk/go/xyz
-  nodejs:
-    dependencies:
-      "@pulumi/aws": "^4.0.0"
-    devDependencies:
-      typescript: "^3.7.0"
-  python:
-    requires:
-      pulumi: ">=3.0.0,<4.0.0"
-      pulumi-aws: ">=4.0.0,<5.0.0"
+```
+$ pip install lbrlabs_pulumi_eks
 ```
 
-For the Go SDK, dependencies are specified in the `sdk/go.mod` file.
+### Go
 
-### Implementation
+To use from Go, use `go get` to grab the latest version of the library
 
-The implementation of this component is in `provider/pkg/provider/staticPage.go` and the structure of the component's inputs and outputs aligns with what is defined in `schema.yaml`:
-
-```go
-// The set of arguments for creating a StaticPage component resource.
-type StaticPageArgs struct {
-    IndexContent pulumi.StringInput `pulumi:"indexContent"`
-}
-
-// The StaticPage component resource.
-type StaticPage struct {
-    pulumi.ResourceState
-
-    Bucket     *s3.Bucket          `pulumi:"bucket"`
-    WebsiteUrl pulumi.StringOutput `pulumi:"websiteUrl"`
-}
-
-// NewStaticPage creates a new StaticPage component resource.
-func NewStaticPage(ctx *pulumi.Context, name string, args *StaticPageArgs, opts ...pulumi.ResourceOption) (*StaticPage, error) {
-    ...
-}
+```
+$ go get github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/...
 ```
 
-The provider makes this component resource available in the `construct` function in `provider/pkg/provider/provider.go`. When `construct` is called and the `typ` argument is `xyz:index:StaticPage`, we create an instance of the `StaticPage` component resource and return its `URN` and state.
+### .NET
 
-```go
-func constructStaticPage(ctx *pulumi.Context, name string, inputs provider.ConstructInputs,
-    options pulumi.ResourceOption) (*provider.ConstructResult, error) {
+To use from Dotnet, use `dotnet add package` to install into your project. You must specify the version if it is a pre-release version.
 
-    // Copy the raw inputs to StaticPageArgs. `inputs.CopyTo` uses the types and `pulumi:` tags
-    // on the struct's fields to convert the raw values to the appropriate Input types.
-    args := &StaticPageArgs{}
-    if err := inputs.CopyTo(args); err != nil {
-        return nil, errors.Wrap(err, "setting args")
-    }
 
-    // Create the component resource.
-    staticPage, err := NewStaticPage(ctx, name, args, options)
-    if err != nil {
-        return nil, errors.Wrap(err, "creating component")
-    }
-
-    // Return the component resource's URN and state. `NewConstructResult` automatically sets the
-    // ConstructResult's state based on resource struct fields tagged with `pulumi:` tags with a value
-    // that is convertible to `pulumi.Input`.
-    return provider.NewConstructResult(staticPage)
-}
 ```
+$ dotnet add package Lbrlabs.PulumiPackage.Eks
+```
+
+## Reference
+
+See the Pulumi registry for API docs:
+
+https://www.pulumi.com/registry/packages/lbrlabs-eks/api-docs/
