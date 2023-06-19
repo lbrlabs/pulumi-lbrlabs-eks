@@ -26,5 +26,9 @@ resources:
     properties:
       clusterName: ${cluster.controlPlane.name}
       subnetIds: ${vpc.privateSubnetIds}
+      scalingConfig:
+        desiredSize: 3
+        maxSize: 10
+        minSize: 1
 outputs:
   kubeconfig: ${cluster.kubeconfig}

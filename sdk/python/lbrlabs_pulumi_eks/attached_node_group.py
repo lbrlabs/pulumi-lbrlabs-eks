@@ -17,27 +17,25 @@ class AttachedNodeGroupArgs:
     def __init__(__self__, *,
                  cluster_name: pulumi.Input[str],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 node_desired_count: Optional[pulumi.Input[float]] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 node_max_count: Optional[pulumi.Input[float]] = None,
-                 node_min_count: Optional[pulumi.Input[float]] = None):
+                 scaling_config: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]] = None):
         """
         The set of arguments for constructing a AttachedNodeGroup resource.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
-        :param pulumi.Input[float] node_desired_count: The initial number of nodes in the node autoscaling group.
-        :param pulumi.Input[float] node_max_count: The maximum number of nodes in the node autoscaling group.
-        :param pulumi.Input[float] node_min_count: The minimum number of nodes in the node autoscaling group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         """
         pulumi.set(__self__, "cluster_name", cluster_name)
         pulumi.set(__self__, "subnet_ids", subnet_ids)
-        if node_desired_count is not None:
-            pulumi.set(__self__, "node_desired_count", node_desired_count)
+        if labels is not None:
+            pulumi.set(__self__, "labels", labels)
         if node_instance_types is not None:
             pulumi.set(__self__, "node_instance_types", node_instance_types)
-        if node_max_count is not None:
-            pulumi.set(__self__, "node_max_count", node_max_count)
-        if node_min_count is not None:
-            pulumi.set(__self__, "node_min_count", node_min_count)
+        if scaling_config is not None:
+            pulumi.set(__self__, "scaling_config", scaling_config)
+        if taints is not None:
+            pulumi.set(__self__, "taints", taints)
 
     @property
     @pulumi.getter(name="clusterName")
@@ -61,16 +59,16 @@ class AttachedNodeGroupArgs:
         pulumi.set(self, "subnet_ids", value)
 
     @property
-    @pulumi.getter(name="nodeDesiredCount")
-    def node_desired_count(self) -> Optional[pulumi.Input[float]]:
+    @pulumi.getter
+    def labels(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
-        The initial number of nodes in the node autoscaling group.
+        Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         """
-        return pulumi.get(self, "node_desired_count")
+        return pulumi.get(self, "labels")
 
-    @node_desired_count.setter
-    def node_desired_count(self, value: Optional[pulumi.Input[float]]):
-        pulumi.set(self, "node_desired_count", value)
+    @labels.setter
+    def labels(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "labels", value)
 
     @property
     @pulumi.getter(name="nodeInstanceTypes")
@@ -82,28 +80,22 @@ class AttachedNodeGroupArgs:
         pulumi.set(self, "node_instance_types", value)
 
     @property
-    @pulumi.getter(name="nodeMaxCount")
-    def node_max_count(self) -> Optional[pulumi.Input[float]]:
-        """
-        The maximum number of nodes in the node autoscaling group.
-        """
-        return pulumi.get(self, "node_max_count")
+    @pulumi.getter(name="scalingConfig")
+    def scaling_config(self) -> Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']]:
+        return pulumi.get(self, "scaling_config")
 
-    @node_max_count.setter
-    def node_max_count(self, value: Optional[pulumi.Input[float]]):
-        pulumi.set(self, "node_max_count", value)
+    @scaling_config.setter
+    def scaling_config(self, value: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']]):
+        pulumi.set(self, "scaling_config", value)
 
     @property
-    @pulumi.getter(name="nodeMinCount")
-    def node_min_count(self) -> Optional[pulumi.Input[float]]:
-        """
-        The minimum number of nodes in the node autoscaling group.
-        """
-        return pulumi.get(self, "node_min_count")
+    @pulumi.getter
+    def taints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]]:
+        return pulumi.get(self, "taints")
 
-    @node_min_count.setter
-    def node_min_count(self, value: Optional[pulumi.Input[float]]):
-        pulumi.set(self, "node_min_count", value)
+    @taints.setter
+    def taints(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]]):
+        pulumi.set(self, "taints", value)
 
 
 class AttachedNodeGroup(pulumi.ComponentResource):
@@ -112,20 +104,18 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 node_desired_count: Optional[pulumi.Input[float]] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 node_max_count: Optional[pulumi.Input[float]] = None,
-                 node_min_count: Optional[pulumi.Input[float]] = None,
+                 scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupTaintArgs']]]]] = None,
                  __props__=None):
         """
         Create a AttachedNodeGroup resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
-        :param pulumi.Input[float] node_desired_count: The initial number of nodes in the node autoscaling group.
-        :param pulumi.Input[float] node_max_count: The maximum number of nodes in the node autoscaling group.
-        :param pulumi.Input[float] node_min_count: The minimum number of nodes in the node autoscaling group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         """
         ...
     @overload
@@ -151,11 +141,11 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 node_desired_count: Optional[pulumi.Input[float]] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 node_max_count: Optional[pulumi.Input[float]] = None,
-                 node_min_count: Optional[pulumi.Input[float]] = None,
+                 scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupTaintArgs']]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -170,14 +160,15 @@ class AttachedNodeGroup(pulumi.ComponentResource):
             if cluster_name is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_name'")
             __props__.__dict__["cluster_name"] = cluster_name
-            __props__.__dict__["node_desired_count"] = node_desired_count
+            __props__.__dict__["labels"] = labels
             __props__.__dict__["node_instance_types"] = node_instance_types
-            __props__.__dict__["node_max_count"] = node_max_count
-            __props__.__dict__["node_min_count"] = node_min_count
+            __props__.__dict__["scaling_config"] = scaling_config
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")
             __props__.__dict__["subnet_ids"] = subnet_ids
+            __props__.__dict__["taints"] = taints
             __props__.__dict__["node_group"] = None
+            __props__.__dict__["node_role"] = None
         super(AttachedNodeGroup, __self__).__init__(
             'lbrlabs-eks:index:AttachedNodeGroup',
             resource_name,
@@ -189,4 +180,9 @@ class AttachedNodeGroup(pulumi.ComponentResource):
     @pulumi.getter(name="nodeGroup")
     def node_group(self) -> pulumi.Output['pulumi_aws.eks.NodeGroup']:
         return pulumi.get(self, "node_group")
+
+    @property
+    @pulumi.getter(name="nodeRole")
+    def node_role(self) -> pulumi.Output['pulumi_aws.iam.Role']:
+        return pulumi.get(self, "node_role")
 

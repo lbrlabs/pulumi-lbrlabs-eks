@@ -22,6 +22,7 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
     }
 
     public /*out*/ readonly nodeGroup!: pulumi.Output<pulumiAws.eks.NodeGroup>;
+    public /*out*/ readonly nodeRole!: pulumi.Output<pulumiAws.iam.Role>;
 
     /**
      * Create a AttachedNodeGroup resource with the given unique name, arguments, and options.
@@ -41,14 +42,16 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'subnetIds'");
             }
             resourceInputs["clusterName"] = args ? args.clusterName : undefined;
-            resourceInputs["nodeDesiredCount"] = args ? args.nodeDesiredCount : undefined;
+            resourceInputs["labels"] = args ? args.labels : undefined;
             resourceInputs["nodeInstanceTypes"] = args ? args.nodeInstanceTypes : undefined;
-            resourceInputs["nodeMaxCount"] = args ? args.nodeMaxCount : undefined;
-            resourceInputs["nodeMinCount"] = args ? args.nodeMinCount : undefined;
+            resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
+            resourceInputs["taints"] = args ? args.taints : undefined;
             resourceInputs["nodeGroup"] = undefined /*out*/;
+            resourceInputs["nodeRole"] = undefined /*out*/;
         } else {
             resourceInputs["nodeGroup"] = undefined /*out*/;
+            resourceInputs["nodeRole"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(AttachedNodeGroup.__pulumiType, name, resourceInputs, opts, true /*remote*/);
@@ -64,17 +67,11 @@ export interface AttachedNodeGroupArgs {
      */
     clusterName: pulumi.Input<string>;
     /**
-     * The initial number of nodes in the node autoscaling group.
+     * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
      */
-    nodeDesiredCount?: pulumi.Input<number>;
+    labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     nodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
-    /**
-     * The maximum number of nodes in the node autoscaling group.
-     */
-    nodeMaxCount?: pulumi.Input<number>;
-    /**
-     * The minimum number of nodes in the node autoscaling group.
-     */
-    nodeMinCount?: pulumi.Input<number>;
+    scalingConfig?: pulumi.Input<pulumiAws.types.input.eks.NodeGroupScalingConfig>;
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    taints?: pulumi.Input<pulumi.Input<pulumiAws.types.input.eks.NodeGroupTaint>[]>;
 }

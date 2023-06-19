@@ -72,15 +72,8 @@ resources:
         type: array
         items:
           type: string
-      nodeMaxCount:
-        type: number
-        description: The maximum number of nodes in the node autoscaling group.
-      nodeMinCount:
-        type: number
-        description: The minimum number of nodes in the node autoscaling group.
-      nodeDesiredCount:
-        type: number
-        description: The initial number of nodes in the node autoscaling group.
+      scalingConfig:
+        "$ref": "/aws/v5.41.0/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
       taints:
         type: "array"
         items:
@@ -100,6 +93,32 @@ resources:
         "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - nodeGroup
+      - nodeRole
+  lbrlabs-eks:index:IamServiceAccountRole:
+    isComponent: true
+    inputProperties:
+      oidcProviderArn:
+        type: string
+        description: The arn of the OIDC provider attached to your EKS cluster.
+      oidcProviderUrl:
+        type: string
+        description: The URL of the OIDC provider attached to your EKS cluster.
+      namespaceName:
+        type: string
+        description: The namespace to create the service account in.
+      serviceAccountName:
+        type: string
+        description: The name of the service account to bind to the role
+    requiredInputs:
+      - oidcProviderArn
+      - oidcProviderUrl
+      - namespaceName
+      - serviceAccountName
+    properties:
+      role:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
+    required:
+      - role
 language:
   csharp:
     packageReferences:

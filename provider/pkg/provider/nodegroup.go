@@ -89,27 +89,6 @@ func NewNodeGroup(ctx *pulumi.Context,
 		instanceTypes = *args.InstanceTypes
 	}
 
-	var nodeMaxCount pulumi.IntInput
-	if args.NodeMaxCount == nil {
-		nodeMaxCount = pulumi.Int(10)
-	} else {
-		nodeMaxCount = *args.NodeMaxCount
-	}
-
-	var nodeMinCount pulumi.IntInput
-	if args.NodeMinCount == nil {
-		nodeMinCount = pulumi.Int(1)
-	} else {
-		nodeMinCount = *args.NodeMinCount
-	}
-
-	var nodeDesiredCount pulumi.IntInput
-	if args.NodeDesiredCount == nil {
-		nodeDesiredCount = pulumi.Int(1)
-	} else {
-		nodeDesiredCount = *args.NodeDesiredCount
-	}
-
 	nodeGroup, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-nodes", name), &eks.NodeGroupArgs{
 		ClusterName:   args.ClusterName,
 		SubnetIds:     args.SubnetIds,
@@ -117,11 +96,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		Taints:        args.Taints,
 		InstanceTypes: instanceTypes,
 		Labels:        args.Labels,
-		ScalingConfig: &eks.NodeGroupScalingConfigArgs{
-			MaxSize:     nodeMaxCount,
-			MinSize:     nodeMinCount,
-			DesiredSize: nodeDesiredCount,
-		},
+		ScalingConfig: args.ScalingConfig,
 	}, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup provider: %w", err)

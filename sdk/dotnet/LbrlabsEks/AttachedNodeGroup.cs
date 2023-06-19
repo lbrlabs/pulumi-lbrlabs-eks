@@ -16,6 +16,9 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
         [Output("nodeGroup")]
         public Output<Pulumi.Aws.Eks.NodeGroup> NodeGroup { get; private set; } = null!;
 
+        [Output("nodeRole")]
+        public Output<Pulumi.Aws.Iam.Role> NodeRole { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a AttachedNodeGroup resource with the given unique name, arguments, and options.
@@ -51,11 +54,17 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
         [Input("clusterName", required: true)]
         public Input<string> ClusterName { get; set; } = null!;
 
+        [Input("labels")]
+        private InputMap<string>? _labels;
+
         /// <summary>
-        /// The initial number of nodes in the node autoscaling group.
+        /// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         /// </summary>
-        [Input("nodeDesiredCount")]
-        public Input<double>? NodeDesiredCount { get; set; }
+        public InputMap<string> Labels
+        {
+            get => _labels ?? (_labels = new InputMap<string>());
+            set => _labels = value;
+        }
 
         [Input("nodeInstanceTypes")]
         private InputList<string>? _nodeInstanceTypes;
@@ -65,17 +74,8 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
             set => _nodeInstanceTypes = value;
         }
 
-        /// <summary>
-        /// The maximum number of nodes in the node autoscaling group.
-        /// </summary>
-        [Input("nodeMaxCount")]
-        public Input<double>? NodeMaxCount { get; set; }
-
-        /// <summary>
-        /// The minimum number of nodes in the node autoscaling group.
-        /// </summary>
-        [Input("nodeMinCount")]
-        public Input<double>? NodeMinCount { get; set; }
+        [Input("scalingConfig")]
+        public Input<Pulumi.Aws.Eks.Inputs.NodeGroupScalingConfigArgs>? ScalingConfig { get; set; }
 
         [Input("subnetIds", required: true)]
         private InputList<string>? _subnetIds;
@@ -83,6 +83,14 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
         {
             get => _subnetIds ?? (_subnetIds = new InputList<string>());
             set => _subnetIds = value;
+        }
+
+        [Input("taints")]
+        private InputList<Pulumi.Aws.Eks.Inputs.NodeGroupTaintArgs>? _taints;
+        public InputList<Pulumi.Aws.Eks.Inputs.NodeGroupTaintArgs> Taints
+        {
+            get => _taints ?? (_taints = new InputList<Pulumi.Aws.Eks.Inputs.NodeGroupTaintArgs>());
+            set => _taints = value;
         }
 
         public AttachedNodeGroupArgs()

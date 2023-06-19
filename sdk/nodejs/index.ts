@@ -15,6 +15,11 @@ export type Cluster = import("./cluster").Cluster;
 export const Cluster: typeof import("./cluster").Cluster = null as any;
 utilities.lazyLoad(exports, ["Cluster"], () => require("./cluster"));
 
+export { IamServiceAccountRoleArgs } from "./iamServiceAccountRole";
+export type IamServiceAccountRole = import("./iamServiceAccountRole").IamServiceAccountRole;
+export const IamServiceAccountRole: typeof import("./iamServiceAccountRole").IamServiceAccountRole = null as any;
+utilities.lazyLoad(exports, ["IamServiceAccountRole"], () => require("./iamServiceAccountRole"));
+
 export { ProviderArgs } from "./provider";
 export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
@@ -29,6 +34,8 @@ const _module = {
                 return new AttachedNodeGroup(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:Cluster":
                 return new Cluster(name, <any>undefined, { urn })
+            case "lbrlabs-eks:index:IamServiceAccountRole":
+                return new IamServiceAccountRole(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

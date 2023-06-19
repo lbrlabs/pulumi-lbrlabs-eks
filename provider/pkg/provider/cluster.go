@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/irsa"
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/kubeconfig"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/eks"
@@ -281,14 +280,16 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &NodeGroupArgs{
-		ClusterName:      controlPlane.Name,
-		SubnetIds:        args.SystemNodeSubnetIds,
-		InstanceTypes:    &instanceTypes,
-		Labels:           systemNodeLabels,
-		Taints:           taints,
-		NodeMaxCount:     &systemNodeMaxCount,
-		NodeMinCount:     &systemNodeMinCount,
-		NodeDesiredCount: &systemNodeDesiredCount,
+		ClusterName:   controlPlane.Name,
+		SubnetIds:     args.SystemNodeSubnetIds,
+		InstanceTypes: &instanceTypes,
+		Labels:        systemNodeLabels,
+		Taints:        taints,
+		ScalingConfig: eks.NodeGroupScalingConfigArgs{
+			MaxSize:     systemNodeMaxCount,
+			MinSize:     systemNodeMinCount,
+			DesiredSize: systemNodeDesiredCount,
+		},
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup: %w", err)
@@ -340,10 +341,10 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error installing coredns: %w", err)
 	}
 
-	vpcCsiRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-vpc-csi-role", name), &irsa.IamServiceAccountRoleArgs{
+	vpcCsiRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-vpc-csi-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
 		OidcProviderUrl:    oidcProvider.Url,
-		Namespace:          pulumi.String("kube-system"),
+		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("aws-node"),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
@@ -368,10 +369,10 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
 	}
 
-	ebsCsiRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-ebs-csi-role", name), &irsa.IamServiceAccountRoleArgs{
+	ebsCsiRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-ebs-csi-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
 		OidcProviderUrl:    oidcProvider.Url,
-		Namespace:          pulumi.String("kube-system"),
+		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("ebs-csi-controller-sa"),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
@@ -590,10 +591,10 @@ func NewCluster(ctx *pulumi.Context,
 	_ = nginxIngressExternal
 	_ = nginxIngressInternal
 
-	externalDNSRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &irsa.IamServiceAccountRoleArgs{
+	externalDNSRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
 		OidcProviderUrl:    oidcProvider.Url,
-		Namespace:          pulumi.String("kube-system"),
+		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("external-dns"),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
@@ -683,10 +684,10 @@ func NewCluster(ctx *pulumi.Context,
 
 	_ = externalDNS
 
-	certManagerRole, err := irsa.NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &irsa.IamServiceAccountRoleArgs{
+	certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
 		OidcProviderUrl:    oidcProvider.Url,
-		Namespace:          pulumi.String("kube-system"),
+		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("cert-manager"),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {

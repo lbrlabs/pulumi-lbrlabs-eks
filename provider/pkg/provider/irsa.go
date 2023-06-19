@@ -1,4 +1,4 @@
-package irsa
+package provider
 
 import (
 	"fmt"
@@ -8,16 +8,16 @@ import (
 )
 
 type IamServiceAccountRoleArgs struct {
-	OidcProviderArn    pulumi.StringInput
-	OidcProviderUrl    pulumi.StringInput
-	Namespace          pulumi.StringInput
-	ServiceAccountName pulumi.StringInput
+	OidcProviderArn    pulumi.StringInput `pulumi:"oidcProviderArn"`
+	OidcProviderUrl    pulumi.StringInput `pulumi:"oidcProviderUrl"`
+	NamespaceName      pulumi.StringInput `pulumi:"namespaceName"`
+	ServiceAccountName pulumi.StringInput `pulumi:"serviceAccountName"`
 }
 
 type IamServiceAccountRole struct {
 	pulumi.ResourceState
 
-	Role *iam.Role
+	Role *iam.Role `pulumi:"role"`
 }
 
 func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamServiceAccountRoleArgs, opts ...pulumi.ResourceOption) (*IamServiceAccountRole, error) {
@@ -52,7 +52,7 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 						Test:     pulumi.String("StringEquals"),
 						Variable: pulumi.Sprintf("%s:sub", args.OidcProviderUrl),
 						Values: pulumi.StringArray{
-							pulumi.Sprintf("system:serviceaccount:%s:%s", args.Namespace, args.ServiceAccountName),
+							pulumi.Sprintf("system:serviceaccount:%s:%s", args.NamespaceName, args.ServiceAccountName),
 						},
 					},
 				},
@@ -77,6 +77,12 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 	}
 
 	component.Role = role
+
+	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
+		"role": role,
+	}); err != nil {
+		return nil, err
+	}
 
 	return component, nil
 
