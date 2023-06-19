@@ -6,6 +6,7 @@ import (
 
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/irsa"
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/kubeconfig"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/kms"
@@ -15,6 +16,7 @@ import (
 	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
 	storagev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/storage/v1"
+	yaml "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/yaml"
 
 	tls "github.com/pulumi/pulumi-tls/sdk/v4/go/tls"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -37,7 +39,7 @@ type Cluster struct {
 	pulumi.ResourceState
 
 	ControlPlane *eks.Cluster               `pulumi:"controlPlane"`
-	SystemNodes  *eks.NodeGroup             `pulumi:"systemNodes"`
+	SystemNodes  *NodeGroup                 `pulumi:"systemNodes"`
 	OidcProvider *iam.OpenIdConnectProvider `pulumi:"oidcProvider"`
 	KubeConfig   pulumi.StringOutput        `pulumi:"kubeconfig"`
 }
@@ -53,6 +55,11 @@ func NewCluster(ctx *pulumi.Context,
 	err := ctx.RegisterComponentResource("lbrlabs-eks:index:Cluster", name, component, opts...)
 	if err != nil {
 		return nil, err
+	}
+
+	region, err := aws.GetRegion(ctx, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error getting region: %w", err)
 	}
 
 	// FIXME: make this strongly typed instead of using interfaces
@@ -191,44 +198,44 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating OIDC provider: %w", err)
 	}
 
-	systemNodePolicyJSON, err := json.Marshal(map[string]interface{}{
-		"Statement": []map[string]interface{}{
-			{
-				"Action": "sts:AssumeRole",
-				"Effect": "Allow",
-				"Principal": map[string]interface{}{
-					"Service": "ec2.amazonaws.com",
-				},
-			},
-		},
-		"Version": "2012-10-17",
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling system node policy: %w", err)
-	}
+	// systemNodePolicyJSON, err := json.Marshal(map[string]interface{}{
+	// 	"Statement": []map[string]interface{}{
+	// 		{
+	// 			"Action": "sts:AssumeRole",
+	// 			"Effect": "Allow",
+	// 			"Principal": map[string]interface{}{
+	// 				"Service": "ec2.amazonaws.com",
+	// 			},
+	// 		},
+	// 	},
+	// 	"Version": "2012-10-17",
+	// })
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error marshalling system node policy: %w", err)
+	// }
 
-	systemNodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-system-node-role", name), &iam.RoleArgs{
-		AssumeRolePolicy: pulumi.String(systemNodePolicyJSON),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error creating system node role: %w", err)
-	}
+	// systemNodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-system-node-role", name), &iam.RoleArgs{
+	// 	AssumeRolePolicy: pulumi.String(systemNodePolicyJSON),
+	// }, pulumi.Parent(controlPlane))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error creating system node role: %w", err)
+	// }
 
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
-		Role:      systemNodeRole.Name,
-	}, pulumi.Parent(systemNodeRole))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching system node worker policy: %w", err)
-	}
+	// _, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
+	// 	PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
+	// 	Role:      systemNodeRole.Name,
+	// }, pulumi.Parent(systemNodeRole))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error attaching system node worker policy: %w", err)
+	// }
 
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
-		Role:      systemNodeRole.Name,
-	}, pulumi.Parent(systemNodeRole))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
-	}
+	// _, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
+	// 	PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
+	// 	Role:      systemNodeRole.Name,
+	// }, pulumi.Parent(systemNodeRole))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
+	// }
 
 	var instanceTypes pulumi.StringArrayInput
 
@@ -261,30 +268,53 @@ func NewCluster(ctx *pulumi.Context,
 		systemNodeDesiredCount = *args.SystemNodeDesiredCount
 	}
 
-	systemNodes, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &eks.NodeGroupArgs{
-		ClusterName:   controlPlane.Name,
-		SubnetIds:     args.SystemNodeSubnetIds,
-		NodeRoleArn:   systemNodeRole.Arn,
-		InstanceTypes: instanceTypes,
-		Labels: pulumi.StringMap{
-			"node.lbrlabs.com/system": pulumi.String("system"),
-		},
-		Taints: eks.NodeGroupTaintArray{
-			eks.NodeGroupTaintArgs{
-				Effect: pulumi.String("NO_SCHEDULE"),
-				Key:    pulumi.String("node.lbrlabs.com/system"),
-				Value:  pulumi.String("true"),
-			},
-		},
-		ScalingConfig: &eks.NodeGroupScalingConfigArgs{
-			MaxSize:     systemNodeMaxCount,
-			MinSize:     systemNodeMinCount,
-			DesiredSize: systemNodeDesiredCount,
-		},
-	}, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
-	if err != nil {
-		return nil, fmt.Errorf("error creating system nodegroup provider: %w", err)
+	systemNodeLabels := pulumi.StringMap{
+		"node.lbrlabs.com/system": pulumi.String("system"),
 	}
+
+	taints := eks.NodeGroupTaintArray{
+		eks.NodeGroupTaintArgs{
+			Effect: pulumi.String("NO_SCHEDULE"),
+			Key:    pulumi.String("node.lbrlabs.com/system"),
+			Value:  pulumi.String("true"),
+		},
+	}
+
+	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &NodeGroupArgs{
+		ClusterName:      controlPlane.Name,
+		SubnetIds:        args.SystemNodeSubnetIds,
+		InstanceTypes:    &instanceTypes,
+		Labels:           systemNodeLabels,
+		Taints:           taints,
+		NodeMaxCount:     &systemNodeMaxCount,
+		NodeMinCount:     &systemNodeMinCount,
+		NodeDesiredCount: &systemNodeDesiredCount,
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating system nodegroup: %w", err)
+	}
+
+	// systemNodes, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &eks.NodeGroupArgs{
+	// 	ClusterName:   controlPlane.Name,
+	// 	SubnetIds:     args.SystemNodeSubnetIds,
+	// 	NodeRoleArn:   systemNodeRole.Arn,
+	// 	InstanceTypes: instanceTypes,
+	// 	Labels: pulumi.StringMap{
+	// 		"node.lbrlabs.com/system": pulumi.String("system"),
+	// 	},
+	// 	Taints: eks.NodeGroupTaintArray{
+	// 		eks.NodeGroupTaintArgs{
+	// 			Effect: pulumi.String("NO_SCHEDULE"),
+	// 			Key:    pulumi.String("node.lbrlabs.com/system"),
+	// 			Value:  pulumi.String("true"),
+	// 		},
+	// 	},
+	// 	ScalingConfig: &eks.NodeGroupScalingConfigArgs{
+	// 		MaxSize:     systemNodeMaxCount,
+	// 		MinSize:     systemNodeMinCount,
+	// 		DesiredSize: systemNodeDesiredCount,
+	// 	},
+	// }, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
 
 	coreDnsConfig, err := json.Marshal(map[string]interface{}{
 		"tolerations": []map[string]interface{}{
@@ -443,6 +473,7 @@ func NewCluster(ctx *pulumi.Context,
 	nginxIngressExternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-ext", name), &helm.ReleaseArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
+		Timeout:   pulumi.Int(600),
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
@@ -500,6 +531,7 @@ func NewCluster(ctx *pulumi.Context,
 	nginxIngressInternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-int", name), &helm.ReleaseArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
+		Timeout:   pulumi.Int(600),
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
@@ -626,6 +658,7 @@ func NewCluster(ctx *pulumi.Context,
 	externalDNS, err := helm.NewRelease(ctx, fmt.Sprintf("%s-external-dns", name), &helm.ReleaseArgs{
 		Chart:     pulumi.String("external-dns"),
 		Namespace: pulumi.String("kube-system"),
+		Timeout:   pulumi.Int(600),
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://kubernetes-sigs.github.io/external-dns/"),
 		},
@@ -725,9 +758,19 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cert manager service account: %w", err)
 	}
 
+	certManagerCrds, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-cert-manager-crds", name), &yaml.ConfigFileArgs{
+		File: "https://github.com/cert-manager/cert-manager/releases/download/v1.12.2/cert-manager.crds.yaml",
+	}, pulumi.Parent(provider), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating cert manager crds: %w", err)
+	}
+
 	certManager, err := helm.NewRelease(ctx, fmt.Sprintf("%s-cert-manager", name), &helm.ReleaseArgs{
-		Chart:     pulumi.String("cert-manager"),
-		Namespace: pulumi.String("kube-system"),
+		Chart:           pulumi.String("cert-manager"),
+		Namespace:       pulumi.String("kube-system"),
+		DisableCRDHooks: pulumi.Bool(true),
+		SkipAwait:       pulumi.Bool(true), // FIXME: this is a very unreliable chart
+		Timeout:         pulumi.Int(600),
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://charts.jetstack.io"),
 		},
@@ -777,9 +820,8 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 			},
-			"installCrds": pulumi.Bool(true),
 		},
-	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, certManagerCrds}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing cert manager helm release: %w", err)
 	}
@@ -801,7 +843,8 @@ func NewCluster(ctx *pulumi.Context,
 						map[string]interface{}{
 							"dns01": map[string]interface{}{
 								"route53": map[string]interface{}{
-									"role": certManagerRole.Role.Arn,
+									"region": region.Name,
+									"role":   certManagerRole.Role.Arn,
 								},
 							},
 						},
@@ -810,6 +853,9 @@ func NewCluster(ctx *pulumi.Context,
 			},
 		},
 	}, pulumi.Parent(certManager), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error installing cluster issuer release: %w", err)
+	}
 
 	_ = clusterIssuer
 
@@ -821,8 +867,8 @@ func NewCluster(ctx *pulumi.Context,
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
 		"controlPlane": controlPlane,
 		"oidcProvider": oidcProvider,
-		"systemNodes":  systemNodes,
-		"kubeconfig":   kc,
+		//"systemNodes":  systemNodes,
+		"kubeconfig": kc,
 	}); err != nil {
 		return nil, err
 	}

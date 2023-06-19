@@ -13,6 +13,7 @@
         "strict": true
     },
     "files": [
+        "attachedNodeGroup.ts",
         "cluster.ts",
         "index.ts",
         "provider.ts",

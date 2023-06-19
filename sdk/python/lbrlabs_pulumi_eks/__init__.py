@@ -5,6 +5,7 @@
 from . import _utilities
 import typing
 # Export this package's modules as members:
+from .attached_node_group import *
 from .cluster import *
 from .provider import *
 _utilities.register(
@@ -15,6 +16,7 @@ _utilities.register(
   "mod": "index",
   "fqn": "lbrlabs_pulumi_eks",
   "classes": {
+   "lbrlabs-eks:index:AttachedNodeGroup": "AttachedNodeGroup",
    "lbrlabs-eks:index:Cluster": "Cluster"
   }
  }

@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
+export { AttachedNodeGroupArgs } from "./attachedNodeGroup";
+export type AttachedNodeGroup = import("./attachedNodeGroup").AttachedNodeGroup;
+export const AttachedNodeGroup: typeof import("./attachedNodeGroup").AttachedNodeGroup = null as any;
+utilities.lazyLoad(exports, ["AttachedNodeGroup"], () => require("./attachedNodeGroup"));
+
 export { ClusterArgs } from "./cluster";
 export type Cluster = import("./cluster").Cluster;
 export const Cluster: typeof import("./cluster").Cluster = null as any;
@@ -20,6 +25,8 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "lbrlabs-eks:index:AttachedNodeGroup":
+                return new AttachedNodeGroup(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:Cluster":
                 return new Cluster(name, <any>undefined, { urn })
             default:

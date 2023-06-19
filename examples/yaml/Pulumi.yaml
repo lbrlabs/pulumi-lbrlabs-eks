@@ -21,5 +21,10 @@ resources:
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
       systemNodeInstanceTypes: [ "t3.large" ]
       systemNodeDesiredCount: 4
+  workloadNodes:
+    type: lbrlabs-eks:index:AttachedNodeGroup
+    properties:
+      clusterName: ${cluster.controlPlane.name}
+      subnetIds: ${vpc.privateSubnetIds}
 outputs:
   kubeconfig: ${cluster.kubeconfig}

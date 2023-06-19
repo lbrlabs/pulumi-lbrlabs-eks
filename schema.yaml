@@ -58,6 +58,48 @@ resources:
       - oidcProvider
       - kubeconfig
       - systemNodes
+  lbrlabs-eks:index:AttachedNodeGroup:
+    isComponent: true
+    inputProperties:
+      clusterName:
+        type: string
+        description: The cluster name to attach the nodegroup tp.
+      subnetIds:
+        type: array
+        items:
+          type: string
+      nodeInstanceTypes:
+        type: array
+        items:
+          type: string
+      nodeMaxCount:
+        type: number
+        description: The maximum number of nodes in the node autoscaling group.
+      nodeMinCount:
+        type: number
+        description: The minimum number of nodes in the node autoscaling group.
+      nodeDesiredCount:
+        type: number
+        description: The initial number of nodes in the node autoscaling group.
+      taints:
+        type: "array"
+        items:
+          "$ref": "/aws/v5.41.0/schema.json#/types/aws:eks%2FNodeGroupTaint:NodeGroupTaint"
+      labels:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed."
+    requiredInputs:
+      - clusterName
+      - subnetIds
+    properties:
+      nodeGroup:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
+      nodeRole:
+        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
+    required:
+      - nodeGroup
 language:
   csharp:
     packageReferences:
