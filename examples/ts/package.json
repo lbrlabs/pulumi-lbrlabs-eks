@@ -6,7 +6,8 @@
 		"dependencies": {
 			"typescript": "^4.0.0",
 			"@pulumi/pulumi": "^3.0.0",
+			"@lbrlabs/pulumi-eks": "0.0.1",
 			"@pulumi/awsx": "*",
-			"@pulumi/kubernetes": "3.29.0"
+			"@pulumi/kubernetes": "3.29.1"
 		}
 }

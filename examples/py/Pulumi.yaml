@@ -1,0 +1,3 @@
+name: lbrlabs-eks-yaml
+runtime: python
+description: A minimal Pulumi YAML program

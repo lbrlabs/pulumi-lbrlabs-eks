@@ -1,0 +1,3 @@
+name: lbrlabs-eks-yaml
+runtime: dotnet
+description: A minimal Pulumi YAML program

@@ -1,46 +1,74 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as awsx from "@pulumi/awsx";
 import * as kubernetes from "@pulumi/kubernetes";
+import * as lbrlabs_eks from "@lbrlabs/pulumi-eks";
 
 const vpc = new awsx.ec2.Vpc("vpc", {
-    cidrBlock: "172.16.0.0/16",
-    subnetSpecs: [
-        {
-            type: awsx.ec2.SubnetType.Public,
-            tags: {
-                "kubernetes.io/role/elb": "1",
-            },
-        },
-        {
-            type: awsx.ec2.SubnetType.Private,
-            tags: {
-                "kubernetes.io/role/internal-elb": "1",
-            },
-        },
-    ],
-});
-const provider = new kubernetes.Provider("provider", {kubeconfig: cluster.kubeconfig});
-const wordpress = new kubernetes.helm.v3.Release("wordpress", {
-    chart: "wordpress",
-    repositoryOpts: {
-        repo: "https://charts.bitnami.com/bitnami",
+  cidrBlock: "172.16.0.0/16",
+  subnetSpecs: [
+    {
+      type: awsx.ec2.SubnetType.Public,
+      tags: {
+        "kubernetes.io/role/elb": "1",
+      },
     },
-    values: {
-        wordpressUsername: "lbrlabs",
-        wordpressPassword: "correct-horse-battery-stable",
-        wordpressEmail: "mail@lbrlabs.com",
-        ingress: {
-            enabled: true,
-            ingressClassName: "external",
-            hostname: "wordpress.aws.briggs.work",
-            tls: true,
-            annotations: {
-                "cert-manager.io/cluster-issuer": "letsencrypt-prod",
-                "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
-            },
-        },
+    {
+      type: awsx.ec2.SubnetType.Private,
+      tags: {
+        "kubernetes.io/role/internal-elb": "1",
+      },
     },
-}, {
-    provider: provider,
+  ],
 });
-export const kubeconfig = cluster.kubeconfig;
+const cluster = new lbrlabs_eks.Cluster("cluster", {
+  clusterSubnetIds: vpc.privateSubnetIds,
+  letsEncryptEmail: "mail@lbrlabs.com",
+  systemNodeSubnetIds: vpc.publicSubnetIds,
+  systemNodeInstanceTypes: ["t3.large"],
+  systemNodeDesiredCount: 4,
+});
+
+export const clusterInfo = cluster.controlPlane
+
+// const workloadNodes = new lbrlabs_eks.AttachedNodeGroup("workload", {
+//   clusterName: cluster.controlPlane.name,
+//   subnetIds: vpc.privateSubnetIds,
+//   scalingConfig: {
+//     desiredSize: 3,
+//     maxSize: 10,
+//     minSize: 1,
+//   },
+// });
+
+// const provider = new kubernetes.Provider("provider", {
+//   kubeconfig: cluster.kubeconfig,
+// });
+
+// const wordpress = new kubernetes.helm.v3.Release(
+//   "wordpress",
+//   {
+//     chart: "wordpress",
+//     repositoryOpts: {
+//       repo: "https://charts.bitnami.com/bitnami",
+//     },
+//     values: {
+//       wordpressUsername: "lbrlabs",
+//       wordpressPassword: "correct-horse-battery-stable",
+//       wordpressEmail: "mail@lbrlabs.com",
+//       ingress: {
+//         enabled: true,
+//         ingressClassName: "external",
+//         hostname: "wordpress.aws.briggs.work",
+//         tls: true,
+//         annotations: {
+//           "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+//           "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
+//         },
+//       },
+//     },
+//   },
+//   {
+//     provider: provider,
+//   }
+// );
+// export const kubeconfig = cluster.kubeconfig;

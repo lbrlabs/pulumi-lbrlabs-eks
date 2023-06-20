@@ -2,6 +2,7 @@
 **/bin/
 **/obj/
 **/node_modules/
+**/lib
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
