@@ -7,10 +7,10 @@ resources:
     properties:
       cidrBlock: "172.16.0.0/16"
       subnetSpecs:
-        - type: public
+        - type: Public
           tags:
             "kubernetes.io/role/elb": "1"
-        - type: private
+        - type: Private
           tags:
             "kubernetes.io/role/internal-elb": "1"
   cluster:
@@ -30,5 +30,29 @@ resources:
         desiredSize: 3
         maxSize: 10
         minSize: 1
+  provider:
+    type: pulumi:providers:kubernetes
+    properties:
+      kubeconfig: ${cluster.kubeconfig}
+  wordpress:
+    type: kubernetes:helm.sh/v3:Release
+    properties:
+      chart: wordpress
+      repositoryOpts:
+        repo: https://charts.bitnami.com/bitnami
+      values:
+        wordpressUsername: lbrlabs
+        wordpressPassword: correct-horse-battery-stable
+        wordpressEmail: mail@lbrlabs.com
+        ingress:
+          enabled: true
+          ingressClassName: external
+          hostname: wordpress.aws.briggs.work # this domain must in exist in route53
+          tls: true
+          annotations:
+            "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+            "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+    options:
+      provider: ${provider}
 outputs:
   kubeconfig: ${cluster.kubeconfig}

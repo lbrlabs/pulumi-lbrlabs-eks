@@ -17,6 +17,8 @@ It creates:
 
 It is designed to be an opinionated implementation of EKS, without the overhead of having to install all of the things required for your cluster to be functional.
 
+It also provides a mechanism to quickly attached a workload node to your newly created cluster, and create an [IAM role for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) with your cluster's OIDC provider.
+
 ## Examples
 
 Examples for all languages are in the [examples](examples/) directory. 

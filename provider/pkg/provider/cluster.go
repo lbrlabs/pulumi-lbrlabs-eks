@@ -31,16 +31,18 @@ type ClusterArgs struct {
 	SystemNodeMinCount      *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
 	SystemNodeDesiredCount  *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
 	ClusterVersion          pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	LetsEncryptEmail        pulumi.StringInput       `pulumi:"letsEncryptEmail"`
 }
 
 // The Cluster component resource.
 type Cluster struct {
 	pulumi.ResourceState
 
-	ControlPlane *eks.Cluster               `pulumi:"controlPlane"`
-	SystemNodes  *NodeGroup                 `pulumi:"systemNodes"`
-	OidcProvider *iam.OpenIdConnectProvider `pulumi:"oidcProvider"`
-	KubeConfig   pulumi.StringOutput        `pulumi:"kubeconfig"`
+	ControlPlane *eks.Cluster                  `pulumi:"controlPlane"`
+	SystemNodes  *NodeGroup                    `pulumi:"systemNodes"`
+	OidcProvider *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
+	KubeConfig   pulumi.StringOutput           `pulumi:"kubeconfig"`
+	ClusterIssue *apiextensions.CustomResource `pulumi:"clusterIssue"`
 }
 
 // NewCluster creates a new EKS Cluster component resource.
@@ -832,10 +834,13 @@ func NewCluster(ctx *pulumi.Context,
 	clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
 		ApiVersion: pulumi.String("cert-manager.io/v1"),
 		Kind:       pulumi.String("ClusterIssuer"),
+		Metadata: &metav1.ObjectMetaArgs{
+			Name: pulumi.String("letsencrypt-prod"),
+		},
 		OtherFields: map[string]interface{}{
 			"spec": map[string]interface{}{
 				"acme": map[string]interface{}{
-					"email":  pulumi.String("lee@leebriggs.co.uk"),
+					"email":  args.LetsEncryptEmail,
 					"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
 					"privateKeySecretRef": map[string]interface{}{
 						"name": pulumi.String("letsencrypt"),
@@ -845,7 +850,6 @@ func NewCluster(ctx *pulumi.Context,
 							"dns01": map[string]interface{}{
 								"route53": map[string]interface{}{
 									"region": region.Name,
-									"role":   certManagerRole.Role.Arn,
 								},
 							},
 						},
@@ -853,9 +857,9 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(certManager), pulumi.Provider(provider))
+	}, pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
 	if err != nil {
-		return nil, fmt.Errorf("error installing cluster issuer release: %w", err)
+		return nil, fmt.Errorf("error installing cluster issuer: %w", err)
 	}
 
 	_ = clusterIssuer
@@ -864,12 +868,12 @@ func NewCluster(ctx *pulumi.Context,
 	component.OidcProvider = oidcProvider
 	component.SystemNodes = systemNodes
 	component.KubeConfig = kc
+	component.ClusterIssue = clusterIssuer
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
 		"controlPlane": controlPlane,
 		"oidcProvider": oidcProvider,
-		//"systemNodes":  systemNodes,
-		"kubeconfig": kc,
+		"kubeconfig":   kc,
 	}); err != nil {
 		return nil, err
 	}

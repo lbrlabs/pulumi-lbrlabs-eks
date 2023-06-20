@@ -1,0 +1,3 @@
+name: lbrlabs-eks-yaml
+runtime: nodejs
+description: A minimal Pulumi YAML program
