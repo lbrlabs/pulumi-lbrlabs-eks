@@ -1,6 +1,9 @@
 archives:
 - id: archive
   name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
+before:
+  hooks:
+  - make generate_schema
 builds:
 - binary: pulumi-resource-lbrlabs-eks
   dir: provider
