@@ -43,19 +43,19 @@ export class Cluster extends pulumi.ComponentResource {
             if ((!args || args.clusterSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'clusterSubnetIds'");
             }
+            if ((!args || args.letsEncryptEmail === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'letsEncryptEmail'");
+            }
             if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
-            if ((!args || args.vpcId === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'vpcId'");
-            }
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
+            resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
             resourceInputs["systemNodeMaxCount"] = args ? args.systemNodeMaxCount : undefined;
             resourceInputs["systemNodeMinCount"] = args ? args.systemNodeMinCount : undefined;
             resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
-            resourceInputs["vpcId"] = args ? args.vpcId : undefined;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
@@ -77,6 +77,10 @@ export class Cluster extends pulumi.ComponentResource {
 export interface ClusterArgs {
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
+     * The email address to use to issue certificates from Lets Encrypt.
+     */
+    letsEncryptEmail: pulumi.Input<string>;
+    /**
      * The initial number of nodes in the system autoscaling group.
      */
     systemNodeDesiredCount?: pulumi.Input<number>;
@@ -90,8 +94,4 @@ export interface ClusterArgs {
      */
     systemNodeMinCount?: pulumi.Input<number>;
     systemNodeSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
-    /**
-     * The VPC ID to create the cluster in.
-     */
-    vpcId: pulumi.Input<string>;
 }

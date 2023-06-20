@@ -16,22 +16,22 @@ __all__ = ['ClusterArgs', 'Cluster']
 class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 lets_encrypt_email: pulumi.Input[str],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 vpc_id: pulumi.Input[str],
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None):
         """
         The set of arguments for constructing a Cluster resource.
-        :param pulumi.Input[str] vpc_id: The VPC ID to create the cluster in.
+        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
+        pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
-        pulumi.set(__self__, "vpc_id", vpc_id)
         if system_node_desired_count is not None:
             pulumi.set(__self__, "system_node_desired_count", system_node_desired_count)
         if system_node_instance_types is not None:
@@ -51,6 +51,18 @@ class ClusterArgs:
         pulumi.set(self, "cluster_subnet_ids", value)
 
     @property
+    @pulumi.getter(name="letsEncryptEmail")
+    def lets_encrypt_email(self) -> pulumi.Input[str]:
+        """
+        The email address to use to issue certificates from Lets Encrypt.
+        """
+        return pulumi.get(self, "lets_encrypt_email")
+
+    @lets_encrypt_email.setter
+    def lets_encrypt_email(self, value: pulumi.Input[str]):
+        pulumi.set(self, "lets_encrypt_email", value)
+
+    @property
     @pulumi.getter(name="systemNodeSubnetIds")
     def system_node_subnet_ids(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
         return pulumi.get(self, "system_node_subnet_ids")
@@ -58,18 +70,6 @@ class ClusterArgs:
     @system_node_subnet_ids.setter
     def system_node_subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "system_node_subnet_ids", value)
-
-    @property
-    @pulumi.getter(name="vpcId")
-    def vpc_id(self) -> pulumi.Input[str]:
-        """
-        The VPC ID to create the cluster in.
-        """
-        return pulumi.get(self, "vpc_id")
-
-    @vpc_id.setter
-    def vpc_id(self, value: pulumi.Input[str]):
-        pulumi.set(self, "vpc_id", value)
 
     @property
     @pulumi.getter(name="systemNodeDesiredCount")
@@ -123,21 +123,21 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 vpc_id: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
         Create a Cluster resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
-        :param pulumi.Input[str] vpc_id: The VPC ID to create the cluster in.
         """
         ...
     @overload
@@ -163,12 +163,12 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 vpc_id: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -183,6 +183,9 @@ class Cluster(pulumi.ComponentResource):
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
+            if lets_encrypt_email is None and not opts.urn:
+                raise TypeError("Missing required property 'lets_encrypt_email'")
+            __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types
             __props__.__dict__["system_node_max_count"] = system_node_max_count
@@ -190,9 +193,6 @@ class Cluster(pulumi.ComponentResource):
             if system_node_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'system_node_subnet_ids'")
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
-            if vpc_id is None and not opts.urn:
-                raise TypeError("Missing required property 'vpc_id'")
-            __props__.__dict__["vpc_id"] = vpc_id
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["kubeconfig"] = None
             __props__.__dict__["oidc_provider"] = None

@@ -66,6 +66,12 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
         }
 
         /// <summary>
+        /// The email address to use to issue certificates from Lets Encrypt.
+        /// </summary>
+        [Input("letsEncryptEmail", required: true)]
+        public Input<string> LetsEncryptEmail { get; set; } = null!;
+
+        /// <summary>
         /// The initial number of nodes in the system autoscaling group.
         /// </summary>
         [Input("systemNodeDesiredCount")]
@@ -98,12 +104,6 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
             get => _systemNodeSubnetIds ?? (_systemNodeSubnetIds = new InputList<string>());
             set => _systemNodeSubnetIds = value;
         }
-
-        /// <summary>
-        /// The VPC ID to create the cluster in.
-        /// </summary>
-        [Input("vpcId", required: true)]
-        public Input<string> VpcId { get; set; } = null!;
 
         public ClusterArgs()
         {

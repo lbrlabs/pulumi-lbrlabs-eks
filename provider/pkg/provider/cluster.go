@@ -23,7 +23,6 @@ import (
 
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
-	VpcId                   pulumi.StringInput       `pulumi:"vpcId"`
 	ClusterSubnetIds        pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
 	SystemNodeSubnetIds     pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
 	SystemNodeInstanceTypes *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
@@ -104,14 +103,6 @@ func NewCluster(ctx *pulumi.Context,
 	if err != nil {
 		return nil, fmt.Errorf("error attaching cluster policy for VPC: %w", err)
 	}
-
-	// clusterSecurityGroup, err := ec2.NewSecurityGroup(ctx, fmt.Sprintf("%s-cluster-sg", name), &ec2.SecurityGroupArgs{
-	// 	VpcId: args.VpcId,
-	// 	RevokeRulesOnDelete: pulumi.Bool(true),
-	// }, pulumi.Parent(component))
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error creating cluster security group: %w", err)
-	// }
 
 	// FIXME: ensure we have a key policy for this key that's sane
 	kmsKey, err := kms.NewKey(ctx, fmt.Sprintf("%s-cluster-kms-key", name), &kms.KeyArgs{
@@ -319,7 +310,7 @@ func NewCluster(ctx *pulumi.Context,
 	// 	},
 	// }, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
 
-	coreDnsConfig, err := json.Marshal(map[string]interface{}{
+	coreDNSConfig, err := json.Marshal(map[string]interface{}{
 		"tolerations": []map[string]interface{}{
 			{
 				"key":      "node.lbrlabs.com/system",
@@ -337,7 +328,7 @@ func NewCluster(ctx *pulumi.Context,
 		AddonName:           pulumi.String("coredns"),
 		ClusterName:         controlPlane.Name,
 		ResolveConflicts:    pulumi.String("OVERWRITE"),
-		ConfigurationValues: pulumi.String(coreDnsConfig),
+		ConfigurationValues: pulumi.String(coreDNSConfig),
 	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
@@ -345,7 +336,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	vpcCsiRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-vpc-csi-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderUrl:    oidcProvider.Url,
+		OidcProviderURL:    oidcProvider.Url,
 		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("aws-node"),
 	}, pulumi.Parent(controlPlane))
@@ -373,7 +364,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	ebsCsiRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-ebs-csi-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderUrl:    oidcProvider.Url,
+		OidcProviderURL:    oidcProvider.Url,
 		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("ebs-csi-controller-sa"),
 	}, pulumi.Parent(controlPlane))
@@ -595,7 +586,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	externalDNSRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderUrl:    oidcProvider.Url,
+		OidcProviderURL:    oidcProvider.Url,
 		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("external-dns"),
 	}, pulumi.Parent(controlPlane))
@@ -688,7 +679,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
 		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderUrl:    oidcProvider.Url,
+		OidcProviderURL:    oidcProvider.Url,
 		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("cert-manager"),
 	}, pulumi.Parent(controlPlane))

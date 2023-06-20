@@ -16,7 +16,6 @@ resources:
   cluster:
     type: lbrlabs-eks:index:Cluster
     properties:
-      vpcId: ${vpc.vpcId}
       clusterSubnetIds: ${vpc.publicSubnetIds}
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
       systemNodeInstanceTypes: [ "t3.large" ]

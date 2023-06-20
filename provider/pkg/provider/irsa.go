@@ -9,7 +9,7 @@ import (
 
 type IamServiceAccountRoleArgs struct {
 	OidcProviderArn    pulumi.StringInput `pulumi:"oidcProviderArn"`
-	OidcProviderUrl    pulumi.StringInput `pulumi:"oidcProviderUrl"`
+	OidcProviderURL    pulumi.StringInput `pulumi:"oidcProviderUrl"`
 	NamespaceName      pulumi.StringInput `pulumi:"namespaceName"`
 	ServiceAccountName pulumi.StringInput `pulumi:"serviceAccountName"`
 }
@@ -43,14 +43,14 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 				Conditions: iam.GetPolicyDocumentStatementConditionArray{
 					iam.GetPolicyDocumentStatementConditionArgs{
 						Test:     pulumi.String("StringEquals"),
-						Variable: pulumi.Sprintf("%s:aud", args.OidcProviderUrl),
+						Variable: pulumi.Sprintf("%s:aud", args.OidcProviderURL),
 						Values: pulumi.StringArray{
 							pulumi.String("sts.amazonaws.com"),
 						},
 					},
 					iam.GetPolicyDocumentStatementConditionArgs{
 						Test:     pulumi.String("StringEquals"),
-						Variable: pulumi.Sprintf("%s:sub", args.OidcProviderUrl),
+						Variable: pulumi.Sprintf("%s:sub", args.OidcProviderURL),
 						Values: pulumi.StringArray{
 							pulumi.Sprintf("system:serviceaccount:%s:%s", args.NamespaceName, args.ServiceAccountName),
 						},

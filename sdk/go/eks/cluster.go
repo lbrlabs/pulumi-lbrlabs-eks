@@ -33,11 +33,11 @@ func NewCluster(ctx *pulumi.Context,
 	if args.ClusterSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'ClusterSubnetIds'")
 	}
+	if args.LetsEncryptEmail == nil {
+		return nil, errors.New("invalid value for required argument 'LetsEncryptEmail'")
+	}
 	if args.SystemNodeSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SystemNodeSubnetIds'")
-	}
-	if args.VpcId == nil {
-		return nil, errors.New("invalid value for required argument 'VpcId'")
 	}
 	opts = pkgResourceDefaultOpts(opts)
 	var resource Cluster
@@ -50,6 +50,8 @@ func NewCluster(ctx *pulumi.Context,
 
 type clusterArgs struct {
 	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
+	// The email address to use to issue certificates from Lets Encrypt.
+	LetsEncryptEmail string `pulumi:"letsEncryptEmail"`
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  *float64 `pulumi:"systemNodeDesiredCount"`
 	SystemNodeInstanceTypes []string `pulumi:"systemNodeInstanceTypes"`
@@ -58,13 +60,13 @@ type clusterArgs struct {
 	// The minimum number of nodes in the system autoscaling group.
 	SystemNodeMinCount  *float64 `pulumi:"systemNodeMinCount"`
 	SystemNodeSubnetIds []string `pulumi:"systemNodeSubnetIds"`
-	// The VPC ID to create the cluster in.
-	VpcId string `pulumi:"vpcId"`
 }
 
 // The set of arguments for constructing a Cluster resource.
 type ClusterArgs struct {
 	ClusterSubnetIds pulumi.StringArrayInput
+	// The email address to use to issue certificates from Lets Encrypt.
+	LetsEncryptEmail pulumi.StringInput
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  pulumi.Float64PtrInput
 	SystemNodeInstanceTypes pulumi.StringArrayInput
@@ -73,8 +75,6 @@ type ClusterArgs struct {
 	// The minimum number of nodes in the system autoscaling group.
 	SystemNodeMinCount  pulumi.Float64PtrInput
 	SystemNodeSubnetIds pulumi.StringArrayInput
-	// The VPC ID to create the cluster in.
-	VpcId pulumi.StringInput
 }
 
 func (ClusterArgs) ElementType() reflect.Type {

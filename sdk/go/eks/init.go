@@ -20,8 +20,12 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "lbrlabs-eks:index:AttachedNodeGroup":
+		r = &AttachedNodeGroup{}
 	case "lbrlabs-eks:index:Cluster":
 		r = &Cluster{}
+	case "lbrlabs-eks:index:IamServiceAccountRole":
+		r = &IamServiceAccountRole{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}
