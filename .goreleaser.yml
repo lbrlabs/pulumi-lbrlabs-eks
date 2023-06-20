@@ -2,7 +2,7 @@ archives:
 - id: archive
   name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
 builds:
-- binary: pulumi-resource-grafana
+- binary: pulumi-resource-lbrlabs-eks
   dir: provider
   env:
   - CGO_ENABLED=0
