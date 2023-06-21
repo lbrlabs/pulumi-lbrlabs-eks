@@ -862,6 +862,8 @@ func NewCluster(ctx *pulumi.Context,
 	component.ClusterIssue = clusterIssuer
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
+		"controlPlane": controlPlane,
+		"oidcProvider": oidcProvider,
 		"kubeconfig":   kc,
 	}); err != nil {
 		return nil, err
