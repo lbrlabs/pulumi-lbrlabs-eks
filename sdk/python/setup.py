@@ -46,7 +46,7 @@ setup(name='lbrlabs_pulumi_eks',
       cmdclass={
           'install': InstallPluginCommand,
       },
-      keywords='eks kubernetes aws lbrlabs',
+      keywords='eks kubernetes aws lbrlabs kind/component category/cloud',
       project_urls={
           'Repository': 'https://github.com/lbrlabs/pulumi-lbrlabs-eks'
       },

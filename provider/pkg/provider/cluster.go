@@ -190,45 +190,6 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating OIDC provider: %w", err)
 	}
 
-	// systemNodePolicyJSON, err := json.Marshal(map[string]interface{}{
-	// 	"Statement": []map[string]interface{}{
-	// 		{
-	// 			"Action": "sts:AssumeRole",
-	// 			"Effect": "Allow",
-	// 			"Principal": map[string]interface{}{
-	// 				"Service": "ec2.amazonaws.com",
-	// 			},
-	// 		},
-	// 	},
-	// 	"Version": "2012-10-17",
-	// })
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error marshalling system node policy: %w", err)
-	// }
-
-	// systemNodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-system-node-role", name), &iam.RoleArgs{
-	// 	AssumeRolePolicy: pulumi.String(systemNodePolicyJSON),
-	// }, pulumi.Parent(controlPlane))
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error creating system node role: %w", err)
-	// }
-
-	// _, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
-	// 	PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
-	// 	Role:      systemNodeRole.Name,
-	// }, pulumi.Parent(systemNodeRole))
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error attaching system node worker policy: %w", err)
-	// }
-
-	// _, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-system-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
-	// 	PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
-	// 	Role:      systemNodeRole.Name,
-	// }, pulumi.Parent(systemNodeRole))
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
-	// }
-
 	var instanceTypes pulumi.StringArrayInput
 
 	if args.SystemNodeInstanceTypes == nil {
@@ -396,7 +357,7 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error marshalling EBS CSI config: %w", err)
 	}
 
-	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), &eks.AddonArgs{
+	ebsCsiAddon, err := eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), &eks.AddonArgs{
 		AddonName:             pulumi.String("aws-ebs-csi-driver"),
 		ClusterName:           controlPlane.Name,
 		ResolveConflicts:      pulumi.String("OVERWRITE"),
@@ -517,7 +478,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
 	}
@@ -576,7 +537,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
 	}

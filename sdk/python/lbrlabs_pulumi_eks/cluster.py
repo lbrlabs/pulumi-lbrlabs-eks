@@ -207,6 +207,9 @@ class Cluster(pulumi.ComponentResource):
     @property
     @pulumi.getter(name="controlPlane")
     def control_plane(self) -> pulumi.Output['pulumi_aws.eks.Cluster']:
+        """
+        The Cluster control plane
+        """
         return pulumi.get(self, "control_plane")
 
     @property
@@ -220,10 +223,16 @@ class Cluster(pulumi.ComponentResource):
     @property
     @pulumi.getter(name="oidcProvider")
     def oidc_provider(self) -> pulumi.Output['pulumi_aws.iam.OpenIdConnectProvider']:
+        """
+        The OIDC provider for this cluster.
+        """
         return pulumi.get(self, "oidc_provider")
 
     @property
     @pulumi.getter(name="systemNodes")
     def system_nodes(self) -> pulumi.Output['pulumi_aws.eks.NodeGroup']:
+        """
+        The system node group.
+        """
         return pulumi.get(self, "system_nodes")
 

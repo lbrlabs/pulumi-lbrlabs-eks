@@ -16,11 +16,14 @@ import (
 type Cluster struct {
 	pulumi.ResourceState
 
+	// The Cluster control plane
 	ControlPlane eks.ClusterOutput `pulumi:"controlPlane"`
 	// The kubeconfig for this cluster.
-	Kubeconfig   pulumi.StringOutput             `pulumi:"kubeconfig"`
+	Kubeconfig pulumi.StringOutput `pulumi:"kubeconfig"`
+	// The OIDC provider for this cluster.
 	OidcProvider iam.OpenIdConnectProviderOutput `pulumi:"oidcProvider"`
-	SystemNodes  eks.NodeGroupOutput             `pulumi:"systemNodes"`
+	// The system node group.
+	SystemNodes eks.NodeGroupOutput `pulumi:"systemNodes"`
 }
 
 // NewCluster registers a new resource with the given unique name, arguments, and options.
@@ -164,6 +167,7 @@ func (o ClusterOutput) ToClusterOutputWithContext(ctx context.Context) ClusterOu
 	return o
 }
 
+// The Cluster control plane
 func (o ClusterOutput) ControlPlane() eks.ClusterOutput {
 	return o.ApplyT(func(v *Cluster) eks.ClusterOutput { return v.ControlPlane }).(eks.ClusterOutput)
 }
@@ -173,10 +177,12 @@ func (o ClusterOutput) Kubeconfig() pulumi.StringOutput {
 	return o.ApplyT(func(v *Cluster) pulumi.StringOutput { return v.Kubeconfig }).(pulumi.StringOutput)
 }
 
+// The OIDC provider for this cluster.
 func (o ClusterOutput) OidcProvider() iam.OpenIdConnectProviderOutput {
 	return o.ApplyT(func(v *Cluster) iam.OpenIdConnectProviderOutput { return v.OidcProvider }).(iam.OpenIdConnectProviderOutput)
 }
 
+// The system node group.
 func (o ClusterOutput) SystemNodes() eks.NodeGroupOutput {
 	return o.ApplyT(func(v *Cluster) eks.NodeGroupOutput { return v.SystemNodes }).(eks.NodeGroupOutput)
 }

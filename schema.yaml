@@ -10,6 +10,8 @@ keywords:
   - kubernetes
   - aws
   - lbrlabs
+  - kind/component
+  - category/cloud
 repository: "https://github.com/lbrlabs/pulumi-lbrlabs-eks"
 resources:
   lbrlabs-eks:index:Cluster:

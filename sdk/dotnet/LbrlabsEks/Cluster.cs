@@ -13,6 +13,9 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
     [LbrlabsEksResourceType("lbrlabs-eks:index:Cluster")]
     public partial class Cluster : global::Pulumi.ComponentResource
     {
+        /// <summary>
+        /// The Cluster control plane
+        /// </summary>
         [Output("controlPlane")]
         public Output<Pulumi.Aws.Eks.Cluster> ControlPlane { get; private set; } = null!;
 
@@ -22,9 +25,15 @@ namespace Lbrlabs.PulumiPackage.LbrlabsEks
         [Output("kubeconfig")]
         public Output<string> Kubeconfig { get; private set; } = null!;
 
+        /// <summary>
+        /// The OIDC provider for this cluster.
+        /// </summary>
         [Output("oidcProvider")]
         public Output<Pulumi.Aws.Iam.OpenIdConnectProvider> OidcProvider { get; private set; } = null!;
 
+        /// <summary>
+        /// The system node group.
+        /// </summary>
         [Output("systemNodes")]
         public Output<Pulumi.Aws.Eks.NodeGroup> SystemNodes { get; private set; } = null!;
 

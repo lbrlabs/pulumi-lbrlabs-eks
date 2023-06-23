@@ -21,12 +21,21 @@ export class Cluster extends pulumi.ComponentResource {
         return obj['__pulumiType'] === Cluster.__pulumiType;
     }
 
+    /**
+     * The Cluster control plane
+     */
     public /*out*/ readonly controlPlane!: pulumi.Output<pulumiAws.eks.Cluster>;
     /**
      * The kubeconfig for this cluster.
      */
     public /*out*/ readonly kubeconfig!: pulumi.Output<string>;
+    /**
+     * The OIDC provider for this cluster.
+     */
     public /*out*/ readonly oidcProvider!: pulumi.Output<pulumiAws.iam.OpenIdConnectProvider>;
+    /**
+     * The system node group.
+     */
     public /*out*/ readonly systemNodes!: pulumi.Output<pulumiAws.eks.NodeGroup>;
 
     /**

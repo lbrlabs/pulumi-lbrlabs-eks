@@ -28,6 +28,7 @@ cluster = lbrlabs_eks.Cluster(
     system_node_subnet_ids=vpc.private_subnet_ids,
     system_node_instance_types=["t3.large"],
     system_node_desired_count=4,
+    lets_encrypt_email="mail@lbrlabs.com",
 )
 
 workload_nodes = lbrlabs_eks.AttachedNodeGroup(

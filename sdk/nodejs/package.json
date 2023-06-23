@@ -5,7 +5,9 @@
         "eks",
         "kubernetes",
         "aws",
-        "lbrlabs"
+        "lbrlabs",
+        "kind/component",
+        "category/cloud"
     ],
     "repository": "https://github.com/lbrlabs/pulumi-lbrlabs-eks",
     "scripts": {
