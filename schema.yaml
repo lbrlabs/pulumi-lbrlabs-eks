@@ -5,6 +5,7 @@ displayName: lbrlabs-eks
 publisher: lbrlabs
 pluginDownloadURL: "github://api.github.com/lbrlabs"
 description: "A batteries included EKS cluster following best practices."
+logoURL: "", //nolint:golint,lll
 keywords:
   - eks
   - kubernetes
