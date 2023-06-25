@@ -249,28 +249,6 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating system nodegroup: %w", err)
 	}
 
-	// systemNodes, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &eks.NodeGroupArgs{
-	// 	ClusterName:   controlPlane.Name,
-	// 	SubnetIds:     args.SystemNodeSubnetIds,
-	// 	NodeRoleArn:   systemNodeRole.Arn,
-	// 	InstanceTypes: instanceTypes,
-	// 	Labels: pulumi.StringMap{
-	// 		"node.lbrlabs.com/system": pulumi.String("system"),
-	// 	},
-	// 	Taints: eks.NodeGroupTaintArray{
-	// 		eks.NodeGroupTaintArgs{
-	// 			Effect: pulumi.String("NO_SCHEDULE"),
-	// 			Key:    pulumi.String("node.lbrlabs.com/system"),
-	// 			Value:  pulumi.String("true"),
-	// 		},
-	// 	},
-	// 	ScalingConfig: &eks.NodeGroupScalingConfigArgs{
-	// 		MaxSize:     systemNodeMaxCount,
-	// 		MinSize:     systemNodeMinCount,
-	// 		DesiredSize: systemNodeDesiredCount,
-	// 	},
-	// }, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
-
 	coreDNSConfig, err := json.Marshal(map[string]interface{}{
 		"tolerations": []map[string]interface{}{
 			{
@@ -374,7 +352,8 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	provider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-provider", name), &kubernetes.ProviderArgs{
-		Kubeconfig: kc,
+		Kubeconfig:               kc,
+		SuppressHelmHookWarnings: pulumi.Bool(true),
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating kubernetes provider: %w", err)
@@ -425,11 +404,10 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating gp3 storage class: %w", err)
 	}
 
-	nginxIngressExternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-ext", name), &helm.ReleaseArgs{
+	nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
-		Timeout:   pulumi.Int(600),
-		RepositoryOpts: &helm.RepositoryOptsArgs{
+		FetchArgs: &helm.FetchArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
 		Values: pulumi.Map{
@@ -483,11 +461,10 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
 	}
 
-	nginxIngressInternal, err := helm.NewRelease(ctx, fmt.Sprintf("%s-nginx-int", name), &helm.ReleaseArgs{
+	nginxIngressInternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-int", name), helm.ChartArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
-		Timeout:   pulumi.Int(600),
-		RepositoryOpts: &helm.RepositoryOptsArgs{
+		FetchArgs: &helm.FetchArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
 		Values: pulumi.Map{
