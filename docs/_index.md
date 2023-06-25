@@ -391,6 +391,7 @@ resources:
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
       systemNodeInstanceTypes: [ "t3.large" ]
       systemNodeDesiredCount: 4
+      letsEncryptEmail: "mail@lbrlabs.com"
   workloadNodes:
     type: lbrlabs-eks:index:AttachedNodeGroup
     properties:

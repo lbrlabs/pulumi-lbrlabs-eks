@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json
 ---
 name: lbrlabs-eks
-displayName: lbrlabs-eks
+displayName: LBr Labs EKS
 publisher: lbrlabs
 pluginDownloadURL: "github://api.github.com/lbrlabs"
 description: "A batteries included EKS cluster following best practices."
