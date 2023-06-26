@@ -3,7 +3,7 @@ module github.com/lbrlabs/pulumi-lbrlabs-eks/examples/go
 go 1.20
 
 require (
-	github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.0.0-20230621140510-62294d769771
+	github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.0.0-20230625190202-688144fe1e82
 	github.com/pulumi/pulumi-aws/sdk/v5 v5.41.0
 	github.com/pulumi/pulumi-awsx/sdk v1.0.2
 	github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.29.1
