@@ -134,6 +134,8 @@ language:
       Pulumi.Aws: 5.*
       Pulumi.Kubernetes: 3.*
     rootNamespace: Lbrlabs.PulumiPackage
+    namespaces:
+      lbrlabs-eks: "Eks"
   go:
     generateResourceContainerTypes: true
     importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace Lbrlabs.PulumiPackage.LbrlabsEks
+namespace Lbrlabs.PulumiPackage.Eks
 {
-    [LbrlabsEksResourceType("lbrlabs-eks:index:IamServiceAccountRole")]
+    [EksResourceType("lbrlabs-eks:index:IamServiceAccountRole")]
     public partial class IamServiceAccountRole : global::Pulumi.ComponentResource
     {
         [Output("role")]

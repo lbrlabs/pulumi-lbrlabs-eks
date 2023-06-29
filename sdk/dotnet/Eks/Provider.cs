@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace Lbrlabs.PulumiPackage.LbrlabsEks
+namespace Lbrlabs.PulumiPackage.Eks
 {
-    [LbrlabsEksResourceType("pulumi:providers:lbrlabs-eks")]
+    [EksResourceType("pulumi:providers:lbrlabs-eks")]
     public partial class Provider : global::Pulumi.ProviderResource
     {
         /// <summary>

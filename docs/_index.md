@@ -186,7 +186,7 @@ using Pulumi;
 using Awsx = Pulumi.Awsx;
 using Aws = Pulumi.Aws;
 using Kubernetes = Pulumi.Kubernetes;
-using LbrlabsEks = Lbrlabs.PulumiPackage.LbrlabsEks;
+using LbrlabsEks = Lbrlabs.PulumiPackage.Eks;
 
 return await Deployment.RunAsync(() =>
 {

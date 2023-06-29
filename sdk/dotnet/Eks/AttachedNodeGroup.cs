@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace Lbrlabs.PulumiPackage.LbrlabsEks
+namespace Lbrlabs.PulumiPackage.Eks
 {
-    [LbrlabsEksResourceType("lbrlabs-eks:index:AttachedNodeGroup")]
+    [EksResourceType("lbrlabs-eks:index:AttachedNodeGroup")]
     public partial class AttachedNodeGroup : global::Pulumi.ComponentResource
     {
         [Output("nodeGroup")]

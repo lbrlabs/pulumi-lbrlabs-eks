@@ -11,7 +11,7 @@
 		<PackageReference Include="Pulumi.Aws" Version="5.41.0" />
 		<PackageReference Include="Pulumi.Awsx" Version="*" />
 		<PackageReference Include="Pulumi.Kubernetes" Version="3.29.1" />
-		<PackageReference Include="Lbrlabs.PulumiPackage.LbrlabsEks" Version="0.0.1" />
+		<PackageReference Include="Lbrlabs.PulumiPackage.Eks" Version="0.0.1" />
 	</ItemGroup>
 
 </Project>

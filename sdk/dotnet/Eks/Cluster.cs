@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace Lbrlabs.PulumiPackage.LbrlabsEks
+namespace Lbrlabs.PulumiPackage.Eks
 {
-    [LbrlabsEksResourceType("lbrlabs-eks:index:Cluster")]
+    [EksResourceType("lbrlabs-eks:index:Cluster")]
     public partial class Cluster : global::Pulumi.ComponentResource
     {
         /// <summary>
