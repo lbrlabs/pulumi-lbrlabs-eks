@@ -1008,7 +1008,7 @@ github.com/hashicorp/yamux v0.1.1/go.mod h1:CtWFDAQgb7dxtzFs4tWbplKIe2jSi3+5vKbg
 github.com/hetznercloud/hcloud-go v1.33.1/go.mod h1:XX/TQub3ge0yWR2yHWmnDVIrB+MQbda1pHxkUmDlUME=
 github.com/hetznercloud/hcloud-go v1.35.0/go.mod h1:mepQwR6va27S3UQthaEPGS86jtzSY9xWL1e9dyxXpgA=
 github.com/hinshun/vt10x v0.0.0-20180616224451-1954e6464174/go.mod h1:DqJ97dSdRW1W22yXSB90986pcOyQ7r45iio1KN2ez1A=
-github.com/hinshun/vt10x v0.0.0-20220119200601-820417d04eec h1:qv2VnGeEQHchGaZ/u7lxST/RaJw+cv273q79D81Xbog=
+github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02 h1:AgcIVYPa6XJnU3phs104wLj8l5GEththEw6+F79YsIY=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/hudl/fargo v1.3.0/go.mod h1:y3CKSmjA+wD2gak7sUSXTAoopbhU08POFhmITJgmKTg=
 github.com/iancoleman/strcase v0.2.0 h1:05I4QRnGpI0m37iZQRuskXh+w77mr6Z41lwQzuHLwW0=
@@ -1448,10 +1448,10 @@ github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.29.0 h1:txIDesF/EIK76l2zl+n3EWKMKP
 github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.29.0/go.mod h1:39Do0SB/PqsFQDcR6FQGWlfoMkTIwD0dS5SHfQJ99dQ=
 github.com/pulumi/pulumi-tls/sdk/v4 v4.10.0 h1:4MC0GyEomAjEZJPXEzBZpZ4+TOUg5WE77k38tMDIvS0=
 github.com/pulumi/pulumi-tls/sdk/v4 v4.10.0/go.mod h1:tNXsM/+RsiVVmBdzJMOOp6gMoi3sPko5u0FKdiei+cE=
-github.com/pulumi/pulumi/pkg/v3 v3.72.2 h1:H9DU5/D73a4UIWEeCrb7N3P1ZrZ/M7r2VYmOlpFbjFg=
-github.com/pulumi/pulumi/pkg/v3 v3.72.2/go.mod h1:roPEZwkXjJ7SgTizApJjJoxFlmvS9Uc6PPhXnA4WuGU=
-github.com/pulumi/pulumi/sdk/v3 v3.72.2 h1:hw/iiPW2JfeCAR38kRZl/XdyFEvSPPrB5HaU/DmsIDs=
-github.com/pulumi/pulumi/sdk/v3 v3.72.2/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXELnn+DgidFj4XSQ=
+github.com/pulumi/pulumi/pkg/v3 v3.74.0 h1:akL3ytYRgytJnlfj3hYyhNq15EiN5GGdlTB0vupxB7I=
+github.com/pulumi/pulumi/pkg/v3 v3.74.0/go.mod h1:HF+q4SozI1SZj8idzw0Kx3MIOH82m7er19PfVLUbDS0=
+github.com/pulumi/pulumi/sdk/v3 v3.74.0 h1:U+7fc/iLFy/aZMyQNOSxrp2voqBk8VKLyodgwkmAt7Q=
+github.com/pulumi/pulumi/sdk/v3 v3.74.0/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXELnn+DgidFj4XSQ=
 github.com/rakyll/embedmd v0.0.0-20171029212350-c8060a0752a2/go.mod h1:7jOTMgqac46PZcF54q6l2hkLEG8op93fZu61KmxWDV4=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
@@ -2131,6 +2131,7 @@ golang.org/x/time v0.0.0-20220224211638-0e9765cccd65/go.mod h1:tRJNPiyCQ0inRvYxb
 golang.org/x/time v0.0.0-20220609170525-579cf78fd858/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
 golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
 golang.org/x/time v0.1.0 h1:xYY+Bajn2a7VBmTM5GikTmnK8ZuX8YgnQCqZpbBNtmA=
+golang.org/x/time v0.1.0/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
 golang.org/x/tools v0.0.0-20180221164845-07fd8470d635/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 golang.org/x/tools v0.0.0-20180828015842-6cd1fcedba52/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
