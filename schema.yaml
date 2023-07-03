@@ -127,6 +127,29 @@ resources:
         "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - role
+  lbrlabs-eks:index:IamRoleMapping:
+    isComponent: true
+    inputProperties:
+      roleArn:
+        type: string
+        description: The arn of the role to map to a Kubernetes group.
+      username:
+        type: string
+        description: The username to assign to the rolemapping.
+      groups:
+        type: array
+        items:
+          type: string
+        description: An array of groups to map the IAM role to.
+    requiredInputs:
+      - roleArn
+      - username
+      - groups
+    properties:
+      roleMapping:
+        "$ref": "/kubernetes/v3.29.1/schema.json#/resources/kubernetes:apiextensions.k8s.io:CustomResource"
+    required:
+      - roleMapping
 language:
   csharp:
     packageReferences:

@@ -5,19 +5,20 @@ import (
 	"fmt"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
+	//"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 type NodeGroupArgs struct {
-	ClusterName      pulumi.StringInput             `pulumi:"clusterName"`
-	SubnetIds        pulumi.StringArrayInput        `pulumi:"subnetIds"`
-	InstanceTypes    *pulumi.StringArrayInput       `pulumi:"instanceTypes"`
-	NodeMaxCount     *pulumi.IntInput               `pulumi:"nodeMaxCount"`
-	NodeMinCount     *pulumi.IntInput               `pulumi:"nodeMinCount"`
-	NodeDesiredCount *pulumi.IntInput               `pulumi:"nodeDesiredCount"`
-	Taints           eks.NodeGroupTaintArray        `pulumi:"taints"`
-	Labels           pulumi.StringMapInput          `pulumi:"labels"`
-	ScalingConfig    eks.NodeGroupScalingConfigArgs `pulumi:"scalingConfig"`
+	ClusterName        pulumi.StringInput             `pulumi:"clusterName"`
+	SubnetIds          pulumi.StringArrayInput        `pulumi:"subnetIds"`
+	InstanceTypes      *pulumi.StringArrayInput       `pulumi:"instanceTypes"`
+	NodeMaxCount       *pulumi.IntInput               `pulumi:"nodeMaxCount"`
+	NodeMinCount       *pulumi.IntInput               `pulumi:"nodeMinCount"`
+	NodeDesiredCount   *pulumi.IntInput               `pulumi:"nodeDesiredCount"`
+	Taints             eks.NodeGroupTaintArray        `pulumi:"taints"`
+	Labels             pulumi.StringMapInput          `pulumi:"labels"`
+	ScalingConfig      eks.NodeGroupScalingConfigArgs `pulumi:"scalingConfig"`
 }
 
 type NodeGroup struct {
