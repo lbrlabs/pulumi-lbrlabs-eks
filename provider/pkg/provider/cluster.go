@@ -11,6 +11,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/kms"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
 	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions"
+	apiextensionsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions/v1"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
@@ -365,6 +366,96 @@ func NewCluster(ctx *pulumi.Context,
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating server side apply kubernetes provider: %w", err)
+	}
+
+	authCrds, err := apiextensionsv1.NewCustomResourceDefinition(ctx, fmt.Sprintf("%s-iam-identity-mapping-crd", name), &apiextensionsv1.CustomResourceDefinitionArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name: pulumi.String("iamidentitymappings.iamauthenticator.k8s.aws"),
+		},
+		Spec: apiextensionsv1.CustomResourceDefinitionSpecArgs{
+			Group: pulumi.String("iamauthenticator.k8s.aws"),
+			Versions: apiextensionsv1.CustomResourceDefinitionVersionArray{
+				apiextensionsv1.CustomResourceDefinitionVersionArgs{
+					Name:    pulumi.String("v1alpha1"),
+					Served:  pulumi.Bool(true),
+					Storage: pulumi.Bool(true),
+					Schema: apiextensionsv1.CustomResourceValidationArgs{
+						OpenAPIV3Schema: apiextensionsv1.JSONSchemaPropsArgs{
+							Type: pulumi.String("object"),
+							Properties: apiextensionsv1.JSONSchemaPropsMap{
+								"spec": apiextensionsv1.JSONSchemaPropsArgs{
+									Type: pulumi.String("object"),
+									Required: pulumi.StringArray{
+										pulumi.String("arn"),
+										pulumi.String("username"),
+									},
+									Properties: apiextensionsv1.JSONSchemaPropsMap{
+										"arn": apiextensionsv1.JSONSchemaPropsArgs{
+											Type: pulumi.String("string"),
+										},
+										"username": apiextensionsv1.JSONSchemaPropsArgs{
+											Type: pulumi.String("string"),
+										},
+										"groups": apiextensionsv1.JSONSchemaPropsArgs{
+											Type: pulumi.String("array"),
+											Items: pulumi.StringMap{
+												"type": pulumi.String("string"),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Scope: pulumi.String("Cluster"),
+			Names: apiextensionsv1.CustomResourceDefinitionNamesArgs{
+				Plural:   pulumi.String("iamidentitymappings"),
+				Singular: pulumi.String("iamidentitymapping"),
+				Kind:     pulumi.String("IAMIdentityMapping"),
+				Categories: pulumi.StringArray{
+					pulumi.String("all"),
+				},
+			},
+		},
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating iam identity mapping crd: %w", err)
+	}
+
+	// install the aws-auth operator to handle aws-auth stuff
+	_, err = helm.NewRelease(ctx, fmt.Sprintf("%s-aws-auth", name), &helm.ReleaseArgs{
+		Chart:     pulumi.String("rustrial-aws-eks-iam-auth-controller"),
+		Namespace: pulumi.String("kube-system"),
+		RepositoryOpts: &helm.RepositoryOptsArgs{
+			Repo: pulumi.String("https://rustrial.github.io/aws-eks-iam-auth-controller"),
+		},
+		Values: pulumi.Map{
+			"tolerations": pulumi.MapArray{
+				pulumi.Map{
+					"key":      pulumi.String("node.lbrlabs.com/system"),
+					"operator": pulumi.String("Equal"),
+					"value":    pulumi.String("true"),
+					"effect":   pulumi.String("NoSchedule"),
+				},
+			},
+		},
+	}, pulumi.Provider(provider), pulumi.Parent(authCrds), pulumi.DependsOn([]pulumi.Resource{systemNodes, authCrds}))
+	if err != nil {
+		return nil, fmt.Errorf("error installing aws-auth operator: %w", err)
+	}
+
+	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{
+		RoleArn:  systemNodes.Role.Arn,
+		Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+		Groups: pulumi.StringArray{
+			pulumi.String("system:bootstrappers"),
+			pulumi.String("system:nodes"),
+		},
+	}, pulumi.Parent(controlPlane), pulumi.Provider(provider))
+	if err != nil {
+		return nil, fmt.Errorf("error creating aws-auth role mapping: %w", err)
 	}
 
 	// FIXME: this is a workaround for EKS creating a broken default storage class

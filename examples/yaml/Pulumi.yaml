@@ -30,6 +30,14 @@ resources:
         desiredSize: 3
         maxSize: 10
         minSize: 1
+  rolemapping:
+    type: lbrlabs-eks:index:IamRoleMapping
+    properties:
+      roleArn: ${workloadNodes.nodeRole.arn}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
   provider:
     type: pulumi:providers:kubernetes
     properties:

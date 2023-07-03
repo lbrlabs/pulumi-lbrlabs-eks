@@ -65,6 +65,12 @@ const workloadNodes = new lbrlabs_eks.AttachedNodeGroup("workload", {
   },
 });
 
+const roleMapping = new lbrlabs_eks.IamRoleMapping("roleMapping", {
+  roleArn: workloadNodes.nodeRole.arn,
+  username: "system:node:{{EC2PrivateDNSName}}",
+  grups: ["system:bootstrappers", "system:nodes"],
+})
+
 const provider = new kubernetes.Provider("provider", {
   kubeconfig: cluster.kubeconfig,
 });
@@ -147,6 +153,13 @@ workload_nodes = lbrlabs_eks.AttachedNodeGroup(
     ),
 )
 
+roleMapping = lbrlabs_eks.IamRoleMapping(
+    "workload",
+    role_arn=workload_nodes.node_role.arn,
+    username="system:node:{{EC2PrivateDNSName}}",
+    groups=["system:bootstrappers", "system:nodes"],
+)
+
 
 provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
 wordpress = kubernetes.helm.v3.Release(
@@ -186,7 +199,7 @@ using Pulumi;
 using Awsx = Pulumi.Awsx;
 using Aws = Pulumi.Aws;
 using Kubernetes = Pulumi.Kubernetes;
-using LbrlabsEks = Lbrlabs.PulumiPackage.Eks;
+using LbrlabsEks = Lbrlabs.PulumiPackage.LbrlabsEks;
 
 return await Deployment.RunAsync(() =>
 {
@@ -238,6 +251,17 @@ return await Deployment.RunAsync(() =>
         // },
     });
 
+    var roleMapping = new LbrlabsEks.IamRoleMapping("workload", new()
+    {
+        RoleArn = workloadNodes.NodeRole.Arn,
+        Username = "system:node:{{EC2PrivateDNSName}}",
+        Groups = new[]
+        {
+            "system:bootstrappers",
+            "system:nodes",
+        },
+    });
+
     var provider = new Kubernetes.Provider("provider", new()
     {
         KubeConfig = cluster.Kubeconfig,
@@ -277,6 +301,9 @@ return await Deployment.RunAsync(() =>
     {
         ["kubeconfig"] = cluster.Kubeconfig,
     };
+});
+
+
 });
 ```
 {{% /choosable %}}
@@ -325,13 +352,22 @@ func main() {
 			LetsEncryptEmail:       pulumi.String("mail@lbrlabs.com"),
 		})
 
-		_, err = lbrlabs.NewAttachedNodeGroup(ctx, "workloadNodes", &lbrlabs.AttachedNodeGroupArgs{
+		workloadNodes, err := lbrlabs.NewAttachedNodeGroup(ctx, "workloadNodes", &lbrlabs.AttachedNodeGroupArgs{
 			ClusterName: cluster.ControlPlane.Name(),
 			SubnetIds:   vpc.PrivateSubnetIds,
 			ScalingConfig: &eks.NodeGroupScalingConfigArgs{
 				DesiredSize: pulumi.Int(4),
 				MaxSize:     pulumi.Int(10),
 				MinSize:     pulumi.Int(1),
+			},
+		})
+
+		_, err = lbrlabs.NewRoleMapping(ctx, "roleMapping", &lbrlabs.RoleMappingArgs{
+			RoleArn:  workloadNodes.NodeRole.Arn(),
+			Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+			Groups: pulumi.StringArray{
+				pulumi.String("system:bootstrappers"),
+				pulumi.String("system:nodes"),
 			},
 		})
 
@@ -365,6 +401,7 @@ func main() {
 		return nil
 	})
 }
+
 ```
 {{% /choosable %}}
 
@@ -401,6 +438,14 @@ resources:
         desiredSize: 3
         maxSize: 10
         minSize: 1
+  rolemapping:
+    type: lbrlabs-eks:index:IamRoleMapping
+    properties:
+      roleArn: ${workloadNodes.nodeRole.arn}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
   provider:
     type: pulumi:providers:kubernetes
     properties:

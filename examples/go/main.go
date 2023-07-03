@@ -41,13 +41,22 @@ func main() {
 			LetsEncryptEmail:       pulumi.String("mail@lbrlabs.com"),
 		})
 
-		_, err = lbrlabs.NewAttachedNodeGroup(ctx, "workloadNodes", &lbrlabs.AttachedNodeGroupArgs{
+		workloadNodes, err := lbrlabs.NewAttachedNodeGroup(ctx, "workloadNodes", &lbrlabs.AttachedNodeGroupArgs{
 			ClusterName: cluster.ControlPlane.Name(),
 			SubnetIds:   vpc.PrivateSubnetIds,
 			ScalingConfig: &eks.NodeGroupScalingConfigArgs{
 				DesiredSize: pulumi.Int(4),
 				MaxSize:     pulumi.Int(10),
 				MinSize:     pulumi.Int(1),
+			},
+		})
+
+		_, err = lbrlabs.NewIamRoleMapping(ctx, "roleMapping", &lbrlabs.IamRoleMappingArgs{
+			RoleArn:  workloadNodes.NodeRole.Arn(),
+			Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+			Groups: pulumi.StringArray{
+				pulumi.String("system:bootstrappers"),
+				pulumi.String("system:nodes"),
 			},
 		})
 
