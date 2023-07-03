@@ -15,6 +15,11 @@ export type Cluster = import("./cluster").Cluster;
 export const Cluster: typeof import("./cluster").Cluster = null as any;
 utilities.lazyLoad(exports, ["Cluster"], () => require("./cluster"));
 
+export { IamRoleMappingArgs } from "./iamRoleMapping";
+export type IamRoleMapping = import("./iamRoleMapping").IamRoleMapping;
+export const IamRoleMapping: typeof import("./iamRoleMapping").IamRoleMapping = null as any;
+utilities.lazyLoad(exports, ["IamRoleMapping"], () => require("./iamRoleMapping"));
+
 export { IamServiceAccountRoleArgs } from "./iamServiceAccountRole";
 export type IamServiceAccountRole = import("./iamServiceAccountRole").IamServiceAccountRole;
 export const IamServiceAccountRole: typeof import("./iamServiceAccountRole").IamServiceAccountRole = null as any;
@@ -34,6 +39,8 @@ const _module = {
                 return new AttachedNodeGroup(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:Cluster":
                 return new Cluster(name, <any>undefined, { urn })
+            case "lbrlabs-eks:index:IamRoleMapping":
+                return new IamRoleMapping(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:IamServiceAccountRole":
                 return new IamServiceAccountRole(name, <any>undefined, { urn })
             default:

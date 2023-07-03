@@ -7,6 +7,7 @@ import typing
 # Export this package's modules as members:
 from .attached_node_group import *
 from .cluster import *
+from .iam_role_mapping import *
 from .iam_service_account_role import *
 from .provider import *
 _utilities.register(
@@ -19,6 +20,7 @@ _utilities.register(
   "classes": {
    "lbrlabs-eks:index:AttachedNodeGroup": "AttachedNodeGroup",
    "lbrlabs-eks:index:Cluster": "Cluster",
+   "lbrlabs-eks:index:IamRoleMapping": "IamRoleMapping",
    "lbrlabs-eks:index:IamServiceAccountRole": "IamServiceAccountRole"
   }
  }

@@ -17,7 +17,7 @@ func construct(ctx *pulumi.Context, typ, name string, inputs provider.ConstructI
 		return constructNodeGroup(ctx, name, inputs, options)
 	case "lbrlabs-eks:index:IamServiceAccountRole":
 		return constructIamServiceAccountRole(ctx, name, inputs, options)
-	case "lbrlabs-eks:index:RoleMapping":
+	case "lbrlabs-eks:index:IamRoleMapping":
 		return constructIamRoleMapping(ctx, name, inputs, options)
 	default:
 		return nil, errors.Errorf("unknown resource type %s", typ)

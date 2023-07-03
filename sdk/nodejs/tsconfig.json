@@ -15,6 +15,7 @@
     "files": [
         "attachedNodeGroup.ts",
         "cluster.ts",
+        "iamRoleMapping.ts",
         "iamServiceAccountRole.ts",
         "index.ts",
         "provider.ts",

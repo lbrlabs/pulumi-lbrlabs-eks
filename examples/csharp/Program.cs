@@ -56,6 +56,17 @@ return await Deployment.RunAsync(() =>
         // },
     });
 
+    var roleMapping = new LbrlabsEks.IamRoleMapping("workload", new()
+    {
+        RoleArn = workloadNodes.NodeRole.Arn,
+        Username = "system:node:{{EC2PrivateDNSName}}",
+        Groups = new[]
+        {
+            "system:bootstrappers",
+            "system:nodes",
+        },
+    });
+
     var provider = new Kubernetes.Provider("provider", new()
     {
         KubeConfig = cluster.Kubeconfig,

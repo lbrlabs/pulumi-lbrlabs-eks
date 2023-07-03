@@ -26,14 +26,14 @@ func NewRoleMapping(ctx *pulumi.Context, name string, args *RoleMappingArgs, opt
 	}
 
 	component := &RoleMapping{}
-	err := ctx.RegisterComponentResource("lbrlabs-eks:index:RoleMapping", name, component, opts...)
+	err := ctx.RegisterComponentResource("lbrlabs-eks:index:IamRoleMapping", name, component, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	roleMapping, err := apiextensions.NewCustomResource(ctx, name, &apiextensions.CustomResourceArgs{
-		ApiVersion:       pulumi.String("iamauthenticator.k8s.aws/v1alpha1"),
-		Kind: pulumi.String("IAMIdentityMapping"),
+		ApiVersion: pulumi.String("iamauthenticator.k8s.aws/v1alpha1"),
+		Kind:       pulumi.String("IAMIdentityMapping"),
 		OtherFields: map[string]interface{}{
 			"spec": map[string]interface{}{
 				"arn":      args.RoleArn,

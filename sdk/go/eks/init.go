@@ -24,6 +24,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &AttachedNodeGroup{}
 	case "lbrlabs-eks:index:Cluster":
 		r = &Cluster{}
+	case "lbrlabs-eks:index:IamRoleMapping":
+		r = &IamRoleMapping{}
 	case "lbrlabs-eks:index:IamServiceAccountRole":
 		r = &IamServiceAccountRole{}
 	default:

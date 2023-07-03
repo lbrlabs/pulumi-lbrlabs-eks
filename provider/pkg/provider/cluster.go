@@ -426,7 +426,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	// install the aws-auth operator to handle aws-auth stuff
 	_, err = helm.NewRelease(ctx, fmt.Sprintf("%s-aws-auth", name), &helm.ReleaseArgs{
-		Chart: pulumi.String("rustrial-aws-eks-iam-auth-controller"),
+		Chart:     pulumi.String("rustrial-aws-eks-iam-auth-controller"),
 		Namespace: pulumi.String("kube-system"),
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://rustrial.github.io/aws-eks-iam-auth-controller"),

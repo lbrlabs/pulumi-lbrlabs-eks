@@ -42,6 +42,13 @@ workload_nodes = lbrlabs_eks.AttachedNodeGroup(
     ),
 )
 
+roleMapping = lbrlabs_eks.IamRoleMapping(
+    "workload",
+    role_arn=workload_nodes.node_role.arn,
+    username="system:node:{{EC2PrivateDNSName}}",
+    groups=["system:bootstrappers", "system:nodes"],
+)
+
 
 provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
 wordpress = kubernetes.helm.v3.Release(
