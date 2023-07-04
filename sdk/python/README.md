@@ -7,6 +7,7 @@ This repo provides a [multi-language](https://www.pulumi.com/blog/pulumiup-pulum
 It creates:
 
 - an EKS cluster with [CloudTrail logging enabled](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.htmleks), and [secret encryption enabled](https://docs.aws.amazon.com/eks/latest/userguide/enable-kms.html)
+- Installs an [operator](https://github.com/rustrial/aws-eks-iam-auth-controller) that eases the process of adding Role Mappings to the [aws-auth](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
 - A node group designed to run "system" workloads with a taint
 - The [AWS EBS CSI Addon](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 - The [AWS VPC CBI Addon](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)

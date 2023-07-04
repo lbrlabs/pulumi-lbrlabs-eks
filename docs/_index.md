@@ -8,7 +8,7 @@ The LBr Labs EKS component for Pulumi can be used to provision a batteries inclu
 
 It provides resources to create a functioning EKS cluster with several Kubernetes addons and operators which will allow you to be quickly successful with Amazon EKS such as:
 
-- an EKS cluster with [CloudTrail logging enabled](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.htmleks), and [secret encryption enabled](https://docs.aws.amazon.com/eks/latest/userguide/enable-kms.html)
+- an EKS cluster with [CloudTrail logging enabled](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html), and [secret encryption enabled](https://docs.aws.amazon.com/eks/latest/userguide/enable-kms.html)
 - A node group designed to run "system" workloads with a taint
 - The [AWS EBS CSI Addon](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 - The [AWS VPC CBI Addon](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
