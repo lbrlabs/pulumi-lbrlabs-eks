@@ -15,6 +15,7 @@ VERSION         := $(shell pulumictl get version)
 
 TESTPARALLELISM := 10
 
+
 WORKING_DIR     := $(shell pwd)
 
 .PHONY: development provider build_sdks build_nodejs build_dotnet build_go build_python
