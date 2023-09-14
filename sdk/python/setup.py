@@ -9,26 +9,6 @@ from subprocess import check_call
 
 
 VERSION = "0.0.0"
-PLUGIN_VERSION = "0.0.0"
-
-class InstallPluginCommand(install):
-    def run(self):
-        install.run(self)
-        try:
-            check_call(['pulumi', 'plugin', 'install', 'resource', 'lbrlabs-eks', PLUGIN_VERSION, '--server', 'github://api.github.com/lbrlabs'])
-        except OSError as error:
-            if error.errno == errno.ENOENT:
-                print(f"""
-                There was an error installing the lbrlabs-eks resource provider plugin.
-                It looks like `pulumi` is not installed on your system.
-                Please visit https://pulumi.com/ to install the Pulumi CLI.
-                You may try manually installing the plugin by running
-                `pulumi plugin install resource lbrlabs-eks {PLUGIN_VERSION}`
-                """)
-            else:
-                raise
-
-
 def readme():
     try:
         with open('README.md', encoding='utf-8') as f:
@@ -43,9 +23,6 @@ setup(name='lbrlabs_pulumi_eks',
       description="A batteries included EKS cluster following best practices.",
       long_description=readme(),
       long_description_content_type='text/markdown',
-      cmdclass={
-          'install': InstallPluginCommand,
-      },
       keywords='eks kubernetes aws lbrlabs kind/component category/cloud',
       project_urls={
           'Repository': 'https://github.com/lbrlabs/pulumi-lbrlabs-eks'
@@ -60,8 +37,8 @@ setup(name='lbrlabs_pulumi_eks',
       install_requires=[
           'parver>=0.2.1',
           'pulumi>=3.0.0,<4.0.0',
-          'pulumi-aws>=5.0.0,<6.0.0',
-          'pulumi-kubernetes>=3.0.0,<4.0.0',
+          'pulumi-aws>=6.0.0,<7.0.0',
+          'pulumi-kubernetes>=4.0.0,<5.0.0',
           'semver>=2.8.1'
       ],
       zip_safe=False)

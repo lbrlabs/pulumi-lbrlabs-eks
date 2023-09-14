@@ -8,8 +8,10 @@ import (
 	"reflect"
 
 	"errors"
+	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type IamServiceAccountRole struct {
@@ -37,7 +39,7 @@ func NewIamServiceAccountRole(ctx *pulumi.Context,
 	if args.ServiceAccountName == nil {
 		return nil, errors.New("invalid value for required argument 'ServiceAccountName'")
 	}
-	opts = pkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource IamServiceAccountRole
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:IamServiceAccountRole", name, args, &resource, opts...)
 	if err != nil {
@@ -92,6 +94,12 @@ func (i *IamServiceAccountRole) ToIamServiceAccountRoleOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleOutput)
 }
 
+func (i *IamServiceAccountRole) ToOutput(ctx context.Context) pulumix.Output[*IamServiceAccountRole] {
+	return pulumix.Output[*IamServiceAccountRole]{
+		OutputState: i.ToIamServiceAccountRoleOutputWithContext(ctx).OutputState,
+	}
+}
+
 // IamServiceAccountRoleArrayInput is an input type that accepts IamServiceAccountRoleArray and IamServiceAccountRoleArrayOutput values.
 // You can construct a concrete instance of `IamServiceAccountRoleArrayInput` via:
 //
@@ -115,6 +123,12 @@ func (i IamServiceAccountRoleArray) ToIamServiceAccountRoleArrayOutput() IamServ
 
 func (i IamServiceAccountRoleArray) ToIamServiceAccountRoleArrayOutputWithContext(ctx context.Context) IamServiceAccountRoleArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleArrayOutput)
+}
+
+func (i IamServiceAccountRoleArray) ToOutput(ctx context.Context) pulumix.Output[[]*IamServiceAccountRole] {
+	return pulumix.Output[[]*IamServiceAccountRole]{
+		OutputState: i.ToIamServiceAccountRoleArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // IamServiceAccountRoleMapInput is an input type that accepts IamServiceAccountRoleMap and IamServiceAccountRoleMapOutput values.
@@ -142,6 +156,12 @@ func (i IamServiceAccountRoleMap) ToIamServiceAccountRoleMapOutputWithContext(ct
 	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleMapOutput)
 }
 
+func (i IamServiceAccountRoleMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamServiceAccountRole] {
+	return pulumix.Output[map[string]*IamServiceAccountRole]{
+		OutputState: i.ToIamServiceAccountRoleMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 type IamServiceAccountRoleOutput struct{ *pulumi.OutputState }
 
 func (IamServiceAccountRoleOutput) ElementType() reflect.Type {
@@ -154,6 +174,12 @@ func (o IamServiceAccountRoleOutput) ToIamServiceAccountRoleOutput() IamServiceA
 
 func (o IamServiceAccountRoleOutput) ToIamServiceAccountRoleOutputWithContext(ctx context.Context) IamServiceAccountRoleOutput {
 	return o
+}
+
+func (o IamServiceAccountRoleOutput) ToOutput(ctx context.Context) pulumix.Output[*IamServiceAccountRole] {
+	return pulumix.Output[*IamServiceAccountRole]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o IamServiceAccountRoleOutput) Role() iam.RoleOutput {
@@ -174,6 +200,12 @@ func (o IamServiceAccountRoleArrayOutput) ToIamServiceAccountRoleArrayOutputWith
 	return o
 }
 
+func (o IamServiceAccountRoleArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*IamServiceAccountRole] {
+	return pulumix.Output[[]*IamServiceAccountRole]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o IamServiceAccountRoleArrayOutput) Index(i pulumi.IntInput) IamServiceAccountRoleOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *IamServiceAccountRole {
 		return vs[0].([]*IamServiceAccountRole)[vs[1].(int)]
@@ -192,6 +224,12 @@ func (o IamServiceAccountRoleMapOutput) ToIamServiceAccountRoleMapOutput() IamSe
 
 func (o IamServiceAccountRoleMapOutput) ToIamServiceAccountRoleMapOutputWithContext(ctx context.Context) IamServiceAccountRoleMapOutput {
 	return o
+}
+
+func (o IamServiceAccountRoleMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamServiceAccountRole] {
+	return pulumix.Output[map[string]*IamServiceAccountRole]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o IamServiceAccountRoleMapOutput) MapIndex(k pulumi.StringInput) IamServiceAccountRoleOutput {

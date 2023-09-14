@@ -8,9 +8,11 @@ import (
 	"reflect"
 
 	"errors"
+	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type AttachedNodeGroup struct {
@@ -33,7 +35,7 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 	if args.SubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SubnetIds'")
 	}
-	opts = pkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AttachedNodeGroup
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:AttachedNodeGroup", name, args, &resource, opts...)
 	if err != nil {
@@ -88,6 +90,12 @@ func (i *AttachedNodeGroup) ToAttachedNodeGroupOutputWithContext(ctx context.Con
 	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupOutput)
 }
 
+func (i *AttachedNodeGroup) ToOutput(ctx context.Context) pulumix.Output[*AttachedNodeGroup] {
+	return pulumix.Output[*AttachedNodeGroup]{
+		OutputState: i.ToAttachedNodeGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 // AttachedNodeGroupArrayInput is an input type that accepts AttachedNodeGroupArray and AttachedNodeGroupArrayOutput values.
 // You can construct a concrete instance of `AttachedNodeGroupArrayInput` via:
 //
@@ -111,6 +119,12 @@ func (i AttachedNodeGroupArray) ToAttachedNodeGroupArrayOutput() AttachedNodeGro
 
 func (i AttachedNodeGroupArray) ToAttachedNodeGroupArrayOutputWithContext(ctx context.Context) AttachedNodeGroupArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupArrayOutput)
+}
+
+func (i AttachedNodeGroupArray) ToOutput(ctx context.Context) pulumix.Output[[]*AttachedNodeGroup] {
+	return pulumix.Output[[]*AttachedNodeGroup]{
+		OutputState: i.ToAttachedNodeGroupArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // AttachedNodeGroupMapInput is an input type that accepts AttachedNodeGroupMap and AttachedNodeGroupMapOutput values.
@@ -138,6 +152,12 @@ func (i AttachedNodeGroupMap) ToAttachedNodeGroupMapOutputWithContext(ctx contex
 	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupMapOutput)
 }
 
+func (i AttachedNodeGroupMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*AttachedNodeGroup] {
+	return pulumix.Output[map[string]*AttachedNodeGroup]{
+		OutputState: i.ToAttachedNodeGroupMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 type AttachedNodeGroupOutput struct{ *pulumi.OutputState }
 
 func (AttachedNodeGroupOutput) ElementType() reflect.Type {
@@ -150,6 +170,12 @@ func (o AttachedNodeGroupOutput) ToAttachedNodeGroupOutput() AttachedNodeGroupOu
 
 func (o AttachedNodeGroupOutput) ToAttachedNodeGroupOutputWithContext(ctx context.Context) AttachedNodeGroupOutput {
 	return o
+}
+
+func (o AttachedNodeGroupOutput) ToOutput(ctx context.Context) pulumix.Output[*AttachedNodeGroup] {
+	return pulumix.Output[*AttachedNodeGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o AttachedNodeGroupOutput) NodeGroup() eks.NodeGroupOutput {
@@ -174,6 +200,12 @@ func (o AttachedNodeGroupArrayOutput) ToAttachedNodeGroupArrayOutputWithContext(
 	return o
 }
 
+func (o AttachedNodeGroupArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*AttachedNodeGroup] {
+	return pulumix.Output[[]*AttachedNodeGroup]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o AttachedNodeGroupArrayOutput) Index(i pulumi.IntInput) AttachedNodeGroupOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *AttachedNodeGroup {
 		return vs[0].([]*AttachedNodeGroup)[vs[1].(int)]
@@ -192,6 +224,12 @@ func (o AttachedNodeGroupMapOutput) ToAttachedNodeGroupMapOutput() AttachedNodeG
 
 func (o AttachedNodeGroupMapOutput) ToAttachedNodeGroupMapOutputWithContext(ctx context.Context) AttachedNodeGroupMapOutput {
 	return o
+}
+
+func (o AttachedNodeGroupMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*AttachedNodeGroup] {
+	return pulumix.Output[map[string]*AttachedNodeGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o AttachedNodeGroupMapOutput) MapIndex(k pulumi.StringInput) AttachedNodeGroupOutput {

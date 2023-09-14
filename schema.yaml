@@ -151,8 +151,8 @@ language:
   csharp:
     packageReferences:
       Pulumi: 3.*
-      Pulumi.Aws: 5.*
-      Pulumi.Kubernetes: 3.*
+      Pulumi.Aws: 6.*
+      Pulumi.Kubernetes: 4.*
     rootNamespace: Lbrlabs.PulumiPackage
     namespaces:
       lbrlabs-eks: "Eks"
@@ -161,8 +161,8 @@ language:
     importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks
   nodejs:
     dependencies:
-      "@pulumi/aws": "^5.0.0"
-      "@pulumi/kubernetes": "^3.0.0"
+      "@pulumi/aws": "^6.0.0"
+      "@pulumi/kubernetes": "^4.0.0"
     devDependencies:
       typescript: "^3.7.0"
     packageName: "@lbrlabs/pulumi-eks"
@@ -170,5 +170,5 @@ language:
     packageName: "lbrlabs_pulumi_eks"
     requires:
       pulumi: ">=3.0.0,<4.0.0"
-      pulumi-aws: ">=5.0.0,<6.0.0"
-      pulumi-kubernetes: ">=3.0.0,<4.0.0"
+      pulumi-aws: ">=6.0.0,<7.0.0"
+      pulumi-kubernetes: ">=4.0.0,<5.0.0"
