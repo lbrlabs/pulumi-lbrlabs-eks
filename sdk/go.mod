@@ -1,11 +1,12 @@
 module github.com/lbrlabs/pulumi-lbrlabs-eks/sdk
 
-go 1.20
+go 1.21
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/pulumi/pulumi-aws/sdk/v5 v5.41.0
-	github.com/pulumi/pulumi/sdk/v3 v3.74.0
+	github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0
+	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1
+	github.com/pulumi/pulumi/sdk/v3 v3.82.1
 )
 
 require (
