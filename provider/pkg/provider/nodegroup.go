@@ -10,15 +10,15 @@ import (
 )
 
 type NodeGroupArgs struct {
-	ClusterName      pulumi.StringInput             `pulumi:"clusterName"`
-	SubnetIds        pulumi.StringArrayInput        `pulumi:"subnetIds"`
-	InstanceTypes    *pulumi.StringArrayInput       `pulumi:"instanceTypes"`
-	NodeMaxCount     *pulumi.IntInput               `pulumi:"nodeMaxCount"`
-	NodeMinCount     *pulumi.IntInput               `pulumi:"nodeMinCount"`
-	NodeDesiredCount *pulumi.IntInput               `pulumi:"nodeDesiredCount"`
-	Taints           eks.NodeGroupTaintArray        `pulumi:"taints"`
-	Labels           pulumi.StringMapInput          `pulumi:"labels"`
-	ScalingConfig    eks.NodeGroupScalingConfigArgs `pulumi:"scalingConfig"`
+	ClusterName      pulumi.StringInput              `pulumi:"clusterName"`
+	SubnetIds        pulumi.StringArrayInput         `pulumi:"subnetIds"`
+	InstanceTypes    *pulumi.StringArrayInput        `pulumi:"instanceTypes"`
+	NodeMaxCount     *pulumi.IntInput                `pulumi:"nodeMaxCount"`
+	NodeMinCount     *pulumi.IntInput                `pulumi:"nodeMinCount"`
+	NodeDesiredCount *pulumi.IntInput                `pulumi:"nodeDesiredCount"`
+	Taints           eks.NodeGroupTaintArray         `pulumi:"taints"`
+	Labels           pulumi.StringMapInput           `pulumi:"labels"`
+	ScalingConfig    eks.NodeGroupScalingConfigInput `pulumi:"scalingConfig"`
 }
 
 type NodeGroup struct {

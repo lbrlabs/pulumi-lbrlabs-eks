@@ -935,6 +935,8 @@ github.com/prometheus/prometheus v0.42.0/go.mod h1:Pfqb/MLnnR2KK+0vchiaH39jXxvLM
 github.com/pulumi/pulumi-java/pkg v0.9.4/go.mod h1:c6rSw/+q4O0IImgJ9axxoC6QesbPYWBaG5gimbHouUQ=
 github.com/pulumi/pulumi-java/pkg v0.9.6/go.mod h1:c6rSw/+q4O0IImgJ9axxoC6QesbPYWBaG5gimbHouUQ=
 github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.0/go.mod h1:25LLu0noa7iNsGN/1MMZwry8Kkh3GL6FlnQFTgURtsY=
+github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.2.0 h1:1MWsrQyEsidp8MFnjZSYQHmuwWdNG6ap5Y+oqnIILC4=
+github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.2.0/go.mod h1:oufYFmFad22ALcYN1AW6pE41qpz4YsyCWNPevg1j9c4=
 github.com/pulumi/pulumi-yaml v1.1.1/go.mod h1:GhpdS6rFpwqvUtKdA+fQy8P28iNvncng39IXh5q68vE=
 github.com/pulumi/pulumi-yaml v1.2.2/go.mod h1:EgakC7b/4+VBNnlgM1RZIea2gUstV8s/7bdFJZt0P64=
 github.com/pulumi/pulumi/pkg/v3 v3.72.0/go.mod h1:Bug/Xi21nzRtrD7Lx+rTBtQUrzyuiaj6rL6RAKMZLRo=
@@ -948,8 +950,6 @@ github.com/pulumi/pulumi/sdk/v3 v3.73.0/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXEL
 github.com/pulumi/pulumi/sdk/v3 v3.78.1/go.mod h1:FEFictCHoa8CYzKDSc0t9ErrNiaO9n7pChreLQLDH+M=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0 h1:TNn/wnxj7ZWnluQ5HZjfGwwKmwSnHp845BijrUI2Au4=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
-github.com/pulumi/pulumi/sdk/v3 v3.82.1 h1:GMFNX33Gp4unTBS7dV5F7rYvvqiwPkuLLyRUgQuOKQA=
-github.com/pulumi/pulumi/sdk/v3 v3.82.1/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
 github.com/rjeczalik/notify v0.9.2/go.mod h1:aErll2f0sUX9PXZnVNyeiObbmTlk5jnMoCa4QEjJeqM=
 github.com/sagikazarmark/crypt v0.6.0/go.mod h1:U8+INwJo3nBv1m6A/8OBXAq7Jnpspk5AxSgDyEQcea8=
 github.com/scaleway/scaleway-sdk-go v1.0.0-beta.12/go.mod h1:fCa7OJZ/9DRTnOKmxvT6pn+LPWUptQAmHF/SBJUGEcg=
@@ -1094,7 +1094,6 @@ golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.4.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.7.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.8.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.3.0/go.mod h1:q750SLmJuPmVoN1blW3UFBPREJfb1KmY3vwxfr+nFDA=
 golang.org/x/term v0.4.0/go.mod h1:9P2UbLfCdcvo3p/nzKvsmas4TnlujnuoV9hGgYzW1lQ=
 golang.org/x/term v0.5.0/go.mod h1:jMB1sMXY+tzblOD4FWmEbocvup2/aLOaQEp7JmGp78k=
