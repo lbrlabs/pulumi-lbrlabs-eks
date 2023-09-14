@@ -51,13 +51,13 @@ resources:
         "type": string
         "description": The kubeconfig for this cluster.
       controlPlane:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2Fcluster:Cluster"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:eks%2Fcluster:Cluster"
         "description": The Cluster control plane
       oidcProvider:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2FopenIdConnectProvider:OpenIdConnectProvider"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:iam%2FopenIdConnectProvider:OpenIdConnectProvider"
         "description": The OIDC provider for this cluster.
       systemNodes:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
         "description": The system node group.
       # clusterIssuer:
       #   "$ref": "/kubernetes/v3.29.1/schema.json#/resources/kubernetes:apiextensions.k8s.io:CustomResource"
@@ -81,11 +81,11 @@ resources:
         items:
           type: string
       scalingConfig:
-        "$ref": "/aws/v5.41.0/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
+        "$ref": "/aws/v6.1.0/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
       taints:
         type: "array"
         items:
-          "$ref": "/aws/v5.41.0/schema.json#/types/aws:eks%2FNodeGroupTaint:NodeGroupTaint"
+          "$ref": "/aws/v6.1.0/schema.json#/types/aws:eks%2FNodeGroupTaint:NodeGroupTaint"
       labels:
         type: object
         additionalProperties:
@@ -96,9 +96,9 @@ resources:
       - subnetIds
     properties:
       nodeGroup:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
       nodeRole:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - nodeGroup
       - nodeRole
@@ -124,7 +124,7 @@ resources:
       - serviceAccountName
     properties:
       role:
-        "$ref": "/aws/v5.41.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - role
   lbrlabs-eks:index:IamRoleMapping:
