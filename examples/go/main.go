@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	lbrlabs "github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/ec2"
-	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
-	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	eks "github.com/pulumi/pulumi-aws/sdk/v6/go/aws/eks"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/ec2"
+	helm "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -57,23 +57,23 @@ func main() {
 			return fmt.Errorf("error creating workload nodes")
 		}
 
-		_, err = lbrlabs.NewIamRoleMapping(ctx, "roleMapping", &lbrlabs.IamRoleMappingArgs{
+		provider, err := kubernetes.NewProvider(ctx, "provider", &kubernetes.ProviderArgs{
+			Kubeconfig: cluster.Kubeconfig,
+		})
+		if err != nil {
+			return fmt.Errorf("error creating provider")
+		}
+
+		_, err = lbrlabs.NewIamRoleMapping(ctx, "rolemapping", &lbrlabs.IamRoleMappingArgs{
 			RoleArn:  workloadNodes.NodeRole.Arn(),
 			Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
 			Groups: pulumi.StringArray{
 				pulumi.String("system:bootstrappers"),
 				pulumi.String("system:nodes"),
 			},
-		}, pulumi.Parent(cluster))
+		}, pulumi.Provider(provider), pulumi.Parent(provider))
 		if err != nil {
 			return fmt.Errorf("error creating role mapping")
-		}
-
-		provider, err := kubernetes.NewProvider(ctx, "provider", &kubernetes.ProviderArgs{
-			Kubeconfig: cluster.Kubeconfig,
-		}, pulumi.Parent(cluster))
-		if err != nil {
-			return fmt.Errorf("error creating provider")
 		}
 
 		_, err = helm.NewRelease(ctx, "wordpress", &helm.ReleaseArgs{

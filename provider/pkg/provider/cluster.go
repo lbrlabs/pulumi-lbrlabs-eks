@@ -265,11 +265,9 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), &eks.AddonArgs{
-		AddonName:                pulumi.String("coredns"),
-		ClusterName:              controlPlane.Name,
-		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
-		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
-		ConfigurationValues:      pulumi.String(coreDNSConfig),
+		AddonName:           pulumi.String("coredns"),
+		ClusterName:         controlPlane.Name,
+		ConfigurationValues: pulumi.String(coreDNSConfig),
 	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
@@ -294,11 +292,9 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-vpc-cni", name), &eks.AddonArgs{
-		AddonName:                pulumi.String("vpc-cni"),
-		ClusterName:              controlPlane.Name,
-		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
-		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
-		ServiceAccountRoleArn:    vpcCsiRole.Role.Arn,
+		AddonName:             pulumi.String("vpc-cni"),
+		ClusterName:           controlPlane.Name,
+		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
 	}, pulumi.Parent(vpcCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
@@ -339,12 +335,10 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	ebsCsiAddon, err := eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), &eks.AddonArgs{
-		AddonName:                pulumi.String("aws-ebs-csi-driver"),
-		ClusterName:              controlPlane.Name,
-		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
-		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
-		ServiceAccountRoleArn:    ebsCsiRole.Role.Arn,
-		ConfigurationValues:      pulumi.String(ebsCsiConfig),
+		AddonName:             pulumi.String("aws-ebs-csi-driver"),
+		ClusterName:           controlPlane.Name,
+		ServiceAccountRoleArn: ebsCsiRole.Role.Arn,
+		ConfigurationValues:   pulumi.String(ebsCsiConfig),
 	}, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)

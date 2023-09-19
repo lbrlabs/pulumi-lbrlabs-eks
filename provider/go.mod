@@ -7,7 +7,6 @@ toolchain go1.21.1
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/pulumi/pulumi-aws/sdk/v5 v5.42.0
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1
 	github.com/pulumi/pulumi-tls/sdk/v4 v4.10.0

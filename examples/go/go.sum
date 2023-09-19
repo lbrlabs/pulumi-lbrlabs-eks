@@ -256,12 +256,16 @@ github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084/go.mod h1:TjEm7z
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/pulumi/pulumi-aws/sdk/v5 v5.16.2 h1:lPiMvKBZmZqhZ5OcM8iEb97oeX8chhtbRUskiyDeVYg=
 github.com/pulumi/pulumi-aws/sdk/v5 v5.16.2/go.mod h1:Ro2eNbpP/uGWMMvtBDrVph+jdL/G6+IiGB6kj+kDRYM=
+github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0 h1:kwI1tDo+v3btJUy9D/td51ZVL7/huKn6GqfSTJyMEac=
+github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0/go.mod h1:UeOesX8l9ntIiiKXdQue8/rQDAvSf7Spd5qf15qngcY=
 github.com/pulumi/pulumi-awsx/sdk v1.0.2 h1:SLm2MUICM91b/02r7KTI2/4R1XRJedIeMQdeYxATe9k=
 github.com/pulumi/pulumi-awsx/sdk v1.0.2/go.mod h1:jwPmIPvPTVYkq+n6Nz/QfMhNZ1cHvBSORdRYvljV9Xo=
 github.com/pulumi/pulumi-docker/sdk/v3 v3.2.0 h1:7liqzpMLCmk7BIO7w6f6JCh9IdtwCp0a//jA12i6eyo=
 github.com/pulumi/pulumi-docker/sdk/v3 v3.2.0/go.mod h1:TACDfD6SWGyaHmWLrtHAuGiZ+pTBD4OYYFb5kTyxdtQ=
 github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.30.2 h1:xJu48+RW+BHHnKtBni6Vj5vKqOEgCzdZAysGbh6tVM0=
 github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.30.2/go.mod h1:7yCJFC/jnUwFs566f0FAY2iAzc4G1mQP8H6K+40FK4Y=
+github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1 h1:A1U9sPo6yxrsIhoHubx/kVCfEsVqyVZRkuLFaKRPHPU=
+github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1/go.mod h1:x0wrexKg++oDtDjFA9Nab1Vio7v6YHOcJl4vIYROWy4=
 github.com/pulumi/pulumi/sdk/v3 v3.27.0/go.mod h1:VsxW+TGv2VBLe/MeqsAr9r0zKzK/gbAhFT9QxYr24cY=
 github.com/pulumi/pulumi/sdk/v3 v3.82.1 h1:GMFNX33Gp4unTBS7dV5F7rYvvqiwPkuLLyRUgQuOKQA=
 github.com/pulumi/pulumi/sdk/v3 v3.82.1/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
