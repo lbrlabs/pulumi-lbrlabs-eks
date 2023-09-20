@@ -56,6 +56,11 @@ return await Deployment.RunAsync(() =>
         // },
     });
 
+    var provider = new Kubernetes.Provider("provider", new()
+    {
+        KubeConfig = cluster.Kubeconfig,
+    });
+
     var roleMapping = new LbrlabsEks.IamRoleMapping("workload", new()
     {
         RoleArn = workloadNodes.NodeRole.Arn,
@@ -65,11 +70,9 @@ return await Deployment.RunAsync(() =>
             "system:bootstrappers",
             "system:nodes",
         },
-    });
-
-    var provider = new Kubernetes.Provider("provider", new()
+    }, new CustomResourceOptions
     {
-        KubeConfig = cluster.Kubeconfig,
+        Provider = provider,
     });
 
     var wordpress = new Kubernetes.Helm.V3.Release("wordpress", new()

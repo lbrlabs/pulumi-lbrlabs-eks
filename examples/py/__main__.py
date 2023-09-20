@@ -42,15 +42,18 @@ workload_nodes = lbrlabs_eks.AttachedNodeGroup(
     ),
 )
 
+provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
+
+
 roleMapping = lbrlabs_eks.IamRoleMapping(
     "workload",
     role_arn=workload_nodes.node_role.arn,
     username="system:node:{{EC2PrivateDNSName}}",
     groups=["system:bootstrappers", "system:nodes"],
+    opts=pulumi.ResourceOptions(provider=provider),
 )
 
 
-provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
 wordpress = kubernetes.helm.v3.Release(
     "wordpress",
     chart="wordpress",

@@ -30,6 +30,10 @@ resources:
         desiredSize: 3
         maxSize: 10
         minSize: 1
+  provider:
+    type: pulumi:providers:kubernetes
+    properties:
+      kubeconfig: ${cluster.kubeconfig}
   rolemapping:
     type: lbrlabs-eks:index:IamRoleMapping
     properties:
@@ -38,10 +42,8 @@ resources:
       groups:
         - system:bootstrappers
         - system:nodes
-  provider:
-    type: pulumi:providers:kubernetes
-    properties:
-      kubeconfig: ${cluster.kubeconfig}
+    options:
+      provider: ${provider}
   wordpress:
     type: kubernetes:helm.sh/v3:Release
     properties:
