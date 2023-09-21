@@ -265,9 +265,11 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), &eks.AddonArgs{
-		AddonName:           pulumi.String("coredns"),
-		ClusterName:         controlPlane.Name,
-		ConfigurationValues: pulumi.String(coreDNSConfig),
+		AddonName:                pulumi.String("coredns"),
+		ClusterName:              controlPlane.Name,
+		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
+		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
+		ConfigurationValues:      pulumi.String(coreDNSConfig),
 	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
