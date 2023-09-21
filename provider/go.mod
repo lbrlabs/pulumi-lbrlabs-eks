@@ -10,8 +10,8 @@ require (
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1
 	github.com/pulumi/pulumi-tls/sdk/v4 v4.10.0
-	github.com/pulumi/pulumi/pkg/v3 v3.81.0
-	github.com/pulumi/pulumi/sdk/v3 v3.81.0
+	github.com/pulumi/pulumi/pkg/v3 v3.84.0
+	github.com/pulumi/pulumi/sdk/v3 v3.84.0
 )
 
 require (

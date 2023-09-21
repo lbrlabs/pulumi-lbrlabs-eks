@@ -944,12 +944,16 @@ github.com/pulumi/pulumi/pkg/v3 v3.82.0 h1:YZxogwVD8iZbbvvJiuw1BM/tGJZe3RhGq/NWA
 github.com/pulumi/pulumi/pkg/v3 v3.82.0/go.mod h1:mIej3vRam6ZmCiARiQvjotFu9Sl7gaSa24Crqp9CtIE=
 github.com/pulumi/pulumi/pkg/v3 v3.82.1 h1:NqJhSWjhmvOF3WPF/IU/Hghyh2bpYNLzP5DlfFaAJ2A=
 github.com/pulumi/pulumi/pkg/v3 v3.82.1/go.mod h1:/2jCTtGIVdDyuzUarw3EM9mkBmJaHgvhbWix4APcwS0=
+github.com/pulumi/pulumi/pkg/v3 v3.84.0 h1:rlW16HT/5xx1RDPXkSIDeZ81G/vndeaA3uyVglXiTaE=
+github.com/pulumi/pulumi/pkg/v3 v3.84.0/go.mod h1:zb1ENMSRtFyPs2yFnx9+OCMrqJezTDjTjiadGvQNcGs=
 github.com/pulumi/pulumi/sdk/v3 v3.50.1/go.mod h1:tqQ4z9ocyM/UI2VQ7ZReWR3w6dF5ffEozoHipOMcDh4=
 github.com/pulumi/pulumi/sdk/v3 v3.69.0/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXELnn+DgidFj4XSQ=
 github.com/pulumi/pulumi/sdk/v3 v3.73.0/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXELnn+DgidFj4XSQ=
 github.com/pulumi/pulumi/sdk/v3 v3.78.1/go.mod h1:FEFictCHoa8CYzKDSc0t9ErrNiaO9n7pChreLQLDH+M=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0 h1:TNn/wnxj7ZWnluQ5HZjfGwwKmwSnHp845BijrUI2Au4=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
+github.com/pulumi/pulumi/sdk/v3 v3.84.0 h1:/vCRj6ATGVZw4pFmG7pZgjlKUcnbbnb9vmlqd+OpdXo=
+github.com/pulumi/pulumi/sdk/v3 v3.84.0/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
 github.com/rjeczalik/notify v0.9.2/go.mod h1:aErll2f0sUX9PXZnVNyeiObbmTlk5jnMoCa4QEjJeqM=
 github.com/sagikazarmark/crypt v0.6.0/go.mod h1:U8+INwJo3nBv1m6A/8OBXAq7Jnpspk5AxSgDyEQcea8=
 github.com/scaleway/scaleway-sdk-go v1.0.0-beta.12/go.mod h1:fCa7OJZ/9DRTnOKmxvT6pn+LPWUptQAmHF/SBJUGEcg=

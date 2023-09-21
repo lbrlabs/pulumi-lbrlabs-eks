@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 import pulumi_aws
 
@@ -26,10 +26,25 @@ class IamServiceAccountRoleArgs:
         :param pulumi.Input[str] oidc_provider_url: The URL of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[str] service_account_name: The name of the service account to bind to the role
         """
-        pulumi.set(__self__, "namespace_name", namespace_name)
-        pulumi.set(__self__, "oidc_provider_arn", oidc_provider_arn)
-        pulumi.set(__self__, "oidc_provider_url", oidc_provider_url)
-        pulumi.set(__self__, "service_account_name", service_account_name)
+        IamServiceAccountRoleArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            namespace_name=namespace_name,
+            oidc_provider_arn=oidc_provider_arn,
+            oidc_provider_url=oidc_provider_url,
+            service_account_name=service_account_name,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             namespace_name: pulumi.Input[str],
+             oidc_provider_arn: pulumi.Input[str],
+             oidc_provider_url: pulumi.Input[str],
+             service_account_name: pulumi.Input[str],
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("namespace_name", namespace_name)
+        _setter("oidc_provider_arn", oidc_provider_arn)
+        _setter("oidc_provider_url", oidc_provider_url)
+        _setter("service_account_name", service_account_name)
 
     @property
     @pulumi.getter(name="namespaceName")
@@ -117,6 +132,10 @@ class IamServiceAccountRole(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
+            kwargs = kwargs or {}
+            def _setter(key, value):
+                kwargs[key] = value
+            IamServiceAccountRoleArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
