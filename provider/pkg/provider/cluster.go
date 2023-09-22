@@ -440,7 +440,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Provider(provider), pulumi.Parent(authCrds), pulumi.DependsOn([]pulumi.Resource{systemNodes, authCrds}))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Provider(provider), pulumi.Parent(authCrds), pulumi.DependsOn([]pulumi.Resource{systemNodes, authCrds}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing aws-auth operator: %w", err)
 	}
@@ -470,7 +470,7 @@ func NewCluster(ctx *pulumi.Context,
 		VolumeBindingMode: pulumi.String("WaitForFirstConsumer"),
 		Provisioner:       pulumi.String("kubernetes.io/aws-ebs"),
 		ReclaimPolicy:     pulumi.String("Delete"),
-	}, pulumi.Parent(serverSideProvider), pulumi.Provider(serverSideProvider))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(serverSideProvider), pulumi.Provider(serverSideProvider))
 	if err != nil {
 		return nil, fmt.Errorf("error creating gp2 storage class: %w", err)
 	}
@@ -489,7 +489,7 @@ func NewCluster(ctx *pulumi.Context,
 			"csi.storage.k8s.io/fstype": pulumi.String("ext4"),
 			"type":                      pulumi.String("gp3"),
 		},
-	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
 	if err != nil {
 		return nil, fmt.Errorf("error creating gp3 storage class: %w", err)
 	}
@@ -672,7 +672,7 @@ func NewCluster(ctx *pulumi.Context,
 				"eks.amazonaws.com/role-arn": externalDNSRole.Role.Arn,
 			},
 		},
-	}, pulumi.Parent(externalDNSRole), pulumi.Provider(provider))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSRole), pulumi.Provider(provider))
 	if err != nil {
 		return nil, fmt.Errorf("error creating external dns service account: %w", err)
 	}
@@ -698,7 +698,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(externalDNSServiceAccount), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSServiceAccount), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing external dns helm release: %w", err)
 	}
@@ -782,7 +782,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	certManagerCrds, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-cert-manager-crds", name), &yaml.ConfigFileArgs{
 		File: "https://github.com/cert-manager/cert-manager/releases/download/v1.12.2/cert-manager.crds.yaml",
-	}, pulumi.Parent(provider), pulumi.Provider(provider))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider))
 	if err != nil {
 		return nil, fmt.Errorf("error creating cert manager crds: %w", err)
 	}
@@ -843,7 +843,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, certManagerCrds}))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, certManagerCrds}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing cert manager helm release: %w", err)
 	}
@@ -876,7 +876,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 			},
 		},
-	}, pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
+	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
 	if err != nil {
 		return nil, fmt.Errorf("error installing cluster issuer: %w", err)
 	}
