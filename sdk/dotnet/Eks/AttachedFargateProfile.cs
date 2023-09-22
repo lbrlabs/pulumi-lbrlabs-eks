@@ -54,11 +54,17 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("clusterName", required: true)]
         public Input<string> ClusterName { get; set; } = null!;
 
+        [Input("selectors", required: true)]
+        private InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs>? _selectors;
+
         /// <summary>
         /// The selectors for the fargate profile.
         /// </summary>
-        [Input("selectors", required: true)]
-        public Input<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs> Selectors { get; set; } = null!;
+        public InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs> Selectors
+        {
+            get => _selectors ?? (_selectors = new InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs>());
+            set => _selectors = value;
+        }
 
         [Input("subnetIds", required: true)]
         private InputList<string>? _subnetIds;

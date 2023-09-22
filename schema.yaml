@@ -159,7 +159,9 @@ resources:
           type: string
         description: The subnet IDs to use for the fargate profile.
       selectors:
-        "$ref": "/aws/v6.1.0/schema.json#/types/aws:eks%2FFargateProfileSelector:FargateProfileSelector"
+        type: array
+        items:
+          "$ref": "/aws/v6.1.0/schema.json#/types/aws:eks%2FFargateProfileSelector:FargateProfileSelector"
         description: The selectors for the fargate profile.
     requiredInputs:
       - clusterName

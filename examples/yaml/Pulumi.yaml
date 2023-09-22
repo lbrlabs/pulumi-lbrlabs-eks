@@ -44,6 +44,12 @@ resources:
         - system:nodes
     options:
       provider: ${provider}
+  fargateProfile:
+    type: lbrlabs-eks:index:AttachedFargateProfile
+    properties:
+      clusterName: ${cluster.controlPlane.name}
+      subnetIds: ${vpc.privateSubnetIds}
+      selectors: [ namespace: kube-system ]
   wordpress:
     type: kubernetes:helm.sh/v3:Release
     properties:

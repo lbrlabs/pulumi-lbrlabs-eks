@@ -870,6 +870,8 @@ github.com/klauspost/compress v1.12.2/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8
 github.com/klauspost/compress v1.13.4/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8eO+e+Dq5Gzg=
 github.com/klauspost/compress v1.15.9/go.mod h1:PhcZ0MbTNciWF3rruxRgKxI5NkcHHrHUDtV4Yw2GlzU=
 github.com/kolo/xmlrpc v0.0.0-20220921171641-a4b6fa1dd06b/go.mod h1:pcaDhQK0/NJZEvtCO0qQPPropqV0sJOJ6YW7X+9kRwM=
+github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.2.0/go.mod h1:BuqOgnfusL5fc1LNP4NvJdsDBTnEKBybHH/r9+PGIvY=
+github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.2.1/go.mod h1:BuqOgnfusL5fc1LNP4NvJdsDBTnEKBybHH/r9+PGIvY=
 github.com/lib/pq v1.10.0/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/lib/pq v1.10.1/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
@@ -956,8 +958,6 @@ github.com/pulumi/pulumi/sdk/v3 v3.73.0/go.mod h1:BUUBfQZsH0FPuznRfFHkR+b96VlXEL
 github.com/pulumi/pulumi/sdk/v3 v3.78.1/go.mod h1:FEFictCHoa8CYzKDSc0t9ErrNiaO9n7pChreLQLDH+M=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0 h1:TNn/wnxj7ZWnluQ5HZjfGwwKmwSnHp845BijrUI2Au4=
 github.com/pulumi/pulumi/sdk/v3 v3.82.0/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
-github.com/pulumi/pulumi/sdk/v3 v3.84.0 h1:/vCRj6ATGVZw4pFmG7pZgjlKUcnbbnb9vmlqd+OpdXo=
-github.com/pulumi/pulumi/sdk/v3 v3.84.0/go.mod h1:RMilNNVMlmK1h4Nl/qylb9vzbgh4F3mufZoUOnPy98o=
 github.com/rjeczalik/notify v0.9.2/go.mod h1:aErll2f0sUX9PXZnVNyeiObbmTlk5jnMoCa4QEjJeqM=
 github.com/sagikazarmark/crypt v0.6.0/go.mod h1:U8+INwJo3nBv1m6A/8OBXAq7Jnpspk5AxSgDyEQcea8=
 github.com/sahilm/fuzzy v0.1.0/go.mod h1:VFvziUEIMCrT6A6tw2RFIXPXXmzXbOsSHF0DOI8ZK9Y=

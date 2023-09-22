@@ -69,7 +69,7 @@ export interface AttachedFargateProfileArgs {
     /**
      * The selectors for the fargate profile.
      */
-    selectors: pulumi.Input<pulumiAws.types.input.eks.FargateProfileSelector>;
+    selectors: pulumi.Input<pulumi.Input<pulumiAws.types.input.eks.FargateProfileSelector>[]>;
     /**
      * The subnet IDs to use for the fargate profile.
      */

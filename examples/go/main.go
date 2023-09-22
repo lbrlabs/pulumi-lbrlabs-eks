@@ -57,6 +57,21 @@ func main() {
 			return fmt.Errorf("error creating workload nodes")
 		}
 
+		profile, err := lbrlabs.NewAttachedFargateProfile(ctx, "profile", &lbrlabs.AttachedFargateProfileArgs{
+			ClusterName: cluster.ControlPlane.Name(),
+			SubnetIds:   vpc.PrivateSubnetIds,
+			Selectors: eks.FargateProfileSelectorArray{
+				&eks.FargateProfileSelectorArgs{
+					Namespace: pulumi.String("default"),
+				},
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("error creating fargate profile")
+		}
+
+		ctx.Export("profileName", profile.Profile.FargateProfileName())
+
 		provider, err := kubernetes.NewProvider(ctx, "provider", &kubernetes.ProviderArgs{
 			Kubeconfig: cluster.Kubeconfig,
 		})

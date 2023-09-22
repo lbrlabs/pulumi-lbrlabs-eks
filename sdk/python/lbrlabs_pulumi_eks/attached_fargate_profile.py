@@ -16,12 +16,12 @@ __all__ = ['AttachedFargateProfileArgs', 'AttachedFargateProfile']
 class AttachedFargateProfileArgs:
     def __init__(__self__, *,
                  cluster_name: pulumi.Input[str],
-                 selectors: pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs'],
+                 selectors: pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]]):
         """
         The set of arguments for constructing a AttachedFargateProfile resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
-        :param pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs'] selectors: The selectors for the fargate profile.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]] selectors: The selectors for the fargate profile.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         """
         AttachedFargateProfileArgs._configure(
@@ -34,7 +34,7 @@ class AttachedFargateProfileArgs:
     def _configure(
              _setter: Callable[[Any, Any], None],
              cluster_name: pulumi.Input[str],
-             selectors: pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs'],
+             selectors: pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]],
              subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
              opts: Optional[pulumi.ResourceOptions]=None):
         _setter("cluster_name", cluster_name)
@@ -55,14 +55,14 @@ class AttachedFargateProfileArgs:
 
     @property
     @pulumi.getter
-    def selectors(self) -> pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']:
+    def selectors(self) -> pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]]:
         """
         The selectors for the fargate profile.
         """
         return pulumi.get(self, "selectors")
 
     @selectors.setter
-    def selectors(self, value: pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']):
+    def selectors(self, value: pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]]):
         pulumi.set(self, "selectors", value)
 
     @property
@@ -84,7 +84,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 selectors: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]] = None,
+                 selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         """
@@ -92,7 +92,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']] selectors: The selectors for the fargate profile.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]] selectors: The selectors for the fargate profile.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         """
         ...
@@ -123,7 +123,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 selectors: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]] = None,
+                 selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -139,11 +139,6 @@ class AttachedFargateProfile(pulumi.ComponentResource):
             if cluster_name is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_name'")
             __props__.__dict__["cluster_name"] = cluster_name
-            if not isinstance(selectors, pulumi_aws.eks.FargateProfileSelectorArgs):
-                selectors = selectors or {}
-                def _setter(key, value):
-                    selectors[key] = value
-                pulumi_aws.eks.FargateProfileSelectorArgs._configure(_setter, **selectors)
             if selectors is None and not opts.urn:
                 raise TypeError("Missing required property 'selectors'")
             __props__.__dict__["selectors"] = selectors
