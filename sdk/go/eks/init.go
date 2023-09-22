@@ -21,6 +21,8 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "lbrlabs-eks:index:AttachedFargateProfile":
+		r = &AttachedFargateProfile{}
 	case "lbrlabs-eks:index:AttachedNodeGroup":
 		r = &AttachedNodeGroup{}
 	case "lbrlabs-eks:index:Cluster":

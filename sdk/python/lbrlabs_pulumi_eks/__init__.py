@@ -5,6 +5,7 @@
 from . import _utilities
 import typing
 # Export this package's modules as members:
+from .attached_fargate_profile import *
 from .attached_node_group import *
 from .cluster import *
 from .iam_role_mapping import *
@@ -18,6 +19,7 @@ _utilities.register(
   "mod": "index",
   "fqn": "lbrlabs_pulumi_eks",
   "classes": {
+   "lbrlabs-eks:index:AttachedFargateProfile": "AttachedFargateProfile",
    "lbrlabs-eks:index:AttachedNodeGroup": "AttachedNodeGroup",
    "lbrlabs-eks:index:Cluster": "Cluster",
    "lbrlabs-eks:index:IamRoleMapping": "IamRoleMapping",

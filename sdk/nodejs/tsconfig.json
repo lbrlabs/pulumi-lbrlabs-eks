@@ -13,6 +13,7 @@
         "strict": true
     },
     "files": [
+        "attachedFargateProfile.ts",
         "attachedNodeGroup.ts",
         "cluster.ts",
         "iamRoleMapping.ts",
