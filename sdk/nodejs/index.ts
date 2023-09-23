@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
+export { AttachedFargateProfileArgs } from "./attachedFargateProfile";
+export type AttachedFargateProfile = import("./attachedFargateProfile").AttachedFargateProfile;
+export const AttachedFargateProfile: typeof import("./attachedFargateProfile").AttachedFargateProfile = null as any;
+utilities.lazyLoad(exports, ["AttachedFargateProfile"], () => require("./attachedFargateProfile"));
+
 export { AttachedNodeGroupArgs } from "./attachedNodeGroup";
 export type AttachedNodeGroup = import("./attachedNodeGroup").AttachedNodeGroup;
 export const AttachedNodeGroup: typeof import("./attachedNodeGroup").AttachedNodeGroup = null as any;
@@ -35,6 +40,8 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "lbrlabs-eks:index:AttachedFargateProfile":
+                return new AttachedFargateProfile(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:AttachedNodeGroup":
                 return new AttachedNodeGroup(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:Cluster":

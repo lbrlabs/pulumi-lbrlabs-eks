@@ -5,15 +5,15 @@ go 1.21
 toolchain go1.21.1
 
 require (
-	github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.1.0
+	github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.2.1
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.1.0
 	github.com/pulumi/pulumi-awsx/sdk v1.0.2
 	github.com/pulumi/pulumi-kubernetes/sdk/v3 v3.30.2
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.1.1
-	github.com/pulumi/pulumi/sdk/v3 v3.82.1
+	github.com/pulumi/pulumi/sdk/v3 v3.84.0
 )
 
-replace github.com/lbrlabs/pulumi-lbrlabs/skd => ../../sdk
+replace github.com/lbrlabs/pulumi-lbrlabs/sdk => ../../sdk/
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect

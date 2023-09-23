@@ -147,6 +147,33 @@ resources:
       - groups
     properties:
     required:
+  lbrlabs-eks:index:AttachedFargateProfile:
+    isComponent: true
+    inputProperties:
+      clusterName:
+        type: string
+        description: The name of the cluster to assign the fargate profile to.
+      subnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnet IDs to use for the fargate profile.
+      selectors:
+        type: array
+        items:
+          "$ref": "/aws/v6.1.0/schema.json#/types/aws:eks%2FFargateProfileSelector:FargateProfileSelector"
+    requiredInputs:
+      - clusterName
+      - subnetIds
+      - selectors
+    properties:
+      role:
+        "$ref": "/aws/v6.1.0/schema.json#/resources/aws:iam%2Frole:Role"
+      profile:
+         "$ref": "/aws/v6.1.0/schema.json#/resources/aws:eks%2FfargateProfile:FargateProfile"
+    required:
+      - role
+      - profile
 language:
   csharp:
     packageReferences:
