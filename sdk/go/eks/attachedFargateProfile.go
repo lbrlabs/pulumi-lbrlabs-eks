@@ -49,9 +49,8 @@ func NewAttachedFargateProfile(ctx *pulumi.Context,
 
 type attachedFargateProfileArgs struct {
 	// The name of the cluster to assign the fargate profile to.
-	ClusterName string `pulumi:"clusterName"`
-	// The selectors for the fargate profile.
-	Selectors []eks.FargateProfileSelector `pulumi:"selectors"`
+	ClusterName string                       `pulumi:"clusterName"`
+	Selectors   []eks.FargateProfileSelector `pulumi:"selectors"`
 	// The subnet IDs to use for the fargate profile.
 	SubnetIds []string `pulumi:"subnetIds"`
 }
@@ -60,8 +59,7 @@ type attachedFargateProfileArgs struct {
 type AttachedFargateProfileArgs struct {
 	// The name of the cluster to assign the fargate profile to.
 	ClusterName pulumi.StringInput
-	// The selectors for the fargate profile.
-	Selectors eks.FargateProfileSelectorArrayInput
+	Selectors   eks.FargateProfileSelectorArrayInput
 	// The subnet IDs to use for the fargate profile.
 	SubnetIds pulumi.StringArrayInput
 }

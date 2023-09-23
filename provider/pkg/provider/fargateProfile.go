@@ -10,9 +10,9 @@ import (
 )
 
 type AttachedFargateProfileArgs struct {
-	SubnetIds   pulumi.StringArrayInput         `pulumi:"subnetIds"`
-	ClusterName pulumi.StringInput              `pulumi:"clusterName"`
-	Selectors   eks.FargateProfileSelectorArray `pulumi:"selectors"`
+	SubnetIds   pulumi.StringArrayInput              `pulumi:"subnetIds"`
+	ClusterName pulumi.StringInput                   `pulumi:"clusterName"`
+	Selectors   eks.FargateProfileSelectorArrayInput `pulumi:"selectors"`
 }
 
 type AttachedFargateProfile struct {

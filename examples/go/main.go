@@ -57,20 +57,38 @@ func main() {
 			return fmt.Errorf("error creating workload nodes")
 		}
 
-		profile, err := lbrlabs.NewAttachedFargateProfile(ctx, "profile", &lbrlabs.AttachedFargateProfileArgs{
+		_, err = lbrlabs.NewAttachedNodeGroup(ctx, "taintedNodes", &lbrlabs.AttachedNodeGroupArgs{
 			ClusterName: cluster.ControlPlane.Name(),
 			SubnetIds:   vpc.PrivateSubnetIds,
-			Selectors: eks.FargateProfileSelectorArray{
-				&eks.FargateProfileSelectorArgs{
-					Namespace: pulumi.String("default"),
+			ScalingConfig: &eks.NodeGroupScalingConfigArgs{
+				DesiredSize: pulumi.Int(1),
+				MaxSize:     pulumi.Int(10),
+				MinSize:     pulumi.Int(1),
+			},
+			Taints: eks.NodeGroupTaintArray{
+				&eks.NodeGroupTaintArgs{
+					Effect: pulumi.String("NoSchedule"),
+					Key:    pulumi.String("dedicated"),
+					Value:  pulumi.String("tainted"),
 				},
 			},
 		})
 		if err != nil {
-			return fmt.Errorf("error creating fargate profile")
+			return fmt.Errorf("error creating workload nodes")
 		}
 
-		ctx.Export("profileName", profile.Profile.FargateProfileName())
+		// profile, err := lbrlabs.NewAttachedFargateProfile(ctx, "profile", &lbrlabs.AttachedFargateProfileArgs{
+		// 	ClusterName: cluster.ControlPlane.Name(),
+		// 	SubnetIds:   vpc.PrivateSubnetIds,
+		// 	Selectors: eks.FargateProfileSelectorArray{
+		// 		&eks.FargateProfileSelectorArgs{
+		// 			Namespace: pulumi.String("default"),
+		// 		},
+		// 	},
+		// })
+		// if err != nil {
+		// 	return fmt.Errorf("error creating fargate profile")
+		// }
 
 		provider, err := kubernetes.NewProvider(ctx, "provider", &kubernetes.ProviderArgs{
 			Kubeconfig: cluster.Kubeconfig,

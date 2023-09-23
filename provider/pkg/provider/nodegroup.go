@@ -16,7 +16,7 @@ type NodeGroupArgs struct {
 	NodeMaxCount     *pulumi.IntInput                `pulumi:"nodeMaxCount"`
 	NodeMinCount     *pulumi.IntInput                `pulumi:"nodeMinCount"`
 	NodeDesiredCount *pulumi.IntInput                `pulumi:"nodeDesiredCount"`
-	Taints           eks.NodeGroupTaintArray         `pulumi:"taints"`
+	Taints           eks.NodeGroupTaintArrayInput    `pulumi:"taints"`
 	Labels           pulumi.StringMapInput           `pulumi:"labels"`
 	ScalingConfig    eks.NodeGroupScalingConfigInput `pulumi:"scalingConfig"`
 }

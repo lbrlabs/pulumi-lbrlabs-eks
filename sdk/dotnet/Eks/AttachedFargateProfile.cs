@@ -56,10 +56,6 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         [Input("selectors", required: true)]
         private InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs>? _selectors;
-
-        /// <summary>
-        /// The selectors for the fargate profile.
-        /// </summary>
         public InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs> Selectors
         {
             get => _selectors ?? (_selectors = new InputList<Pulumi.Aws.Eks.Inputs.FargateProfileSelectorArgs>());

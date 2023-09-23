@@ -66,9 +66,6 @@ export interface AttachedFargateProfileArgs {
      * The name of the cluster to assign the fargate profile to.
      */
     clusterName: pulumi.Input<string>;
-    /**
-     * The selectors for the fargate profile.
-     */
     selectors: pulumi.Input<pulumi.Input<pulumiAws.types.input.eks.FargateProfileSelector>[]>;
     /**
      * The subnet IDs to use for the fargate profile.

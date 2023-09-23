@@ -21,7 +21,6 @@ class AttachedFargateProfileArgs:
         """
         The set of arguments for constructing a AttachedFargateProfile resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]] selectors: The selectors for the fargate profile.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         """
         AttachedFargateProfileArgs._configure(
@@ -56,9 +55,6 @@ class AttachedFargateProfileArgs:
     @property
     @pulumi.getter
     def selectors(self) -> pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]]:
-        """
-        The selectors for the fargate profile.
-        """
         return pulumi.get(self, "selectors")
 
     @selectors.setter
@@ -92,7 +88,6 @@ class AttachedFargateProfile(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]] selectors: The selectors for the fargate profile.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         """
         ...
