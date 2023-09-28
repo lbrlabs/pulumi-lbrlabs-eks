@@ -64,7 +64,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating node role: %w", err)
 	}
 
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
+	workerNodePolicyAttachment, err := iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
 		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
@@ -72,7 +72,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching node worker policy: %w", err)
 	}
 
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
+	ecrPolicyAttachment, err := iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
 		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
@@ -98,7 +98,11 @@ func NewNodeGroup(ctx *pulumi.Context,
 		InstanceTypes: instanceTypes,
 		Labels:        args.Labels,
 		ScalingConfig: args.ScalingConfig,
-	}, pulumi.Parent(component), pulumi.IgnoreChanges([]string{"scalingConfig"}))
+	},
+		pulumi.Parent(component),
+		pulumi.IgnoreChanges([]string{"scalingConfig"}),
+		pulumi.DependsOn([]pulumi.Resource{nodeRole, ecrPolicyAttachment, workerNodePolicyAttachment}),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup provider: %w", err)
 	}
