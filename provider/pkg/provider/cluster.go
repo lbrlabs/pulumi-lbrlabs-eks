@@ -297,7 +297,7 @@ func NewCluster(ctx *pulumi.Context,
 		AddonName:             pulumi.String("vpc-cni"),
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
-	}, pulumi.Parent(vpcCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}, pulumi.Parent(vpcCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
 	}
@@ -344,6 +344,96 @@ func NewCluster(ctx *pulumi.Context,
 	}, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
+	}
+
+	cloudwatchRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cw-obs-role", name), &IamServiceAccountRoleArgs{
+		OidcProviderArn:    oidcProvider.Arn,
+		OidcProviderURL:    oidcProvider.Url,
+		NamespaceName:      pulumi.String("amazon-cloudwatch"),
+		ServiceAccountName: pulumi.String("cloudwatch-agent"),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-obs-policy", name), &iam.RolePolicyAttachmentArgs{
+		Role:      cloudwatchRole.Role.Name,
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"),
+	}, pulumi.Parent(cloudwatchRole.Role))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-xray-policy", name), &iam.RolePolicyAttachmentArgs{
+		Role:      cloudwatchRole.Role.Name,
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"),
+	}, pulumi.Parent(cloudwatchRole.Role))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
+	}
+
+	ebsPolicyJSON, err := json.Marshal(map[string]interface{}{
+		"Version": "2012-10-17",
+		"Statement": []map[string]interface{}{
+			{
+				"Action": []string{
+					"ec2:DescribeVolumes",
+				},
+				"Effect":   "Allow",
+				"Resource": "*",
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling EBS policy json: %w", err)
+	}
+
+	ebsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.PolicyArgs{
+		Description: pulumi.String("Policy for EBS metrics"),
+		Policy:      pulumi.String(ebsPolicyJSON),
+	}, pulumi.Parent(cloudwatchRole.Role))
+	if err != nil {
+		return nil, fmt.Errorf("error creating EBS policy: %w", err)
+	}
+
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.RolePolicyAttachmentArgs{
+		Role:      cloudwatchRole.Role.Name,
+		PolicyArn: ebsPolicy.Arn,
+	}, pulumi.Parent(ebsPolicy))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching EBS policy to role: %w", err)
+	}
+
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-cloudwatch-observability", name), &eks.AddonArgs{
+		AddonName:             pulumi.String("amazon-cloudwatch-observability"),
+		ClusterName:           controlPlane.Name,
+		ServiceAccountRoleArn: cloudwatchRole.Role.Arn,
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error installing Cloudwatch observability addon: %w", err)
+	}
+
+	otelConfig, err := json.Marshal(map[string]interface{}{
+		"tolerations": []map[string]interface{}{
+			{
+				"key":      "node.lbrlabs.com/system",
+				"operator": "Equal",
+				"value":    "true",
+				"effect":   "NoSchedule",
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling Otel config: %w", err)
+	}
+
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-otel", name), &eks.AddonArgs{
+		AddonName:           pulumi.String("adot"),
+		ClusterName:         controlPlane.Name,
+		ConfigurationValues: pulumi.String(otelConfig),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error installing otel addon: %w", err)
 	}
 
 	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)

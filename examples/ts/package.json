@@ -1,13 +1,14 @@
 {
 		"name": "lbrlabs-eks-yaml",
 		"devDependencies": {
-			"@types/node": "^14"
+				"@types/node": "^14"
 		},
 		"dependencies": {
-			"typescript": "^4.0.0",
-			"@pulumi/pulumi": "^3.0.0",
-			"@lbrlabs/pulumi-eks": "0.0.1",
-			"@pulumi/awsx": "*",
-			"@pulumi/kubernetes": "3.29.1"
+				"@lbrlabs/pulumi-eks": "file:../../sdk/nodejs/bin",
+				"@pulumi/aws": "^6.14.0",
+				"@pulumi/awsx": "^2.3.0",
+				"@pulumi/kubernetes": "^3.29.1",
+				"@pulumi/pulumi": "^3.97.0",
+				"typescript": "^4.0.0"
 		}
 }

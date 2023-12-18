@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 import pulumi_aws
 
@@ -29,38 +29,17 @@ class ClusterArgs:
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         """
-        ClusterArgs._configure(
-            lambda key, value: pulumi.set(__self__, key, value),
-            cluster_subnet_ids=cluster_subnet_ids,
-            lets_encrypt_email=lets_encrypt_email,
-            system_node_subnet_ids=system_node_subnet_ids,
-            system_node_desired_count=system_node_desired_count,
-            system_node_instance_types=system_node_instance_types,
-            system_node_max_count=system_node_max_count,
-            system_node_min_count=system_node_min_count,
-        )
-    @staticmethod
-    def _configure(
-             _setter: Callable[[Any, Any], None],
-             cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-             lets_encrypt_email: pulumi.Input[str],
-             system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-             system_node_desired_count: Optional[pulumi.Input[float]] = None,
-             system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-             system_node_max_count: Optional[pulumi.Input[float]] = None,
-             system_node_min_count: Optional[pulumi.Input[float]] = None,
-             opts: Optional[pulumi.ResourceOptions]=None):
-        _setter("cluster_subnet_ids", cluster_subnet_ids)
-        _setter("lets_encrypt_email", lets_encrypt_email)
-        _setter("system_node_subnet_ids", system_node_subnet_ids)
+        pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
+        pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
+        pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
         if system_node_desired_count is not None:
-            _setter("system_node_desired_count", system_node_desired_count)
+            pulumi.set(__self__, "system_node_desired_count", system_node_desired_count)
         if system_node_instance_types is not None:
-            _setter("system_node_instance_types", system_node_instance_types)
+            pulumi.set(__self__, "system_node_instance_types", system_node_instance_types)
         if system_node_max_count is not None:
-            _setter("system_node_max_count", system_node_max_count)
+            pulumi.set(__self__, "system_node_max_count", system_node_max_count)
         if system_node_min_count is not None:
-            _setter("system_node_min_count", system_node_min_count)
+            pulumi.set(__self__, "system_node_min_count", system_node_min_count)
 
     @property
     @pulumi.getter(name="clusterSubnetIds")
@@ -178,10 +157,6 @@ class Cluster(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
-            kwargs = kwargs or {}
-            def _setter(key, value):
-                kwargs[key] = value
-            ClusterArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,

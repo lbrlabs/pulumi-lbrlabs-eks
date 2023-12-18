@@ -1,5 +1,20 @@
-pulumi>=3.0.0,<4.0.0
-pulumi-awsx>=1.0.0,<2.0.0
-pulumi-aws>=5.0.0,<6.0.0
-pulumi-kubernetes==3.29.1
-lbrlabs_pulumi_eks==0.0.1
+Arpeggio==2.0.2
+attrs==23.1.0
+certifi==2023.11.17
+charset-normalizer==3.3.2
+dill==0.3.7
+grpcio==1.56.2
+idna==3.6
+-e git+ssh://git@github.com/lbrlabs/pulumi-lbrlabs-eks.git@b9f72e43c30cbfa5096e369d5ef9e8ff5a2596a8#egg=lbrlabs_pulumi_eks&subdirectory=sdk/python
+parver==0.5
+protobuf==4.25.1
+pulumi==3.97.0
+pulumi-aws==6.14.0
+pulumi-awsx==2.3.0
+pulumi-docker==4.5.0
+pulumi-kubernetes==4.6.1
+PyYAML==6.0.1
+requests==2.31.0
+semver==2.13.0
+six==1.16.0
+urllib3==2.1.0

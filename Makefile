@@ -84,8 +84,8 @@ clean::
 
 install_plugins::
 	[ -x $(shell which pulumi) ] || curl -fsSL https://get.pulumi.com | sh
-	pulumi plugin install resource random 4.13.2
-	pulumi plugin install resource aws 6.1.0
+	pulumi plugin install resource kubernetes
+	pulumi plugin install resource aws
 
 install_dotnet_sdk::
 	mkdir -p $(WORKING_DIR)/nuget

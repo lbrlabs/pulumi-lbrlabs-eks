@@ -6,11 +6,14 @@ resources:
     type: awsx:ec2:Vpc
     properties:
       cidrBlock: "172.16.0.0/16"
+      subnetStrategy: Auto
       subnetSpecs:
         - type: Public
+          cidrMask: 20
           tags:
             "kubernetes.io/role/elb": "1"
         - type: Private
+          cidrMask: 19
           tags:
             "kubernetes.io/role/internal-elb": "1"
   cluster:

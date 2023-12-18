@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 import pulumi_aws
 
@@ -23,22 +23,9 @@ class AttachedFargateProfileArgs:
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         """
-        AttachedFargateProfileArgs._configure(
-            lambda key, value: pulumi.set(__self__, key, value),
-            cluster_name=cluster_name,
-            selectors=selectors,
-            subnet_ids=subnet_ids,
-        )
-    @staticmethod
-    def _configure(
-             _setter: Callable[[Any, Any], None],
-             cluster_name: pulumi.Input[str],
-             selectors: pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]],
-             subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-             opts: Optional[pulumi.ResourceOptions]=None):
-        _setter("cluster_name", cluster_name)
-        _setter("selectors", selectors)
-        _setter("subnet_ids", subnet_ids)
+        pulumi.set(__self__, "cluster_name", cluster_name)
+        pulumi.set(__self__, "selectors", selectors)
+        pulumi.set(__self__, "subnet_ids", subnet_ids)
 
     @property
     @pulumi.getter(name="clusterName")
@@ -108,10 +95,6 @@ class AttachedFargateProfile(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
-            kwargs = kwargs or {}
-            def _setter(key, value):
-                kwargs[key] = value
-            AttachedFargateProfileArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,

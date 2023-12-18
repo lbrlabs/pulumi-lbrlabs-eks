@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 import pulumi_aws
 
@@ -26,35 +26,16 @@ class AttachedNodeGroupArgs:
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         """
-        AttachedNodeGroupArgs._configure(
-            lambda key, value: pulumi.set(__self__, key, value),
-            cluster_name=cluster_name,
-            subnet_ids=subnet_ids,
-            labels=labels,
-            node_instance_types=node_instance_types,
-            scaling_config=scaling_config,
-            taints=taints,
-        )
-    @staticmethod
-    def _configure(
-             _setter: Callable[[Any, Any], None],
-             cluster_name: pulumi.Input[str],
-             subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-             labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-             node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-             scaling_config: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']] = None,
-             taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]] = None,
-             opts: Optional[pulumi.ResourceOptions]=None):
-        _setter("cluster_name", cluster_name)
-        _setter("subnet_ids", subnet_ids)
+        pulumi.set(__self__, "cluster_name", cluster_name)
+        pulumi.set(__self__, "subnet_ids", subnet_ids)
         if labels is not None:
-            _setter("labels", labels)
+            pulumi.set(__self__, "labels", labels)
         if node_instance_types is not None:
-            _setter("node_instance_types", node_instance_types)
+            pulumi.set(__self__, "node_instance_types", node_instance_types)
         if scaling_config is not None:
-            _setter("scaling_config", scaling_config)
+            pulumi.set(__self__, "scaling_config", scaling_config)
         if taints is not None:
-            _setter("taints", taints)
+            pulumi.set(__self__, "taints", taints)
 
     @property
     @pulumi.getter(name="clusterName")
@@ -154,10 +135,6 @@ class AttachedNodeGroup(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
-            kwargs = kwargs or {}
-            def _setter(key, value):
-                kwargs[key] = value
-            AttachedNodeGroupArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
@@ -185,11 +162,6 @@ class AttachedNodeGroup(pulumi.ComponentResource):
             __props__.__dict__["cluster_name"] = cluster_name
             __props__.__dict__["labels"] = labels
             __props__.__dict__["node_instance_types"] = node_instance_types
-            if not isinstance(scaling_config, pulumi_aws.eks.NodeGroupScalingConfigArgs):
-                scaling_config = scaling_config or {}
-                def _setter(key, value):
-                    scaling_config[key] = value
-                pulumi_aws.eks.NodeGroupScalingConfigArgs._configure(_setter, **scaling_config)
             __props__.__dict__["scaling_config"] = scaling_config
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")

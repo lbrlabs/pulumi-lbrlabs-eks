@@ -1,0 +1,5 @@
+parver>=0.2.1
+pulumi<4.0.0,>=3.0.0
+pulumi-aws<7.0.0,>=6.0.0
+pulumi-kubernetes<5.0.0,>=4.0.0
+semver>=2.8.1

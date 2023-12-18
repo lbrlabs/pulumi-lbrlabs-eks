@@ -1,3 +1,7 @@
 name: lbrlabs-eks-py
-runtime: python
+runtime:
+  name: python
+  options:
+    virtualenv: venv
 description: A minimal Pulumi YAML program
+

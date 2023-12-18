@@ -7,15 +7,18 @@ import pulumi_kubernetes as kubernetes
 vpc = awsx.ec2.Vpc(
     "vpc",
     cidr_block="172.16.0.0/16",
+    subnet_strategy=awsx.ec2.SubnetAllocationStrategy.AUTO,
     subnet_specs=[
         awsx.ec2.SubnetSpecArgs(
             type=awsx.ec2.SubnetType.PUBLIC,
+            cidr_mask=20,
             tags={
                 "kubernetes.io/role/elb": "1",
             },
         ),
         awsx.ec2.SubnetSpecArgs(
             type=awsx.ec2.SubnetType.PRIVATE,
+            cidr_mask=19,
             tags={
                 "kubernetes.io/role/internal-elb": "1",
             },
