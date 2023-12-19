@@ -179,6 +179,12 @@ jobs:
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Set Release Version
       run: echo "GORELEASER_CURRENT_TAG=v$(pulumictl get version --language generic)" >> $GITHUB_ENV
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        # this might remove tools that are actually needed,
+        # if set to "true" but frees about 6 GB
+        tool-cache: false
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v3
       with:
