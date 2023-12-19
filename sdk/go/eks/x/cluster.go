@@ -18,6 +18,8 @@ import (
 type Cluster struct {
 	pulumi.ResourceState
 
+	// The cluster name
+	ClusterName pulumix.Output[string] `pulumi:"clusterName"`
 	// The Cluster control plane
 	ControlPlane pulumix.GPtrOutput[eks.Cluster, eks.ClusterOutput] `pulumi:"controlPlane"`
 	// The kubeconfig for this cluster.
@@ -44,6 +46,22 @@ func NewCluster(ctx *pulumi.Context,
 	if args.SystemNodeSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SystemNodeSubnetIds'")
 	}
+	if args.EnableCertManager == nil {
+		enableCertManager_ := true
+		args.EnableCertManager = &enableCertManager_
+	}
+	if args.EnableExternalDns == nil {
+		enableExternalDns_ := true
+		args.EnableExternalDns = &enableExternalDns_
+	}
+	if args.EnableOtel == nil {
+		enableOtel_ := false
+		args.EnableOtel = &enableOtel_
+	}
+	if args.EnableenableCloudWatchAgent == nil {
+		enableenableCloudWatchAgent_ := false
+		args.EnableenableCloudWatchAgent = &enableenableCloudWatchAgent_
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Cluster
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:Cluster", name, args, &resource, opts...)
@@ -55,6 +73,14 @@ func NewCluster(ctx *pulumi.Context,
 
 type clusterArgs struct {
 	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
+	// Whether to enable cert-manager with route 53 integration.
+	EnableCertManager *bool `pulumi:"enableCertManager"`
+	// Whether to enable external dns with route 53 integration.
+	EnableExternalDns *bool `pulumi:"enableExternalDns"`
+	// Whether to enable the OTEL Distro for EKS.
+	EnableOtel *bool `pulumi:"enableOtel"`
+	// Whether to enable cloudwatch container insights for EKS.
+	EnableenableCloudWatchAgent *bool `pulumi:"enableenableCloudWatchAgent"`
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail string `pulumi:"letsEncryptEmail"`
 	// The initial number of nodes in the system autoscaling group.
@@ -70,6 +96,14 @@ type clusterArgs struct {
 // The set of arguments for constructing a Cluster resource.
 type ClusterArgs struct {
 	ClusterSubnetIds pulumix.Input[[]string]
+	// Whether to enable cert-manager with route 53 integration.
+	EnableCertManager *bool
+	// Whether to enable external dns with route 53 integration.
+	EnableExternalDns *bool
+	// Whether to enable the OTEL Distro for EKS.
+	EnableOtel *bool
+	// Whether to enable cloudwatch container insights for EKS.
+	EnableenableCloudWatchAgent *bool
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail pulumix.Input[string]
 	// The initial number of nodes in the system autoscaling group.
@@ -104,6 +138,12 @@ func (o ClusterOutput) ToOutput(ctx context.Context) pulumix.Output[Cluster] {
 	return pulumix.Output[Cluster]{
 		OutputState: o.OutputState,
 	}
+}
+
+// The cluster name
+func (o ClusterOutput) ClusterName() pulumix.Output[string] {
+	value := pulumix.Apply[Cluster](o, func(v Cluster) pulumix.Output[string] { return v.ClusterName })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 
 // The Cluster control plane

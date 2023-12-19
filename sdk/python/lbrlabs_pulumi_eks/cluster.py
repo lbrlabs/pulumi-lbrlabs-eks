@@ -18,6 +18,10 @@ class ClusterArgs:
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  lets_encrypt_email: pulumi.Input[str],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 enable_cert_manager: Optional[bool] = None,
+                 enable_external_dns: Optional[bool] = None,
+                 enable_otel: Optional[bool] = None,
+                 enableenable_cloud_watch_agent: Optional[bool] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -25,6 +29,10 @@ class ClusterArgs:
         """
         The set of arguments for constructing a Cluster resource.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
+        :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param bool enableenable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -32,6 +40,22 @@ class ClusterArgs:
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
+        if enable_cert_manager is None:
+            enable_cert_manager = True
+        if enable_cert_manager is not None:
+            pulumi.set(__self__, "enable_cert_manager", enable_cert_manager)
+        if enable_external_dns is None:
+            enable_external_dns = True
+        if enable_external_dns is not None:
+            pulumi.set(__self__, "enable_external_dns", enable_external_dns)
+        if enable_otel is None:
+            enable_otel = False
+        if enable_otel is not None:
+            pulumi.set(__self__, "enable_otel", enable_otel)
+        if enableenable_cloud_watch_agent is None:
+            enableenable_cloud_watch_agent = False
+        if enableenable_cloud_watch_agent is not None:
+            pulumi.set(__self__, "enableenable_cloud_watch_agent", enableenable_cloud_watch_agent)
         if system_node_desired_count is not None:
             pulumi.set(__self__, "system_node_desired_count", system_node_desired_count)
         if system_node_instance_types is not None:
@@ -70,6 +94,54 @@ class ClusterArgs:
     @system_node_subnet_ids.setter
     def system_node_subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "system_node_subnet_ids", value)
+
+    @property
+    @pulumi.getter(name="enableCertManager")
+    def enable_cert_manager(self) -> Optional[bool]:
+        """
+        Whether to enable cert-manager with route 53 integration.
+        """
+        return pulumi.get(self, "enable_cert_manager")
+
+    @enable_cert_manager.setter
+    def enable_cert_manager(self, value: Optional[bool]):
+        pulumi.set(self, "enable_cert_manager", value)
+
+    @property
+    @pulumi.getter(name="enableExternalDns")
+    def enable_external_dns(self) -> Optional[bool]:
+        """
+        Whether to enable external dns with route 53 integration.
+        """
+        return pulumi.get(self, "enable_external_dns")
+
+    @enable_external_dns.setter
+    def enable_external_dns(self, value: Optional[bool]):
+        pulumi.set(self, "enable_external_dns", value)
+
+    @property
+    @pulumi.getter(name="enableOtel")
+    def enable_otel(self) -> Optional[bool]:
+        """
+        Whether to enable the OTEL Distro for EKS.
+        """
+        return pulumi.get(self, "enable_otel")
+
+    @enable_otel.setter
+    def enable_otel(self, value: Optional[bool]):
+        pulumi.set(self, "enable_otel", value)
+
+    @property
+    @pulumi.getter(name="enableenableCloudWatchAgent")
+    def enableenable_cloud_watch_agent(self) -> Optional[bool]:
+        """
+        Whether to enable cloudwatch container insights for EKS.
+        """
+        return pulumi.get(self, "enableenable_cloud_watch_agent")
+
+    @enableenable_cloud_watch_agent.setter
+    def enableenable_cloud_watch_agent(self, value: Optional[bool]):
+        pulumi.set(self, "enableenable_cloud_watch_agent", value)
 
     @property
     @pulumi.getter(name="systemNodeDesiredCount")
@@ -123,6 +195,10 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 enable_cert_manager: Optional[bool] = None,
+                 enable_external_dns: Optional[bool] = None,
+                 enable_otel: Optional[bool] = None,
+                 enableenable_cloud_watch_agent: Optional[bool] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -134,6 +210,10 @@ class Cluster(pulumi.ComponentResource):
         Create a Cluster resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
+        :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param bool enableenable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
@@ -163,6 +243,10 @@ class Cluster(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 enable_cert_manager: Optional[bool] = None,
+                 enable_external_dns: Optional[bool] = None,
+                 enable_otel: Optional[bool] = None,
+                 enableenable_cloud_watch_agent: Optional[bool] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -183,6 +267,18 @@ class Cluster(pulumi.ComponentResource):
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
+            if enable_cert_manager is None:
+                enable_cert_manager = True
+            __props__.__dict__["enable_cert_manager"] = enable_cert_manager
+            if enable_external_dns is None:
+                enable_external_dns = True
+            __props__.__dict__["enable_external_dns"] = enable_external_dns
+            if enable_otel is None:
+                enable_otel = False
+            __props__.__dict__["enable_otel"] = enable_otel
+            if enableenable_cloud_watch_agent is None:
+                enableenable_cloud_watch_agent = False
+            __props__.__dict__["enableenable_cloud_watch_agent"] = enableenable_cloud_watch_agent
             if lets_encrypt_email is None and not opts.urn:
                 raise TypeError("Missing required property 'lets_encrypt_email'")
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
@@ -193,6 +289,7 @@ class Cluster(pulumi.ComponentResource):
             if system_node_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'system_node_subnet_ids'")
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
+            __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["kubeconfig"] = None
             __props__.__dict__["oidc_provider"] = None
@@ -203,6 +300,14 @@ class Cluster(pulumi.ComponentResource):
             __props__,
             opts,
             remote=True)
+
+    @property
+    @pulumi.getter(name="clusterName")
+    def cluster_name(self) -> pulumi.Output[str]:
+        """
+        The cluster name
+        """
+        return pulumi.get(self, "cluster_name")
 
     @property
     @pulumi.getter(name="controlPlane")

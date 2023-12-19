@@ -31,6 +31,10 @@ type ClusterArgs struct {
 	SystemNodeMinCount      *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
 	SystemNodeDesiredCount  *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
 	ClusterVersion          pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	EnableOtel              bool                     `pulumi:"enableOtel"`
+	EnableCloudWatchAgent   bool                     `pulumi:"enableCloudWatchAgent"`
+	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
+	EnableCertManager       bool                     `pulumi:"enableCertManager"`
 	LetsEncryptEmail        pulumi.StringInput       `pulumi:"letsEncryptEmail"`
 }
 
@@ -38,6 +42,7 @@ type ClusterArgs struct {
 type Cluster struct {
 	pulumi.ResourceState
 
+	ClusterName  pulumi.StringOutput           `pulumi:"clusterName"`
 	ControlPlane *eks.Cluster                  `pulumi:"controlPlane"`
 	SystemNodes  *NodeGroup                    `pulumi:"systemNodes"`
 	OidcProvider *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
@@ -346,96 +351,6 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
 	}
 
-	cloudwatchRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cw-obs-role", name), &IamServiceAccountRoleArgs{
-		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderURL:    oidcProvider.Url,
-		NamespaceName:      pulumi.String("amazon-cloudwatch"),
-		ServiceAccountName: pulumi.String("cloudwatch-agent"),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
-	}
-
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-obs-policy", name), &iam.RolePolicyAttachmentArgs{
-		Role:      cloudwatchRole.Role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"),
-	}, pulumi.Parent(cloudwatchRole.Role))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
-	}
-
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-xray-policy", name), &iam.RolePolicyAttachmentArgs{
-		Role:      cloudwatchRole.Role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"),
-	}, pulumi.Parent(cloudwatchRole.Role))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
-	}
-
-	ebsPolicyJSON, err := json.Marshal(map[string]interface{}{
-		"Version": "2012-10-17",
-		"Statement": []map[string]interface{}{
-			{
-				"Action": []string{
-					"ec2:DescribeVolumes",
-				},
-				"Effect":   "Allow",
-				"Resource": "*",
-			},
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling EBS policy json: %w", err)
-	}
-
-	ebsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.PolicyArgs{
-		Description: pulumi.String("Policy for EBS metrics"),
-		Policy:      pulumi.String(ebsPolicyJSON),
-	}, pulumi.Parent(cloudwatchRole.Role))
-	if err != nil {
-		return nil, fmt.Errorf("error creating EBS policy: %w", err)
-	}
-
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.RolePolicyAttachmentArgs{
-		Role:      cloudwatchRole.Role.Name,
-		PolicyArn: ebsPolicy.Arn,
-	}, pulumi.Parent(ebsPolicy))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching EBS policy to role: %w", err)
-	}
-
-	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-cloudwatch-observability", name), &eks.AddonArgs{
-		AddonName:             pulumi.String("amazon-cloudwatch-observability"),
-		ClusterName:           controlPlane.Name,
-		ServiceAccountRoleArn: cloudwatchRole.Role.Arn,
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error installing Cloudwatch observability addon: %w", err)
-	}
-
-	otelConfig, err := json.Marshal(map[string]interface{}{
-		"tolerations": []map[string]interface{}{
-			{
-				"key":      "node.lbrlabs.com/system",
-				"operator": "Equal",
-				"value":    "true",
-				"effect":   "NoSchedule",
-			},
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling Otel config: %w", err)
-	}
-
-	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-otel", name), &eks.AddonArgs{
-		AddonName:           pulumi.String("adot"),
-		ClusterName:         controlPlane.Name,
-		ConfigurationValues: pulumi.String(otelConfig),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error installing otel addon: %w", err)
-	}
-
 	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)
 	if err != nil {
 		return nil, fmt.Errorf("error generating kubeconfig: %w", err)
@@ -702,207 +617,84 @@ func NewCluster(ctx *pulumi.Context,
 	_ = nginxIngressExternal
 	_ = nginxIngressInternal
 
-	externalDNSRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &IamServiceAccountRoleArgs{
-		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderURL:    oidcProvider.Url,
-		NamespaceName:      pulumi.String("kube-system"),
-		ServiceAccountName: pulumi.String("external-dns"),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error creating iam service account role for external dns: %w", err)
-	}
+	if args.EnableExternalDNS {
+		externalDNSRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-external-dns-role", name), &IamServiceAccountRoleArgs{
+			OidcProviderArn:    oidcProvider.Arn,
+			OidcProviderURL:    oidcProvider.Url,
+			NamespaceName:      pulumi.String("kube-system"),
+			ServiceAccountName: pulumi.String("external-dns"),
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error creating iam service account role for external dns: %w", err)
+		}
 
-	externalDNSPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
-		Statements: iam.GetPolicyDocumentStatementArray{
-			iam.GetPolicyDocumentStatementArgs{
-				Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
-				Actions: pulumi.StringArray{
-					pulumi.String("route53:ChangeResourceRecordSets"),
+		externalDNSPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+			Statements: iam.GetPolicyDocumentStatementArray{
+				iam.GetPolicyDocumentStatementArgs{
+					Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
+					Actions: pulumi.StringArray{
+						pulumi.String("route53:ChangeResourceRecordSets"),
+					},
+					Effect: pulumi.String("Allow"),
+					Resources: pulumi.StringArray{
+						pulumi.String("arn:aws:route53:::hostedzone/*"),
+					},
 				},
-				Effect: pulumi.String("Allow"),
-				Resources: pulumi.StringArray{
-					pulumi.String("arn:aws:route53:::hostedzone/*"),
+				iam.GetPolicyDocumentStatementArgs{
+					Sid: pulumi.String("AllowAccessToRoute53RecordSets"),
+					Actions: pulumi.StringArray{
+						pulumi.String("route53:ListHostedZones"),
+						pulumi.String("route53:ListResourceRecordSets"),
+					},
+					Effect: pulumi.String("Allow"),
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
 				},
 			},
-			iam.GetPolicyDocumentStatementArgs{
-				Sid: pulumi.String("AllowAccessToRoute53RecordSets"),
-				Actions: pulumi.StringArray{
-					pulumi.String("route53:ListHostedZones"),
-					pulumi.String("route53:ListResourceRecordSets"),
-				},
-				Effect: pulumi.String("Allow"),
-				Resources: pulumi.StringArray{
-					pulumi.String("*"),
+		})
+
+		externalDNSPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-external-dns-policy", name), &iam.PolicyArgs{
+			Description: pulumi.String("Policy for external-dns to modify route53 "),
+			Policy:      externalDNSPolicyDocument.Json(),
+		}, pulumi.Parent(role))
+		if err != nil {
+			return nil, fmt.Errorf("error creating external DNS policy: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-external-dns-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
+			Role:      externalDNSRole.Role.Name,
+			PolicyArn: externalDNSPolicy.Arn,
+		}, pulumi.Parent(externalDNSRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching cluster policy for external dns: %w", err)
+		}
+
+		externalDNSServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-external-dns-service-account", name), &corev1.ServiceAccountArgs{
+			Metadata: &metav1.ObjectMetaArgs{
+				Name:      pulumi.String("external-dns"),
+				Namespace: pulumi.String("kube-system"),
+				Annotations: pulumi.StringMap{
+					"eks.amazonaws.com/role-arn": externalDNSRole.Role.Arn,
 				},
 			},
-		},
-	})
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSRole), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating external dns service account: %w", err)
+		}
 
-	externalDNSPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-external-dns-policy", name), &iam.PolicyArgs{
-		Description: pulumi.String("Policy for external-dns to modify route53 "),
-		Policy:      externalDNSPolicyDocument.Json(),
-	}, pulumi.Parent(role))
-	if err != nil {
-		return nil, fmt.Errorf("error creating external DNS policy: %w", err)
-	}
-
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-external-dns-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
-		Role:      externalDNSRole.Role.Name,
-		PolicyArn: externalDNSPolicy.Arn,
-	}, pulumi.Parent(externalDNSRole.Role))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching cluster policy for external dns: %w", err)
-	}
-
-	externalDNSServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-external-dns-service-account", name), &corev1.ServiceAccountArgs{
-		Metadata: &metav1.ObjectMetaArgs{
-			Name:      pulumi.String("external-dns"),
+		externalDNS, err := helm.NewRelease(ctx, fmt.Sprintf("%s-external-dns", name), &helm.ReleaseArgs{
+			Chart:     pulumi.String("external-dns"),
 			Namespace: pulumi.String("kube-system"),
-			Annotations: pulumi.StringMap{
-				"eks.amazonaws.com/role-arn": externalDNSRole.Role.Arn,
+			Timeout:   pulumi.Int(600),
+			RepositoryOpts: &helm.RepositoryOptsArgs{
+				Repo: pulumi.String("https://kubernetes-sigs.github.io/external-dns/"),
 			},
-		},
-	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSRole), pulumi.Provider(provider))
-	if err != nil {
-		return nil, fmt.Errorf("error creating external dns service account: %w", err)
-	}
-
-	externalDNS, err := helm.NewRelease(ctx, fmt.Sprintf("%s-external-dns", name), &helm.ReleaseArgs{
-		Chart:     pulumi.String("external-dns"),
-		Namespace: pulumi.String("kube-system"),
-		Timeout:   pulumi.Int(600),
-		RepositoryOpts: &helm.RepositoryOptsArgs{
-			Repo: pulumi.String("https://kubernetes-sigs.github.io/external-dns/"),
-		},
-		Values: pulumi.Map{
-			"serviceAccount": pulumi.Map{
-				"create": pulumi.Bool(false),
-				"name":   externalDNSServiceAccount.Metadata.Name(),
-			},
-			"tolerations": pulumi.MapArray{
-				pulumi.Map{
-					"key":      pulumi.String("node.lbrlabs.com/system"),
-					"operator": pulumi.String("Equal"),
-					"value":    pulumi.String("true"),
-					"effect":   pulumi.String("NoSchedule"),
+			Values: pulumi.Map{
+				"serviceAccount": pulumi.Map{
+					"create": pulumi.Bool(false),
+					"name":   externalDNSServiceAccount.Metadata.Name(),
 				},
-			},
-		},
-	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSServiceAccount), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
-	if err != nil {
-		return nil, fmt.Errorf("error installing external dns helm release: %w", err)
-	}
-
-	_ = externalDNS
-
-	certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
-		OidcProviderArn:    oidcProvider.Arn,
-		OidcProviderURL:    oidcProvider.Url,
-		NamespaceName:      pulumi.String("kube-system"),
-		ServiceAccountName: pulumi.String("cert-manager"),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error creating iam service account role for cert manager: %w", err)
-	}
-
-	certManagerPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
-		Statements: iam.GetPolicyDocumentStatementArray{
-			iam.GetPolicyDocumentStatementArgs{
-				Sid: pulumi.String("AllowAccessToRoute53Changess"),
-				Actions: pulumi.StringArray{
-					pulumi.String("route53:GetChange"),
-				},
-				Effect: pulumi.String("Allow"),
-				Resources: pulumi.StringArray{
-					pulumi.String("arn:aws:route53:::change/*"),
-				},
-			},
-			iam.GetPolicyDocumentStatementArgs{
-				Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
-				Actions: pulumi.StringArray{
-					pulumi.String("route53:ChangeResourceRecordSets"),
-					pulumi.String("route53:ListResourceRecordSets"),
-				},
-				Effect: pulumi.String("Allow"),
-				Resources: pulumi.StringArray{
-					pulumi.String("arn:aws:route53:::hostedzone/*"),
-				},
-			},
-			iam.GetPolicyDocumentStatementArgs{
-				Sid: pulumi.String("AllowListingHostedZones"),
-				Actions: pulumi.StringArray{
-					pulumi.String("route53:ListHostedZonesByName"),
-				},
-				Effect: pulumi.String("Allow"),
-				Resources: pulumi.StringArray{
-					pulumi.String("*"),
-				},
-			},
-		},
-	})
-
-	certManagerPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cert-manager-policy", name), &iam.PolicyArgs{
-		Description: pulumi.String("Policy for cert-manager to modify route53 "),
-		Policy:      certManagerPolicyDocument.Json(),
-	}, pulumi.Parent(role))
-	if err != nil {
-		return nil, fmt.Errorf("error creating cert manager DNS policy: %w", err)
-	}
-
-	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-cert-manager-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
-		Role:      certManagerRole.Role.Name,
-		PolicyArn: certManagerPolicy.Arn,
-	}, pulumi.Parent(certManagerPolicy))
-	if err != nil {
-		return nil, fmt.Errorf("error attaching cluster policy for cert manager: %w", err)
-	}
-
-	certManagerServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-cert-manager-service-account", name), &corev1.ServiceAccountArgs{
-		Metadata: &metav1.ObjectMetaArgs{
-			Name:      pulumi.String("cert-manager"),
-			Namespace: pulumi.String("kube-system"),
-			Annotations: pulumi.StringMap{
-				"eks.amazonaws.com/role-arn": certManagerRole.Role.Arn,
-			},
-		},
-	}, pulumi.Parent(certManagerRole), pulumi.Provider(provider))
-	if err != nil {
-		return nil, fmt.Errorf("error creating cert manager service account: %w", err)
-	}
-
-	certManagerCrds, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-cert-manager-crds", name), &yaml.ConfigFileArgs{
-		File: "https://github.com/cert-manager/cert-manager/releases/download/v1.12.2/cert-manager.crds.yaml",
-	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider))
-	if err != nil {
-		return nil, fmt.Errorf("error creating cert manager crds: %w", err)
-	}
-
-	certManager, err := helm.NewRelease(ctx, fmt.Sprintf("%s-cert-manager", name), &helm.ReleaseArgs{
-		Chart:           pulumi.String("cert-manager"),
-		Namespace:       pulumi.String("kube-system"),
-		DisableCRDHooks: pulumi.Bool(true),
-		SkipAwait:       pulumi.Bool(true), // FIXME: this is a very unreliable chart
-		Timeout:         pulumi.Int(600),
-		RepositoryOpts: &helm.RepositoryOptsArgs{
-			Repo: pulumi.String("https://charts.jetstack.io"),
-		},
-		Values: pulumi.Map{
-			"serviceAccount": pulumi.Map{
-				"create": pulumi.Bool(false),
-				"name":   certManagerServiceAccount.Metadata.Name(),
-			},
-			"securityContext": pulumi.Map{
-				"fsGroup": pulumi.Int(1001),
-			},
-			"tolerations": pulumi.MapArray{
-				pulumi.Map{
-					"key":      pulumi.String("node.lbrlabs.com/system"),
-					"operator": pulumi.String("Equal"),
-					"value":    pulumi.String("true"),
-					"effect":   pulumi.String("NoSchedule"),
-				},
-			},
-			"startupapicheck": pulumi.Map{
 				"tolerations": pulumi.MapArray{
 					pulumi.Map{
 						"key":      pulumi.String("node.lbrlabs.com/system"),
@@ -912,74 +704,307 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 			},
-			"webhook": pulumi.Map{
-				"tolerations": pulumi.MapArray{
-					pulumi.Map{
-						"key":      pulumi.String("node.lbrlabs.com/system"),
-						"operator": pulumi.String("Equal"),
-						"value":    pulumi.String("true"),
-						"effect":   pulumi.String("NoSchedule"),
-					},
-				},
-			},
-			"cainjector": pulumi.Map{
-				"tolerations": pulumi.MapArray{
-					pulumi.Map{
-						"key":      pulumi.String("node.lbrlabs.com/system"),
-						"operator": pulumi.String("Equal"),
-						"value":    pulumi.String("true"),
-						"effect":   pulumi.String("NoSchedule"),
-					},
-				},
-			},
-		},
-	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, certManagerCrds}))
-	if err != nil {
-		return nil, fmt.Errorf("error installing cert manager helm release: %w", err)
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(externalDNSServiceAccount), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+		if err != nil {
+			return nil, fmt.Errorf("error installing external dns helm release: %w", err)
+		}
+
+		_ = externalDNS
 	}
 
-	_ = certManager
+	if args.EnableCertManager {
 
-	clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
-		ApiVersion: pulumi.String("cert-manager.io/v1"),
-		Kind:       pulumi.String("ClusterIssuer"),
-		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("letsencrypt-prod"),
-		},
-		OtherFields: map[string]interface{}{
-			"spec": map[string]interface{}{
-				"acme": map[string]interface{}{
-					"email":  args.LetsEncryptEmail,
-					"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
-					"privateKeySecretRef": map[string]interface{}{
-						"name": pulumi.String("letsencrypt"),
+		certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
+			OidcProviderArn:    oidcProvider.Arn,
+			OidcProviderURL:    oidcProvider.Url,
+			NamespaceName:      pulumi.String("kube-system"),
+			ServiceAccountName: pulumi.String("cert-manager"),
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error creating iam service account role for cert manager: %w", err)
+		}
+
+		certManagerPolicyDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+			Statements: iam.GetPolicyDocumentStatementArray{
+				iam.GetPolicyDocumentStatementArgs{
+					Sid: pulumi.String("AllowAccessToRoute53Changess"),
+					Actions: pulumi.StringArray{
+						pulumi.String("route53:GetChange"),
 					},
-					"solvers": []interface{}{
-						map[string]interface{}{
-							"dns01": map[string]interface{}{
-								"route53": map[string]interface{}{
-									"region": region.Name,
+					Effect: pulumi.String("Allow"),
+					Resources: pulumi.StringArray{
+						pulumi.String("arn:aws:route53:::change/*"),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid: pulumi.String("AllowAccessToRoute53HostedZones"),
+					Actions: pulumi.StringArray{
+						pulumi.String("route53:ChangeResourceRecordSets"),
+						pulumi.String("route53:ListResourceRecordSets"),
+					},
+					Effect: pulumi.String("Allow"),
+					Resources: pulumi.StringArray{
+						pulumi.String("arn:aws:route53:::hostedzone/*"),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid: pulumi.String("AllowListingHostedZones"),
+					Actions: pulumi.StringArray{
+						pulumi.String("route53:ListHostedZonesByName"),
+					},
+					Effect: pulumi.String("Allow"),
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
+				},
+			},
+		})
+
+		certManagerPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cert-manager-policy", name), &iam.PolicyArgs{
+			Description: pulumi.String("Policy for cert-manager to modify route53 "),
+			Policy:      certManagerPolicyDocument.Json(),
+		}, pulumi.Parent(role))
+		if err != nil {
+			return nil, fmt.Errorf("error creating cert manager DNS policy: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-cert-manager-policy-attachment", name), &iam.RolePolicyAttachmentArgs{
+			Role:      certManagerRole.Role.Name,
+			PolicyArn: certManagerPolicy.Arn,
+		}, pulumi.Parent(certManagerPolicy))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching cluster policy for cert manager: %w", err)
+		}
+
+		certManagerServiceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-cert-manager-service-account", name), &corev1.ServiceAccountArgs{
+			Metadata: &metav1.ObjectMetaArgs{
+				Name:      pulumi.String("cert-manager"),
+				Namespace: pulumi.String("kube-system"),
+				Annotations: pulumi.StringMap{
+					"eks.amazonaws.com/role-arn": certManagerRole.Role.Arn,
+				},
+			},
+		}, pulumi.Parent(certManagerRole), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating cert manager service account: %w", err)
+		}
+
+		certManagerCrds, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-cert-manager-crds", name), &yaml.ConfigFileArgs{
+			File: "https://github.com/cert-manager/cert-manager/releases/download/v1.12.2/cert-manager.crds.yaml",
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating cert manager crds: %w", err)
+		}
+
+		certManager, err := helm.NewRelease(ctx, fmt.Sprintf("%s-cert-manager", name), &helm.ReleaseArgs{
+			Chart:           pulumi.String("cert-manager"),
+			Namespace:       pulumi.String("kube-system"),
+			DisableCRDHooks: pulumi.Bool(true),
+			SkipAwait:       pulumi.Bool(true), // FIXME: this is a very unreliable chart
+			Timeout:         pulumi.Int(600),
+			RepositoryOpts: &helm.RepositoryOptsArgs{
+				Repo: pulumi.String("https://charts.jetstack.io"),
+			},
+			Values: pulumi.Map{
+				"serviceAccount": pulumi.Map{
+					"create": pulumi.Bool(false),
+					"name":   certManagerServiceAccount.Metadata.Name(),
+				},
+				"securityContext": pulumi.Map{
+					"fsGroup": pulumi.Int(1001),
+				},
+				"tolerations": pulumi.MapArray{
+					pulumi.Map{
+						"key":      pulumi.String("node.lbrlabs.com/system"),
+						"operator": pulumi.String("Equal"),
+						"value":    pulumi.String("true"),
+						"effect":   pulumi.String("NoSchedule"),
+					},
+				},
+				"startupapicheck": pulumi.Map{
+					"tolerations": pulumi.MapArray{
+						pulumi.Map{
+							"key":      pulumi.String("node.lbrlabs.com/system"),
+							"operator": pulumi.String("Equal"),
+							"value":    pulumi.String("true"),
+							"effect":   pulumi.String("NoSchedule"),
+						},
+					},
+				},
+				"webhook": pulumi.Map{
+					"tolerations": pulumi.MapArray{
+						pulumi.Map{
+							"key":      pulumi.String("node.lbrlabs.com/system"),
+							"operator": pulumi.String("Equal"),
+							"value":    pulumi.String("true"),
+							"effect":   pulumi.String("NoSchedule"),
+						},
+					},
+				},
+				"cainjector": pulumi.Map{
+					"tolerations": pulumi.MapArray{
+						pulumi.Map{
+							"key":      pulumi.String("node.lbrlabs.com/system"),
+							"operator": pulumi.String("Equal"),
+							"value":    pulumi.String("true"),
+							"effect":   pulumi.String("NoSchedule"),
+						},
+					},
+				},
+			},
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, certManagerCrds}))
+		if err != nil {
+			return nil, fmt.Errorf("error installing cert manager helm release: %w", err)
+		}
+
+		_ = certManager
+
+		clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
+			ApiVersion: pulumi.String("cert-manager.io/v1"),
+			Kind:       pulumi.String("ClusterIssuer"),
+			Metadata: &metav1.ObjectMetaArgs{
+				Name: pulumi.String("letsencrypt-prod"),
+			},
+			OtherFields: map[string]interface{}{
+				"spec": map[string]interface{}{
+					"acme": map[string]interface{}{
+						"email":  args.LetsEncryptEmail,
+						"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
+						"privateKeySecretRef": map[string]interface{}{
+							"name": pulumi.String("letsencrypt"),
+						},
+						"solvers": []interface{}{
+							map[string]interface{}{
+								"dns01": map[string]interface{}{
+									"route53": map[string]interface{}{
+										"region": region.Name,
+									},
 								},
 							},
 						},
 					},
 				},
 			},
-		},
-	}, pulumi.DeletedWith(controlPlane), pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
-	if err != nil {
-		return nil, fmt.Errorf("error installing cluster issuer: %w", err)
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
+		if err != nil {
+			return nil, fmt.Errorf("error installing cluster issuer: %w", err)
+		}
+
+		_ = clusterIssuer
 	}
 
-	_ = clusterIssuer
+	if args.EnableCloudWatchAgent {
 
+		cloudwatchRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cw-obs-role", name), &IamServiceAccountRoleArgs{
+			OidcProviderArn:    oidcProvider.Arn,
+			OidcProviderURL:    oidcProvider.Url,
+			NamespaceName:      pulumi.String("amazon-cloudwatch"),
+			ServiceAccountName: pulumi.String("cloudwatch-agent"),
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-obs-policy", name), &iam.RolePolicyAttachmentArgs{
+			Role:      cloudwatchRole.Role.Name,
+			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"),
+		}, pulumi.Parent(cloudwatchRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-xray-policy", name), &iam.RolePolicyAttachmentArgs{
+			Role:      cloudwatchRole.Role.Name,
+			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"),
+		}, pulumi.Parent(cloudwatchRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
+		}
+
+		ebsPolicyJSON, err := json.Marshal(map[string]interface{}{
+			"Version": "2012-10-17",
+			"Statement": []map[string]interface{}{
+				{
+					"Action": []string{
+						"ec2:DescribeVolumes",
+					},
+					"Effect":   "Allow",
+					"Resource": "*",
+				},
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling EBS policy json: %w", err)
+		}
+
+		ebsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.PolicyArgs{
+			Description: pulumi.String("Policy for EBS metrics"),
+			Policy:      pulumi.String(ebsPolicyJSON),
+		}, pulumi.Parent(cloudwatchRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error creating EBS policy: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.RolePolicyAttachmentArgs{
+			Role:      cloudwatchRole.Role.Name,
+			PolicyArn: ebsPolicy.Arn,
+		}, pulumi.Parent(ebsPolicy))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching EBS policy to role: %w", err)
+		}
+
+		_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-cloudwatch-observability", name), &eks.AddonArgs{
+			AddonName:             pulumi.String("amazon-cloudwatch-observability"),
+			ClusterName:           controlPlane.Name,
+			ServiceAccountRoleArn: cloudwatchRole.Role.Arn,
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error installing Cloudwatch observability addon: %w", err)
+		}
+
+	}
+
+	if args.EnableOtel {
+
+		if !args.EnableCertManager {
+			err := ctx.Log.Error("Cert Manager must be installed for telemetry to execute successfully.", &pulumi.LogArgs{Resource: component})
+			if err != nil {
+				return nil, fmt.Errorf("error logging: %w", err)
+			}
+		}
+
+		otelConfig, err := json.Marshal(map[string]interface{}{
+			"tolerations": []map[string]interface{}{
+				{
+					"key":      "node.lbrlabs.com/system",
+					"operator": "Equal",
+					"value":    "true",
+					"effect":   "NoSchedule",
+				},
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling Otel config: %w", err)
+		}
+
+		_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-otel", name), &eks.AddonArgs{
+			AddonName:           pulumi.String("adot"),
+			ClusterName:         controlPlane.Name,
+			ConfigurationValues: pulumi.String(otelConfig),
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error installing otel addon: %w", err)
+		}
+	}
+
+	component.ClusterName = controlPlane.Name
 	component.ControlPlane = controlPlane
 	component.OidcProvider = oidcProvider
 	component.SystemNodes = systemNodes
 	component.KubeConfig = kc
-	component.ClusterIssue = clusterIssuer
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
+		"clusterName":  controlPlane.Name,
 		"controlPlane": controlPlane,
 		"oidcProvider": oidcProvider,
 		"kubeconfig":   kc,

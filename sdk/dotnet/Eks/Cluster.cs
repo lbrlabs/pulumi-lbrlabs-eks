@@ -14,6 +14,12 @@ namespace Lbrlabs.PulumiPackage.Eks
     public partial class Cluster : global::Pulumi.ComponentResource
     {
         /// <summary>
+        /// The cluster name
+        /// </summary>
+        [Output("clusterName")]
+        public Output<string> ClusterName { get; private set; } = null!;
+
+        /// <summary>
         /// The Cluster control plane
         /// </summary>
         [Output("controlPlane")]
@@ -75,6 +81,30 @@ namespace Lbrlabs.PulumiPackage.Eks
         }
 
         /// <summary>
+        /// Whether to enable cert-manager with route 53 integration.
+        /// </summary>
+        [Input("enableCertManager")]
+        public bool? EnableCertManager { get; set; }
+
+        /// <summary>
+        /// Whether to enable external dns with route 53 integration.
+        /// </summary>
+        [Input("enableExternalDns")]
+        public bool? EnableExternalDns { get; set; }
+
+        /// <summary>
+        /// Whether to enable the OTEL Distro for EKS.
+        /// </summary>
+        [Input("enableOtel")]
+        public bool? EnableOtel { get; set; }
+
+        /// <summary>
+        /// Whether to enable cloudwatch container insights for EKS.
+        /// </summary>
+        [Input("enableenableCloudWatchAgent")]
+        public bool? EnableenableCloudWatchAgent { get; set; }
+
+        /// <summary>
         /// The email address to use to issue certificates from Lets Encrypt.
         /// </summary>
         [Input("letsEncryptEmail", required: true)]
@@ -116,6 +146,10 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public ClusterArgs()
         {
+            EnableCertManager = true;
+            EnableExternalDns = true;
+            EnableOtel = false;
+            EnableenableCloudWatchAgent = false;
         }
         public static new ClusterArgs Empty => new ClusterArgs();
     }

@@ -22,6 +22,10 @@ export class Cluster extends pulumi.ComponentResource {
     }
 
     /**
+     * The cluster name
+     */
+    public /*out*/ readonly clusterName!: pulumi.Output<string>;
+    /**
      * The Cluster control plane
      */
     public /*out*/ readonly controlPlane!: pulumi.Output<pulumiAws.eks.Cluster>;
@@ -59,17 +63,23 @@ export class Cluster extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
+            resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
+            resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
+            resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
+            resourceInputs["enableenableCloudWatchAgent"] = (args ? args.enableenableCloudWatchAgent : undefined) ?? false;
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
             resourceInputs["systemNodeMaxCount"] = args ? args.systemNodeMaxCount : undefined;
             resourceInputs["systemNodeMinCount"] = args ? args.systemNodeMinCount : undefined;
             resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
+            resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
         } else {
+            resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
@@ -85,6 +95,22 @@ export class Cluster extends pulumi.ComponentResource {
  */
 export interface ClusterArgs {
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Whether to enable cert-manager with route 53 integration.
+     */
+    enableCertManager?: boolean;
+    /**
+     * Whether to enable external dns with route 53 integration.
+     */
+    enableExternalDns?: boolean;
+    /**
+     * Whether to enable the OTEL Distro for EKS.
+     */
+    enableOtel?: boolean;
+    /**
+     * Whether to enable cloudwatch container insights for EKS.
+     */
+    enableenableCloudWatchAgent?: boolean;
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
