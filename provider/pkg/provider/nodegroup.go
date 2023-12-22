@@ -93,6 +93,14 @@ func NewNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
 	}
 
+	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ssm-policy", name), &iam.RolePolicyAttachmentArgs{
+		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"),
+		Role:      nodeRole.Name,
+	}, pulumi.Parent(nodeRole))
+	if err != nil {
+		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
+	}
+
 	var instanceTypes pulumi.StringArrayInput
 
 	if args.InstanceTypes == nil {
@@ -104,6 +112,18 @@ func NewNodeGroup(ctx *pulumi.Context,
 		}
 	} else {
 		instanceTypes = *args.InstanceTypes
+	}
+
+	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{
+		RoleArn:  nodeRole.Arn,
+		Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+		Groups: pulumi.StringArray{
+			pulumi.String("system:bootstrappers"),
+			pulumi.String("system:nodes"),
+		},
+	}, pulumi.Parent(nodeRole))
+	if err != nil {
+		return nil, fmt.Errorf("error creating aws-auth role mapping: %w", err)
 	}
 
 	nodeGroup, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-nodes", name), &eks.NodeGroupArgs{

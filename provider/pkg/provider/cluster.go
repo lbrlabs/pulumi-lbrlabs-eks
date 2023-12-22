@@ -192,6 +192,19 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)
 	}
 
+	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)
+	if err != nil {
+		return nil, fmt.Errorf("error generating kubeconfig: %w", err)
+	}
+
+	provider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-provider", name), &kubernetes.ProviderArgs{
+		Kubeconfig:               kc,
+		SuppressHelmHookWarnings: pulumi.Bool(true),
+	}, pulumi.Parent(controlPlane))
+	if err != nil {
+		return nil, fmt.Errorf("error creating kubernetes provider: %w", err)
+	}
+
 	cert := tls.GetCertificateOutput(ctx, tls.GetCertificateOutputArgs{
 		Url: controlPlane.Identities.Index(pulumi.Int(0)).Oidcs().Index(pulumi.Int(0)).Issuer().Elem(),
 	}, pulumi.Parent(component))
@@ -265,7 +278,7 @@ func NewCluster(ctx *pulumi.Context,
 		},
 	}
 
-	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system-nodes", name), &NodeGroupArgs{
+	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system", name), &NodeGroupArgs{
 		ClusterName:   controlPlane.Name,
 		SubnetIds:     args.SystemNodeSubnetIds,
 		InstanceTypes: &instanceTypes,
@@ -277,7 +290,9 @@ func NewCluster(ctx *pulumi.Context,
 			DesiredSize: systemNodeDesiredCount,
 		},
 		Tags: &tags,
-	}, pulumi.Parent(controlPlane))
+	}, pulumi.Parent(controlPlane), pulumi.ProviderMap(map[string]pulumi.ProviderResource{
+		"kubernetes": provider,
+	}))
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup: %w", err)
 	}
@@ -382,19 +397,6 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
 	}
 
-	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)
-	if err != nil {
-		return nil, fmt.Errorf("error generating kubeconfig: %w", err)
-	}
-
-	provider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-provider", name), &kubernetes.ProviderArgs{
-		Kubeconfig:               kc,
-		SuppressHelmHookWarnings: pulumi.Bool(true),
-	}, pulumi.Parent(controlPlane))
-	if err != nil {
-		return nil, fmt.Errorf("error creating kubernetes provider: %w", err)
-	}
-
 	serverSideProvider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-ssa-provider", name), &kubernetes.ProviderArgs{
 		Kubeconfig:            kc,
 		EnableServerSideApply: pulumi.Bool(true),
@@ -479,18 +481,6 @@ func NewCluster(ctx *pulumi.Context,
 	}, pulumi.DeletedWith(controlPlane), pulumi.Provider(provider), pulumi.Parent(authCrds), pulumi.DependsOn([]pulumi.Resource{systemNodes, authCrds}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing aws-auth operator: %w", err)
-	}
-
-	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{
-		RoleArn:  systemNodes.Role.Arn,
-		Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
-		Groups: pulumi.StringArray{
-			pulumi.String("system:bootstrappers"),
-			pulumi.String("system:nodes"),
-		},
-	}, pulumi.Parent(controlPlane), pulumi.Provider(provider))
-	if err != nil {
-		return nil, fmt.Errorf("error creating aws-auth role mapping: %w", err)
 	}
 
 	// FIXME: this is a workaround for EKS creating a broken default storage class
