@@ -20,7 +20,7 @@ type AttachedFargateProfile struct {
 	pulumi.ResourceState
 
 	FargateProfile *eks.FargateProfile `pulumi:"profile"`
-	Role           *iam.Role           `pulumi:"nodeRole"`
+	Role           *iam.Role           `pulumi:"role"`
 }
 
 // NewFargateProfile creates a new fargate profile component resource.
@@ -84,6 +84,15 @@ func NewFargateProfile(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching fargate profile ecr policy: %w", err)
 	}
 
+	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-fargateprofile-rolemapping", name), &RoleMappingArgs{
+		RoleArn:  profileRole.Arn,
+		Username: pulumi.String("system:node:{{SessionName}}"),
+		Groups:   pulumi.StringArray{pulumi.String("system:bootstrappers"), pulumi.String("system:nodes"), pulumi.String("system:node-proxier")},
+	}, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error creating fargate profile rolemapping: %w", err)
+	}
+
 	fargateProfile, err := eks.NewFargateProfile(ctx, fmt.Sprintf("%s-fargateprofile", name), &eks.FargateProfileArgs{
 		ClusterName:         args.ClusterName,
 		PodExecutionRoleArn: profileRole.Arn,
@@ -100,7 +109,7 @@ func NewFargateProfile(ctx *pulumi.Context,
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
 		"fargateProfile": fargateProfile,
-		"profileRole":    profileRole,
+		"role":           profileRole,
 	}); err != nil {
 		return nil, err
 	}
