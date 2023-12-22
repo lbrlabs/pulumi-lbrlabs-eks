@@ -87,6 +87,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableCertManager { get; set; }
 
         /// <summary>
+        /// Whether to enable cloudwatch container insights for EKS.
+        /// </summary>
+        [Input("enableCloudWatchAgent")]
+        public bool? EnableCloudWatchAgent { get; set; }
+
+        /// <summary>
         /// Whether to enable external dns with route 53 integration.
         /// </summary>
         [Input("enableExternalDns")]
@@ -97,12 +103,6 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// </summary>
         [Input("enableOtel")]
         public bool? EnableOtel { get; set; }
-
-        /// <summary>
-        /// Whether to enable cloudwatch container insights for EKS.
-        /// </summary>
-        [Input("enableenableCloudWatchAgent")]
-        public bool? EnableenableCloudWatchAgent { get; set; }
 
         /// <summary>
         /// The email address to use to issue certificates from Lets Encrypt.
@@ -147,9 +147,9 @@ namespace Lbrlabs.PulumiPackage.Eks
         public ClusterArgs()
         {
             EnableCertManager = true;
+            EnableCloudWatchAgent = false;
             EnableExternalDns = true;
             EnableOtel = false;
-            EnableenableCloudWatchAgent = false;
         }
         public static new ClusterArgs Empty => new ClusterArgs();
     }

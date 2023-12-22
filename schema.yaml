@@ -47,7 +47,7 @@ resources:
         description: Whether to enable the OTEL Distro for EKS.
         default: false
         plain: true
-      enableenableCloudWatchAgent:
+      enableCloudWatchAgent:
         type: boolean
         description: Whether to enable cloudwatch container insights for EKS.
         default: false

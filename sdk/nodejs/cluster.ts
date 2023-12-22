@@ -64,9 +64,9 @@ export class Cluster extends pulumi.ComponentResource {
             }
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
+            resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
-            resourceInputs["enableenableCloudWatchAgent"] = (args ? args.enableenableCloudWatchAgent : undefined) ?? false;
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
@@ -100,6 +100,10 @@ export interface ClusterArgs {
      */
     enableCertManager?: boolean;
     /**
+     * Whether to enable cloudwatch container insights for EKS.
+     */
+    enableCloudWatchAgent?: boolean;
+    /**
      * Whether to enable external dns with route 53 integration.
      */
     enableExternalDns?: boolean;
@@ -107,10 +111,6 @@ export interface ClusterArgs {
      * Whether to enable the OTEL Distro for EKS.
      */
     enableOtel?: boolean;
-    /**
-     * Whether to enable cloudwatch container insights for EKS.
-     */
-    enableenableCloudWatchAgent?: boolean;
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
