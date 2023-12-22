@@ -107,8 +107,8 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// <summary>
         /// The email address to use to issue certificates from Lets Encrypt.
         /// </summary>
-        [Input("letsEncryptEmail", required: true)]
-        public Input<string> LetsEncryptEmail { get; set; } = null!;
+        [Input("letsEncryptEmail")]
+        public Input<string>? LetsEncryptEmail { get; set; }
 
         /// <summary>
         /// The initial number of nodes in the system autoscaling group.

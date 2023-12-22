@@ -56,9 +56,6 @@ export class Cluster extends pulumi.ComponentResource {
             if ((!args || args.clusterSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'clusterSubnetIds'");
             }
-            if ((!args || args.letsEncryptEmail === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'letsEncryptEmail'");
-            }
             if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
@@ -114,7 +111,7 @@ export interface ClusterArgs {
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
-    letsEncryptEmail: pulumi.Input<string>;
+    letsEncryptEmail?: pulumi.Input<string>;
     /**
      * The initial number of nodes in the system autoscaling group.
      */

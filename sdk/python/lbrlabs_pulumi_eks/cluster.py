@@ -16,29 +16,28 @@ __all__ = ['ClusterArgs', 'Cluster']
 class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 lets_encrypt_email: pulumi.Input[str],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None):
         """
         The set of arguments for constructing a Cluster resource.
-        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
-        pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
         if enable_cert_manager is None:
             enable_cert_manager = True
@@ -56,6 +55,8 @@ class ClusterArgs:
             enable_otel = False
         if enable_otel is not None:
             pulumi.set(__self__, "enable_otel", enable_otel)
+        if lets_encrypt_email is not None:
+            pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         if system_node_desired_count is not None:
             pulumi.set(__self__, "system_node_desired_count", system_node_desired_count)
         if system_node_instance_types is not None:
@@ -73,18 +74,6 @@ class ClusterArgs:
     @cluster_subnet_ids.setter
     def cluster_subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "cluster_subnet_ids", value)
-
-    @property
-    @pulumi.getter(name="letsEncryptEmail")
-    def lets_encrypt_email(self) -> pulumi.Input[str]:
-        """
-        The email address to use to issue certificates from Lets Encrypt.
-        """
-        return pulumi.get(self, "lets_encrypt_email")
-
-    @lets_encrypt_email.setter
-    def lets_encrypt_email(self, value: pulumi.Input[str]):
-        pulumi.set(self, "lets_encrypt_email", value)
 
     @property
     @pulumi.getter(name="systemNodeSubnetIds")
@@ -142,6 +131,18 @@ class ClusterArgs:
     @enable_otel.setter
     def enable_otel(self, value: Optional[bool]):
         pulumi.set(self, "enable_otel", value)
+
+    @property
+    @pulumi.getter(name="letsEncryptEmail")
+    def lets_encrypt_email(self) -> Optional[pulumi.Input[str]]:
+        """
+        The email address to use to issue certificates from Lets Encrypt.
+        """
+        return pulumi.get(self, "lets_encrypt_email")
+
+    @lets_encrypt_email.setter
+    def lets_encrypt_email(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "lets_encrypt_email", value)
 
     @property
     @pulumi.getter(name="systemNodeDesiredCount")
@@ -279,8 +280,6 @@ class Cluster(pulumi.ComponentResource):
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
-            if lets_encrypt_email is None and not opts.urn:
-                raise TypeError("Missing required property 'lets_encrypt_email'")
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types

@@ -40,9 +40,6 @@ func NewCluster(ctx *pulumi.Context,
 	if args.ClusterSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'ClusterSubnetIds'")
 	}
-	if args.LetsEncryptEmail == nil {
-		return nil, errors.New("invalid value for required argument 'LetsEncryptEmail'")
-	}
 	if args.SystemNodeSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SystemNodeSubnetIds'")
 	}
@@ -82,7 +79,7 @@ type clusterArgs struct {
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
 	// The email address to use to issue certificates from Lets Encrypt.
-	LetsEncryptEmail string `pulumi:"letsEncryptEmail"`
+	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  *float64 `pulumi:"systemNodeDesiredCount"`
 	SystemNodeInstanceTypes []string `pulumi:"systemNodeInstanceTypes"`
@@ -105,7 +102,7 @@ type ClusterArgs struct {
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
 	// The email address to use to issue certificates from Lets Encrypt.
-	LetsEncryptEmail pulumi.StringInput
+	LetsEncryptEmail pulumi.StringPtrInput
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  pulumi.Float64PtrInput
 	SystemNodeInstanceTypes pulumi.StringArrayInput

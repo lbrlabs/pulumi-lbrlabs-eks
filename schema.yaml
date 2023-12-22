@@ -65,7 +65,6 @@ resources:
     requiredInputs:
       - clusterSubnetIds
       - systemNodeSubnetIds
-      - letsEncryptEmail
     properties:
       clusterName:
         "type": string

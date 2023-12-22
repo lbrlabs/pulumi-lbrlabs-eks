@@ -35,7 +35,7 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent   bool                     `pulumi:"enableCloudWatchAgent"`
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
-	LetsEncryptEmail        pulumi.StringInput       `pulumi:"letsEncryptEmail"`
+	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
 }
 
 // The Cluster component resource.
@@ -713,6 +713,10 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	if args.EnableCertManager {
+
+		if args.LetsEncryptEmail == nil {
+			return nil, fmt.Errorf("lets encrypt email must be set if cert manager is enabled")
+		}
 
 		certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
 			OidcProviderArn:    oidcProvider.Arn,
