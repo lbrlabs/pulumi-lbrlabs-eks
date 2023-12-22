@@ -57,6 +57,8 @@ type iamServiceAccountRoleArgs struct {
 	OidcProviderUrl string `pulumi:"oidcProviderUrl"`
 	// The name of the service account to bind to the role
 	ServiceAccountName string `pulumi:"serviceAccountName"`
+	// Key-value map of tags to apply to the service account.
+	Tags map[string]string `pulumi:"tags"`
 }
 
 // The set of arguments for constructing a IamServiceAccountRole resource.
@@ -69,6 +71,8 @@ type IamServiceAccountRoleArgs struct {
 	OidcProviderUrl pulumi.StringInput
 	// The name of the service account to bind to the role
 	ServiceAccountName pulumi.StringInput
+	// Key-value map of tags to apply to the service account.
+	Tags pulumi.StringMapInput
 }
 
 func (IamServiceAccountRoleArgs) ElementType() reflect.Type {

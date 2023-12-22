@@ -74,6 +74,18 @@ namespace Lbrlabs.PulumiPackage.Eks
             set => _subnetIds = value;
         }
 
+        [Input("tags")]
+        private InputMap<string>? _tags;
+
+        /// <summary>
+        /// Key-value map for tags to apply to Fargate Profile.
+        /// </summary>
+        public InputMap<string> Tags
+        {
+            get => _tags ?? (_tags = new InputMap<string>());
+            set => _tags = value;
+        }
+
         public AttachedFargateProfileArgs()
         {
         }

@@ -13,6 +13,7 @@ type AttachedFargateProfileArgs struct {
 	SubnetIds   pulumi.StringArrayInput              `pulumi:"subnetIds"`
 	ClusterName pulumi.StringInput                   `pulumi:"clusterName"`
 	Selectors   eks.FargateProfileSelectorArrayInput `pulumi:"selectors"`
+	Tags        *pulumi.StringMapInput               `pulumi:"tags"`
 }
 
 type AttachedFargateProfile struct {
@@ -35,14 +36,21 @@ func NewFargateProfile(ctx *pulumi.Context,
 		return nil, err
 	}
 
+	var tags pulumi.StringMapInput
+
+	if args.Tags != nil {
+		tags = *args.Tags
+	} else {
+		tags = pulumi.StringMap{}
+	}
+
 	fargateAssumeRolePolicyJSON, err := json.Marshal(map[string]interface{}{
 		"Statement": []map[string]interface{}{
 			{
 				"Action": "sts:AssumeRole",
 				"Effect": "Allow",
 				"Principal": map[string]interface{}{
-					"Service":     "ec2.amazonaws.com",
-					"Identifiers": []string{"eks-fargate-pods.amazonaws.com"},
+					"Service": "eks-fargate-pods.amazonaws.com",
 				},
 			},
 		},
@@ -54,6 +62,7 @@ func NewFargateProfile(ctx *pulumi.Context,
 
 	profileRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-fargateprofile-role", name), &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(fargateAssumeRolePolicyJSON),
+		Tags:             tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating fargate profile role: %w", err)
@@ -80,6 +89,7 @@ func NewFargateProfile(ctx *pulumi.Context,
 		PodExecutionRoleArn: profileRole.Arn,
 		SubnetIds:           args.SubnetIds,
 		Selectors:           args.Selectors,
+		Tags:                tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating fargate profile: %w", err)

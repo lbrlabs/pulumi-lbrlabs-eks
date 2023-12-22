@@ -53,6 +53,8 @@ type attachedFargateProfileArgs struct {
 	Selectors   []eks.FargateProfileSelector `pulumi:"selectors"`
 	// The subnet IDs to use for the fargate profile.
 	SubnetIds []string `pulumi:"subnetIds"`
+	// Key-value map for tags to apply to Fargate Profile.
+	Tags map[string]string `pulumi:"tags"`
 }
 
 // The set of arguments for constructing a AttachedFargateProfile resource.
@@ -62,6 +64,8 @@ type AttachedFargateProfileArgs struct {
 	Selectors   pulumix.Input[[]*eks.FargateProfileSelectorArgs]
 	// The subnet IDs to use for the fargate profile.
 	SubnetIds pulumix.Input[[]string]
+	// Key-value map for tags to apply to Fargate Profile.
+	Tags pulumix.Input[map[string]string]
 }
 
 func (AttachedFargateProfileArgs) ElementType() reflect.Type {

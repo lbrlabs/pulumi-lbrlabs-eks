@@ -88,6 +88,8 @@ type clusterArgs struct {
 	// The minimum number of nodes in the system autoscaling group.
 	SystemNodeMinCount  *float64 `pulumi:"systemNodeMinCount"`
 	SystemNodeSubnetIds []string `pulumi:"systemNodeSubnetIds"`
+	// Key-value map of tags to apply to the cluster.
+	Tags map[string]string `pulumi:"tags"`
 }
 
 // The set of arguments for constructing a Cluster resource.
@@ -111,6 +113,8 @@ type ClusterArgs struct {
 	// The minimum number of nodes in the system autoscaling group.
 	SystemNodeMinCount  pulumix.Input[*float64]
 	SystemNodeSubnetIds pulumix.Input[[]string]
+	// Key-value map of tags to apply to the cluster.
+	Tags pulumix.Input[map[string]string]
 }
 
 func (ClusterArgs) ElementType() reflect.Type {

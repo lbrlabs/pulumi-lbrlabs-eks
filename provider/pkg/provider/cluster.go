@@ -36,6 +36,7 @@ type ClusterArgs struct {
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
 	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
+	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
 }
 
 // The Cluster component resource.
@@ -55,6 +56,14 @@ func NewCluster(ctx *pulumi.Context,
 	name string, args *ClusterArgs, opts ...pulumi.ResourceOption) (*Cluster, error) {
 	if args == nil {
 		args = &ClusterArgs{}
+	}
+
+	var tags pulumi.StringMapInput
+
+	if args.Tags != nil {
+		tags = *args.Tags
+	} else {
+		tags = pulumi.StringMap{}
 	}
 
 	component := &Cluster{}
@@ -89,6 +98,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	role, err := iam.NewRole(ctx, fmt.Sprintf("%s-cluster-role", name), &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(clusterRoleJSON),
+		Tags:             tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating cluster role: %w", err)
@@ -114,6 +124,7 @@ func NewCluster(ctx *pulumi.Context,
 	kmsKey, err := kms.NewKey(ctx, fmt.Sprintf("%s-cluster-kms-key", name), &kms.KeyArgs{
 		EnableKeyRotation: pulumi.Bool(true),
 		Description:       pulumi.String("KMS key for EKS cluster secrets"),
+		Tags:              tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating cluster kms key: %w", err)
@@ -140,6 +151,7 @@ func NewCluster(ctx *pulumi.Context,
 	clusterKmsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cluster-kms-policy", name), &iam.PolicyArgs{
 		Description: pulumi.String("KMS key policy for EKS cluster secrets"),
 		Policy:      keyPolicyDocument.Json(),
+		Tags:        tags,
 	}, pulumi.Parent(role))
 	if err != nil {
 		return nil, fmt.Errorf("error creating KMS key policy: %w", err)
@@ -174,6 +186,7 @@ func NewCluster(ctx *pulumi.Context,
 			pulumi.String("controllerManager"),
 			pulumi.String("scheduler"),
 		},
+		Tags: tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)
@@ -191,6 +204,7 @@ func NewCluster(ctx *pulumi.Context,
 		ThumbprintLists: pulumi.StringArray{
 			cert.Certificates().Index(pulumi.Int(0)).Sha1Fingerprint(),
 		},
+		Tags: tags,
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating OIDC provider: %w", err)
@@ -250,6 +264,7 @@ func NewCluster(ctx *pulumi.Context,
 			MinSize:     systemNodeMinCount,
 			DesiredSize: systemNodeDesiredCount,
 		},
+		Tags: &tags,
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating system nodegroup: %w", err)
@@ -275,6 +290,7 @@ func NewCluster(ctx *pulumi.Context,
 		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
 		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
 		ConfigurationValues:      pulumi.String(coreDNSConfig),
+		Tags:                     tags,
 	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
@@ -302,6 +318,7 @@ func NewCluster(ctx *pulumi.Context,
 		AddonName:             pulumi.String("vpc-cni"),
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
+		Tags:                  tags,
 	}, pulumi.Parent(vpcCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
@@ -312,6 +329,7 @@ func NewCluster(ctx *pulumi.Context,
 		OidcProviderURL:    oidcProvider.Url,
 		NamespaceName:      pulumi.String("kube-system"),
 		ServiceAccountName: pulumi.String("ebs-csi-controller-sa"),
+		Tags:               &tags,
 	}, pulumi.Parent(controlPlane))
 	if err != nil {
 		return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
@@ -346,6 +364,7 @@ func NewCluster(ctx *pulumi.Context,
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: ebsCsiRole.Role.Arn,
 		ConfigurationValues:   pulumi.String(ebsCsiConfig),
+		Tags:                  tags,
 	}, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
@@ -623,6 +642,7 @@ func NewCluster(ctx *pulumi.Context,
 			OidcProviderURL:    oidcProvider.Url,
 			NamespaceName:      pulumi.String("kube-system"),
 			ServiceAccountName: pulumi.String("external-dns"),
+			Tags:               &tags,
 		}, pulumi.Parent(controlPlane))
 		if err != nil {
 			return nil, fmt.Errorf("error creating iam service account role for external dns: %w", err)
@@ -657,6 +677,7 @@ func NewCluster(ctx *pulumi.Context,
 		externalDNSPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-external-dns-policy", name), &iam.PolicyArgs{
 			Description: pulumi.String("Policy for external-dns to modify route53 "),
 			Policy:      externalDNSPolicyDocument.Json(),
+			Tags:        tags,
 		}, pulumi.Parent(role))
 		if err != nil {
 			return nil, fmt.Errorf("error creating external DNS policy: %w", err)
@@ -723,6 +744,7 @@ func NewCluster(ctx *pulumi.Context,
 			OidcProviderURL:    oidcProvider.Url,
 			NamespaceName:      pulumi.String("kube-system"),
 			ServiceAccountName: pulumi.String("cert-manager"),
+			Tags:               &tags,
 		}, pulumi.Parent(controlPlane))
 		if err != nil {
 			return nil, fmt.Errorf("error creating iam service account role for cert manager: %w", err)
@@ -767,6 +789,7 @@ func NewCluster(ctx *pulumi.Context,
 		certManagerPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cert-manager-policy", name), &iam.PolicyArgs{
 			Description: pulumi.String("Policy for cert-manager to modify route53 "),
 			Policy:      certManagerPolicyDocument.Json(),
+			Tags:        tags,
 		}, pulumi.Parent(role))
 		if err != nil {
 			return nil, fmt.Errorf("error creating cert manager DNS policy: %w", err)
@@ -904,6 +927,7 @@ func NewCluster(ctx *pulumi.Context,
 			OidcProviderURL:    oidcProvider.Url,
 			NamespaceName:      pulumi.String("amazon-cloudwatch"),
 			ServiceAccountName: pulumi.String("cloudwatch-agent"),
+			Tags:               &tags,
 		}, pulumi.Parent(controlPlane))
 		if err != nil {
 			return nil, fmt.Errorf("error creating iam service account role for EBS CSI: %w", err)
@@ -944,6 +968,7 @@ func NewCluster(ctx *pulumi.Context,
 		ebsPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-cw-ebs-policy", name), &iam.PolicyArgs{
 			Description: pulumi.String("Policy for EBS metrics"),
 			Policy:      pulumi.String(ebsPolicyJSON),
+			Tags:        tags,
 		}, pulumi.Parent(cloudwatchRole.Role))
 		if err != nil {
 			return nil, fmt.Errorf("error creating EBS policy: %w", err)
@@ -961,6 +986,7 @@ func NewCluster(ctx *pulumi.Context,
 			AddonName:             pulumi.String("amazon-cloudwatch-observability"),
 			ClusterName:           controlPlane.Name,
 			ServiceAccountRoleArn: cloudwatchRole.Role.Arn,
+			Tags:                  tags,
 		}, pulumi.Parent(controlPlane))
 		if err != nil {
 			return nil, fmt.Errorf("error installing Cloudwatch observability addon: %w", err)
@@ -995,7 +1021,9 @@ func NewCluster(ctx *pulumi.Context,
 			AddonName:           pulumi.String("adot"),
 			ClusterName:         controlPlane.Name,
 			ConfigurationValues: pulumi.String(otelConfig),
+			Tags:                tags,
 		}, pulumi.Parent(controlPlane))
+
 		if err != nil {
 			return nil, fmt.Errorf("error installing otel addon: %w", err)
 		}

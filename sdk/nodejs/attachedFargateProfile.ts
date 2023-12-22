@@ -47,6 +47,7 @@ export class AttachedFargateProfile extends pulumi.ComponentResource {
             resourceInputs["clusterName"] = args ? args.clusterName : undefined;
             resourceInputs["selectors"] = args ? args.selectors : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
+            resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["profile"] = undefined /*out*/;
             resourceInputs["role"] = undefined /*out*/;
         } else {
@@ -71,4 +72,8 @@ export interface AttachedFargateProfileArgs {
      * The subnet IDs to use for the fargate profile.
      */
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Key-value map for tags to apply to Fargate Profile.
+     */
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

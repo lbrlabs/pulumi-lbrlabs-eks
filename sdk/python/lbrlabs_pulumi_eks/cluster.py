@@ -25,7 +25,8 @@ class ClusterArgs:
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
-                 system_node_min_count: Optional[pulumi.Input[float]] = None):
+                 system_node_min_count: Optional[pulumi.Input[float]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Cluster resource.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
@@ -36,6 +37,7 @@ class ClusterArgs:
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the cluster.
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
@@ -65,6 +67,8 @@ class ClusterArgs:
             pulumi.set(__self__, "system_node_max_count", system_node_max_count)
         if system_node_min_count is not None:
             pulumi.set(__self__, "system_node_min_count", system_node_min_count)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
 
     @property
     @pulumi.getter(name="clusterSubnetIds")
@@ -189,6 +193,18 @@ class ClusterArgs:
     def system_node_min_count(self, value: Optional[pulumi.Input[float]]):
         pulumi.set(self, "system_node_min_count", value)
 
+    @property
+    @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Key-value map of tags to apply to the cluster.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
+
 
 class Cluster(pulumi.ComponentResource):
     @overload
@@ -206,6 +222,7 @@ class Cluster(pulumi.ComponentResource):
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         Create a Cluster resource with the given unique name, props, and options.
@@ -219,6 +236,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the cluster.
         """
         ...
     @overload
@@ -254,6 +272,7 @@ class Cluster(pulumi.ComponentResource):
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
                  system_node_min_count: Optional[pulumi.Input[float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -288,6 +307,7 @@ class Cluster(pulumi.ComponentResource):
             if system_node_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'system_node_subnet_ids'")
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
+            __props__.__dict__["tags"] = tags
             __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["kubeconfig"] = None

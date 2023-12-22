@@ -8,10 +8,11 @@ import (
 )
 
 type IamServiceAccountRoleArgs struct {
-	OidcProviderArn    pulumi.StringInput `pulumi:"oidcProviderArn"`
-	OidcProviderURL    pulumi.StringInput `pulumi:"oidcProviderUrl"`
-	NamespaceName      pulumi.StringInput `pulumi:"namespaceName"`
-	ServiceAccountName pulumi.StringInput `pulumi:"serviceAccountName"`
+	OidcProviderArn    pulumi.StringInput     `pulumi:"oidcProviderArn"`
+	OidcProviderURL    pulumi.StringInput     `pulumi:"oidcProviderUrl"`
+	NamespaceName      pulumi.StringInput     `pulumi:"namespaceName"`
+	ServiceAccountName pulumi.StringInput     `pulumi:"serviceAccountName"`
+	Tags               *pulumi.StringMapInput `pulumi:"tags"`
 }
 
 type IamServiceAccountRole struct {
@@ -24,6 +25,14 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 
 	if args == nil {
 		args = &IamServiceAccountRoleArgs{}
+	}
+
+	var tags pulumi.StringMapInput
+
+	if args.Tags != nil {
+		tags = *args.Tags
+	} else {
+		tags = pulumi.StringMap{}
 	}
 
 	component := &IamServiceAccountRole{}
@@ -70,6 +79,7 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 
 	role, err := iam.NewRole(ctx, name, &iam.RoleArgs{
 		AssumeRolePolicy: trustDocument.Json(),
+		Tags:             tags,
 	}, pulumi.Parent(component))
 
 	if err != nil {

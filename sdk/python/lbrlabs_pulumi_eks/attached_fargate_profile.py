@@ -17,15 +17,19 @@ class AttachedFargateProfileArgs:
     def __init__(__self__, *,
                  cluster_name: pulumi.Input[str],
                  selectors: pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.FargateProfileSelectorArgs']]],
-                 subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]]):
+                 subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a AttachedFargateProfile resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map for tags to apply to Fargate Profile.
         """
         pulumi.set(__self__, "cluster_name", cluster_name)
         pulumi.set(__self__, "selectors", selectors)
         pulumi.set(__self__, "subnet_ids", subnet_ids)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
 
     @property
     @pulumi.getter(name="clusterName")
@@ -60,6 +64,18 @@ class AttachedFargateProfileArgs:
     def subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "subnet_ids", value)
 
+    @property
+    @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Key-value map for tags to apply to Fargate Profile.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
+
 
 class AttachedFargateProfile(pulumi.ComponentResource):
     @overload
@@ -69,6 +85,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  cluster_name: Optional[pulumi.Input[str]] = None,
                  selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         Create a AttachedFargateProfile resource with the given unique name, props, and options.
@@ -76,6 +93,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cluster_name: The name of the cluster to assign the fargate profile to.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The subnet IDs to use for the fargate profile.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map for tags to apply to Fargate Profile.
         """
         ...
     @overload
@@ -103,6 +121,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  cluster_name: Optional[pulumi.Input[str]] = None,
                  selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.FargateProfileSelectorArgs']]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -123,6 +142,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")
             __props__.__dict__["subnet_ids"] = subnet_ids
+            __props__.__dict__["tags"] = tags
             __props__.__dict__["profile"] = None
             __props__.__dict__["role"] = None
         super(AttachedFargateProfile, __self__).__init__(

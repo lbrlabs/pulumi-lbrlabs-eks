@@ -144,6 +144,18 @@ namespace Lbrlabs.PulumiPackage.Eks
             set => _systemNodeSubnetIds = value;
         }
 
+        [Input("tags")]
+        private InputMap<string>? _tags;
+
+        /// <summary>
+        /// Key-value map of tags to apply to the cluster.
+        /// </summary>
+        public InputMap<string> Tags
+        {
+            get => _tags ?? (_tags = new InputMap<string>());
+            set => _tags = value;
+        }
+
         public ClusterArgs()
         {
             EnableCertManager = true;

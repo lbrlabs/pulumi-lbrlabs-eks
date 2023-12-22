@@ -46,6 +46,7 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
             resourceInputs["nodeInstanceTypes"] = args ? args.nodeInstanceTypes : undefined;
             resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
+            resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taints"] = args ? args.taints : undefined;
             resourceInputs["nodeGroup"] = undefined /*out*/;
             resourceInputs["nodeRole"] = undefined /*out*/;
@@ -73,5 +74,9 @@ export interface AttachedNodeGroupArgs {
     nodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
     scalingConfig?: pulumi.Input<pulumiAws.types.input.eks.NodeGroupScalingConfig>;
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Key-value map of tags to apply to the nodegroup.
+     */
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     taints?: pulumi.Input<pulumi.Input<pulumiAws.types.input.eks.NodeGroupTaint>[]>;
 }

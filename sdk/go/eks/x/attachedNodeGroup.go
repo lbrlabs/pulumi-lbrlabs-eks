@@ -52,7 +52,9 @@ type attachedNodeGroupArgs struct {
 	NodeInstanceTypes []string                    `pulumi:"nodeInstanceTypes"`
 	ScalingConfig     *eks.NodeGroupScalingConfig `pulumi:"scalingConfig"`
 	SubnetIds         []string                    `pulumi:"subnetIds"`
-	Taints            []eks.NodeGroupTaint        `pulumi:"taints"`
+	// Key-value map of tags to apply to the nodegroup.
+	Tags   map[string]string    `pulumi:"tags"`
+	Taints []eks.NodeGroupTaint `pulumi:"taints"`
 }
 
 // The set of arguments for constructing a AttachedNodeGroup resource.
@@ -64,7 +66,9 @@ type AttachedNodeGroupArgs struct {
 	NodeInstanceTypes pulumix.Input[[]string]
 	ScalingConfig     pulumix.Input[*eks.NodeGroupScalingConfigArgs]
 	SubnetIds         pulumix.Input[[]string]
-	Taints            pulumix.Input[[]*eks.NodeGroupTaintArgs]
+	// Key-value map of tags to apply to the nodegroup.
+	Tags   pulumix.Input[map[string]string]
+	Taints pulumix.Input[[]*eks.NodeGroupTaintArgs]
 }
 
 func (AttachedNodeGroupArgs) ElementType() reflect.Type {

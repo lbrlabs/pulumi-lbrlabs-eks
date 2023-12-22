@@ -70,6 +70,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["systemNodeMaxCount"] = args ? args.systemNodeMaxCount : undefined;
             resourceInputs["systemNodeMinCount"] = args ? args.systemNodeMinCount : undefined;
             resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
+            resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
@@ -126,4 +127,8 @@ export interface ClusterArgs {
      */
     systemNodeMinCount?: pulumi.Input<number>;
     systemNodeSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Key-value map of tags to apply to the cluster.
+     */
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

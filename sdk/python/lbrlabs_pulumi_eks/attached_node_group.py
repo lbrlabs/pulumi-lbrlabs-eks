@@ -20,11 +20,13 @@ class AttachedNodeGroupArgs:
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]] = None):
         """
         The set of arguments for constructing a AttachedNodeGroup resource.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
         """
         pulumi.set(__self__, "cluster_name", cluster_name)
         pulumi.set(__self__, "subnet_ids", subnet_ids)
@@ -34,6 +36,8 @@ class AttachedNodeGroupArgs:
             pulumi.set(__self__, "node_instance_types", node_instance_types)
         if scaling_config is not None:
             pulumi.set(__self__, "scaling_config", scaling_config)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
         if taints is not None:
             pulumi.set(__self__, "taints", taints)
 
@@ -90,6 +94,18 @@ class AttachedNodeGroupArgs:
 
     @property
     @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Key-value map of tags to apply to the nodegroup.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
+
+    @property
+    @pulumi.getter
     def taints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]]:
         return pulumi.get(self, "taints")
 
@@ -108,6 +124,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupTaintArgs']]]]] = None,
                  __props__=None):
         """
@@ -116,6 +133,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
         """
         ...
     @overload
@@ -145,6 +163,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupTaintArgs']]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -166,6 +185,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")
             __props__.__dict__["subnet_ids"] = subnet_ids
+            __props__.__dict__["tags"] = tags
             __props__.__dict__["taints"] = taints
             __props__.__dict__["node_group"] = None
             __props__.__dict__["node_role"] = None

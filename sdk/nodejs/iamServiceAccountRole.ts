@@ -50,6 +50,7 @@ export class IamServiceAccountRole extends pulumi.ComponentResource {
             resourceInputs["oidcProviderArn"] = args ? args.oidcProviderArn : undefined;
             resourceInputs["oidcProviderUrl"] = args ? args.oidcProviderUrl : undefined;
             resourceInputs["serviceAccountName"] = args ? args.serviceAccountName : undefined;
+            resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["role"] = undefined /*out*/;
         } else {
             resourceInputs["role"] = undefined /*out*/;
@@ -79,4 +80,8 @@ export interface IamServiceAccountRoleArgs {
      * The name of the service account to bind to the role
      */
     serviceAccountName: pulumi.Input<string>;
+    /**
+     * Key-value map of tags to apply to the service account.
+     */
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

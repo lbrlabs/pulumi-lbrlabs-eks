@@ -18,18 +18,22 @@ class IamServiceAccountRoleArgs:
                  namespace_name: pulumi.Input[str],
                  oidc_provider_arn: pulumi.Input[str],
                  oidc_provider_url: pulumi.Input[str],
-                 service_account_name: pulumi.Input[str]):
+                 service_account_name: pulumi.Input[str],
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a IamServiceAccountRole resource.
         :param pulumi.Input[str] namespace_name: The namespace to create the service account in.
         :param pulumi.Input[str] oidc_provider_arn: The arn of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[str] oidc_provider_url: The URL of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[str] service_account_name: The name of the service account to bind to the role
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the service account.
         """
         pulumi.set(__self__, "namespace_name", namespace_name)
         pulumi.set(__self__, "oidc_provider_arn", oidc_provider_arn)
         pulumi.set(__self__, "oidc_provider_url", oidc_provider_url)
         pulumi.set(__self__, "service_account_name", service_account_name)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
 
     @property
     @pulumi.getter(name="namespaceName")
@@ -79,6 +83,18 @@ class IamServiceAccountRoleArgs:
     def service_account_name(self, value: pulumi.Input[str]):
         pulumi.set(self, "service_account_name", value)
 
+    @property
+    @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Key-value map of tags to apply to the service account.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
+
 
 class IamServiceAccountRole(pulumi.ComponentResource):
     @overload
@@ -89,6 +105,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
                  oidc_provider_arn: Optional[pulumi.Input[str]] = None,
                  oidc_provider_url: Optional[pulumi.Input[str]] = None,
                  service_account_name: Optional[pulumi.Input[str]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         Create a IamServiceAccountRole resource with the given unique name, props, and options.
@@ -98,6 +115,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
         :param pulumi.Input[str] oidc_provider_arn: The arn of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[str] oidc_provider_url: The URL of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[str] service_account_name: The name of the service account to bind to the role
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the service account.
         """
         ...
     @overload
@@ -126,6 +144,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
                  oidc_provider_arn: Optional[pulumi.Input[str]] = None,
                  oidc_provider_url: Optional[pulumi.Input[str]] = None,
                  service_account_name: Optional[pulumi.Input[str]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -149,6 +168,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
             if service_account_name is None and not opts.urn:
                 raise TypeError("Missing required property 'service_account_name'")
             __props__.__dict__["service_account_name"] = service_account_name
+            __props__.__dict__["tags"] = tags
             __props__.__dict__["role"] = None
         super(IamServiceAccountRole, __self__).__init__(
             'lbrlabs-eks:index:IamServiceAccountRole',

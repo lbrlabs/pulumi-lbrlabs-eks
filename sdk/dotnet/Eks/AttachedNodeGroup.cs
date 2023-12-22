@@ -85,6 +85,18 @@ namespace Lbrlabs.PulumiPackage.Eks
             set => _subnetIds = value;
         }
 
+        [Input("tags")]
+        private InputMap<string>? _tags;
+
+        /// <summary>
+        /// Key-value map of tags to apply to the nodegroup.
+        /// </summary>
+        public InputMap<string> Tags
+        {
+            get => _tags ?? (_tags = new InputMap<string>());
+            set => _tags = value;
+        }
+
         [Input("taints")]
         private InputList<Pulumi.Aws.Eks.Inputs.NodeGroupTaintArgs>? _taints;
         public InputList<Pulumi.Aws.Eks.Inputs.NodeGroupTaintArgs> Taints

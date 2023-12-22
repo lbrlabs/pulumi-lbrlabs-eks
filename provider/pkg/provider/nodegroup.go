@@ -19,6 +19,7 @@ type NodeGroupArgs struct {
 	Taints           eks.NodeGroupTaintArrayInput    `pulumi:"taints"`
 	Labels           pulumi.StringMapInput           `pulumi:"labels"`
 	ScalingConfig    eks.NodeGroupScalingConfigInput `pulumi:"scalingConfig"`
+	Tags             *pulumi.StringMapInput          `pulumi:"tags"`
 }
 
 type NodeGroup struct {
@@ -33,6 +34,14 @@ func NewNodeGroup(ctx *pulumi.Context,
 	name string, args *NodeGroupArgs, opts ...pulumi.ResourceOption) (*NodeGroup, error) {
 	if args == nil {
 		args = &NodeGroupArgs{}
+	}
+
+	var tags pulumi.StringMapInput
+
+	if args.Tags != nil {
+		tags = *args.Tags
+	} else {
+		tags = pulumi.StringMap{}
 	}
 
 	component := &NodeGroup{}
@@ -59,6 +68,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 
 	nodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-node-role", name), &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(nodePolicyJSON),
+		Tags:             tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating node role: %w", err)
@@ -98,6 +108,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		InstanceTypes: instanceTypes,
 		Labels:        args.Labels,
 		ScalingConfig: args.ScalingConfig,
+		Tags:          tags,
 	},
 		pulumi.Parent(component),
 		pulumi.IgnoreChanges([]string{"scalingConfig"}),

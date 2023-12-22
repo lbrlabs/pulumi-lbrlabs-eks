@@ -62,6 +62,11 @@ resources:
         description: Whether to enable cert-manager with route 53 integration.
         default: true
         plain: true
+      tags:
+        type: object
+        additionalProperties:
+          type: string
+        description: Key-value map of tags to apply to the cluster.
     requiredInputs:
       - clusterSubnetIds
       - systemNodeSubnetIds
@@ -103,6 +108,11 @@ resources:
         type: array
         items:
           type: string
+      tags:
+        type: object
+        additionalProperties:
+          type: string
+        description: Key-value map of tags to apply to the nodegroup.
       scalingConfig:
         "$ref": "/aws/v6.14.0/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
       taints:
@@ -140,6 +150,11 @@ resources:
       serviceAccountName:
         type: string
         description: The name of the service account to bind to the role
+      tags: 
+        type: object
+        additionalProperties:
+          type: string
+        description: Key-value map of tags to apply to the service account.
     requiredInputs:
       - oidcProviderArn
       - oidcProviderUrl
@@ -181,6 +196,11 @@ resources:
         items:
           type: string
         description: The subnet IDs to use for the fargate profile.
+      tags:
+        type: object
+        additionalProperties:
+          type: string
+        description: Key-value map for tags to apply to Fargate Profile.
       selectors:
         type: array
         items:
