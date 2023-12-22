@@ -17,8 +17,8 @@ class AttachedNodeGroupArgs:
     def __init__(__self__, *,
                  cluster_name: pulumi.Input[str],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]] = None):
@@ -30,10 +30,10 @@ class AttachedNodeGroupArgs:
         """
         pulumi.set(__self__, "cluster_name", cluster_name)
         pulumi.set(__self__, "subnet_ids", subnet_ids)
+        if instance_types is not None:
+            pulumi.set(__self__, "instance_types", instance_types)
         if labels is not None:
             pulumi.set(__self__, "labels", labels)
-        if node_instance_types is not None:
-            pulumi.set(__self__, "node_instance_types", node_instance_types)
         if scaling_config is not None:
             pulumi.set(__self__, "scaling_config", scaling_config)
         if tags is not None:
@@ -63,6 +63,15 @@ class AttachedNodeGroupArgs:
         pulumi.set(self, "subnet_ids", value)
 
     @property
+    @pulumi.getter(name="instanceTypes")
+    def instance_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        return pulumi.get(self, "instance_types")
+
+    @instance_types.setter
+    def instance_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "instance_types", value)
+
+    @property
     @pulumi.getter
     def labels(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
@@ -73,15 +82,6 @@ class AttachedNodeGroupArgs:
     @labels.setter
     def labels(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "labels", value)
-
-    @property
-    @pulumi.getter(name="nodeInstanceTypes")
-    def node_instance_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
-        return pulumi.get(self, "node_instance_types")
-
-    @node_instance_types.setter
-    def node_instance_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
-        pulumi.set(self, "node_instance_types", value)
 
     @property
     @pulumi.getter(name="scalingConfig")
@@ -120,8 +120,8 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
+                 instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
@@ -159,8 +159,8 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
+                 instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
@@ -179,8 +179,8 @@ class AttachedNodeGroup(pulumi.ComponentResource):
             if cluster_name is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_name'")
             __props__.__dict__["cluster_name"] = cluster_name
+            __props__.__dict__["instance_types"] = instance_types
             __props__.__dict__["labels"] = labels
-            __props__.__dict__["node_instance_types"] = node_instance_types
             __props__.__dict__["scaling_config"] = scaling_config
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")

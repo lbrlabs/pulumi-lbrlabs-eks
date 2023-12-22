@@ -29,16 +29,19 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 
 	var tags pulumi.StringMapInput
 
-	if args.Tags != nil {
-		tags = *args.Tags
-	} else {
-		tags = pulumi.StringMap{}
-	}
-
 	component := &IamServiceAccountRole{}
 	err := ctx.RegisterComponentResource("lbrlabs-eks:index:IamServiceAccountRole", name, component, opts...)
 	if err != nil {
 		return nil, err
+	}
+
+	if args.Tags != nil {
+		tags = *args.Tags
+	} else {
+		if err := ctx.Log.Debug("No tags provided, defaulting to empty map", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
+		tags = pulumi.StringMap{}
 	}
 
 	trustDocument := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{

@@ -46,12 +46,12 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 
 type attachedNodeGroupArgs struct {
 	// The cluster name to attach the nodegroup tp.
-	ClusterName string `pulumi:"clusterName"`
+	ClusterName   string   `pulumi:"clusterName"`
+	InstanceTypes []string `pulumi:"instanceTypes"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
-	Labels            map[string]string           `pulumi:"labels"`
-	NodeInstanceTypes []string                    `pulumi:"nodeInstanceTypes"`
-	ScalingConfig     *eks.NodeGroupScalingConfig `pulumi:"scalingConfig"`
-	SubnetIds         []string                    `pulumi:"subnetIds"`
+	Labels        map[string]string           `pulumi:"labels"`
+	ScalingConfig *eks.NodeGroupScalingConfig `pulumi:"scalingConfig"`
+	SubnetIds     []string                    `pulumi:"subnetIds"`
 	// Key-value map of tags to apply to the nodegroup.
 	Tags   map[string]string    `pulumi:"tags"`
 	Taints []eks.NodeGroupTaint `pulumi:"taints"`
@@ -60,12 +60,12 @@ type attachedNodeGroupArgs struct {
 // The set of arguments for constructing a AttachedNodeGroup resource.
 type AttachedNodeGroupArgs struct {
 	// The cluster name to attach the nodegroup tp.
-	ClusterName pulumix.Input[string]
+	ClusterName   pulumix.Input[string]
+	InstanceTypes pulumix.Input[[]string]
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
-	Labels            pulumix.Input[map[string]string]
-	NodeInstanceTypes pulumix.Input[[]string]
-	ScalingConfig     pulumix.Input[*eks.NodeGroupScalingConfigArgs]
-	SubnetIds         pulumix.Input[[]string]
+	Labels        pulumix.Input[map[string]string]
+	ScalingConfig pulumix.Input[*eks.NodeGroupScalingConfigArgs]
+	SubnetIds     pulumix.Input[[]string]
 	// Key-value map of tags to apply to the nodegroup.
 	Tags   pulumix.Input[map[string]string]
 	Taints pulumix.Input[[]*eks.NodeGroupTaintArgs]

@@ -54,6 +54,14 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("clusterName", required: true)]
         public Input<string> ClusterName { get; set; } = null!;
 
+        [Input("instanceTypes")]
+        private InputList<string>? _instanceTypes;
+        public InputList<string> InstanceTypes
+        {
+            get => _instanceTypes ?? (_instanceTypes = new InputList<string>());
+            set => _instanceTypes = value;
+        }
+
         [Input("labels")]
         private InputMap<string>? _labels;
 
@@ -64,14 +72,6 @@ namespace Lbrlabs.PulumiPackage.Eks
         {
             get => _labels ?? (_labels = new InputMap<string>());
             set => _labels = value;
-        }
-
-        [Input("nodeInstanceTypes")]
-        private InputList<string>? _nodeInstanceTypes;
-        public InputList<string> NodeInstanceTypes
-        {
-            get => _nodeInstanceTypes ?? (_nodeInstanceTypes = new InputList<string>());
-            set => _nodeInstanceTypes = value;
         }
 
         [Input("scalingConfig")]

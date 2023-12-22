@@ -41,6 +41,9 @@ func NewFargateProfile(ctx *pulumi.Context,
 	if args.Tags != nil {
 		tags = *args.Tags
 	} else {
+		if err := ctx.Log.Debug("No tags provided, defaulting to empty map", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		tags = pulumi.StringMap{}
 	}
 

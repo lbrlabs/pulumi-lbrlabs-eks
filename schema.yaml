@@ -104,7 +104,7 @@ resources:
         type: array
         items:
           type: string
-      nodeInstanceTypes:
+      instanceTypes:
         type: array
         items:
           type: string

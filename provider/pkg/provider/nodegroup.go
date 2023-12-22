@@ -36,18 +36,21 @@ func NewNodeGroup(ctx *pulumi.Context,
 		args = &NodeGroupArgs{}
 	}
 
+	component := &NodeGroup{}
+	err := ctx.RegisterComponentResource("lbrlabs-eks:index:AttachedNodeGroup", name, component, opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	var tags pulumi.StringMapInput
 
 	if args.Tags != nil {
 		tags = *args.Tags
 	} else {
+		if err := ctx.Log.Debug("No tags provided, defaulting to empty map", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		tags = pulumi.StringMap{}
-	}
-
-	component := &NodeGroup{}
-	err := ctx.RegisterComponentResource("lbrlabs-eks:index:AttachedNodeGroup", name, component, opts...)
-	if err != nil {
-		return nil, err
 	}
 
 	nodePolicyJSON, err := json.Marshal(map[string]interface{}{
@@ -93,6 +96,9 @@ func NewNodeGroup(ctx *pulumi.Context,
 	var instanceTypes pulumi.StringArrayInput
 
 	if args.InstanceTypes == nil {
+		if err := ctx.Log.Debug("No instance types provided, defaulting to t3.medium", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		instanceTypes = pulumi.StringArray{
 			pulumi.String("t3.medium"),
 		}

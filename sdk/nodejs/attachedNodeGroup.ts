@@ -42,8 +42,8 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'subnetIds'");
             }
             resourceInputs["clusterName"] = args ? args.clusterName : undefined;
+            resourceInputs["instanceTypes"] = args ? args.instanceTypes : undefined;
             resourceInputs["labels"] = args ? args.labels : undefined;
-            resourceInputs["nodeInstanceTypes"] = args ? args.nodeInstanceTypes : undefined;
             resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -67,11 +67,11 @@ export interface AttachedNodeGroupArgs {
      * The cluster name to attach the nodegroup tp.
      */
     clusterName: pulumi.Input<string>;
+    instanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
      */
     labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-    nodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
     scalingConfig?: pulumi.Input<pulumiAws.types.input.eks.NodeGroupScalingConfig>;
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**

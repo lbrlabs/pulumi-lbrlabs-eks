@@ -213,6 +213,9 @@ func NewCluster(ctx *pulumi.Context,
 	var instanceTypes pulumi.StringArrayInput
 
 	if args.SystemNodeInstanceTypes == nil {
+		if err := ctx.Log.Debug("No instance types provided, defaulting to t3.medium", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		instanceTypes = pulumi.StringArray{
 			pulumi.String("t3.medium"),
 		}
@@ -222,6 +225,9 @@ func NewCluster(ctx *pulumi.Context,
 
 	var systemNodeMaxCount pulumi.IntInput
 	if args.SystemNodeMaxCount == nil {
+		if err := ctx.Log.Debug("No max count provided, defaulting to 10", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		systemNodeMaxCount = pulumi.Int(10)
 	} else {
 		systemNodeMaxCount = *args.SystemNodeMaxCount
@@ -229,6 +235,9 @@ func NewCluster(ctx *pulumi.Context,
 
 	var systemNodeMinCount pulumi.IntInput
 	if args.SystemNodeMinCount == nil {
+		if err := ctx.Log.Debug("No min count provided, defaulting to 1", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		systemNodeMinCount = pulumi.Int(1)
 	} else {
 		systemNodeMinCount = *args.SystemNodeMinCount
@@ -236,6 +245,9 @@ func NewCluster(ctx *pulumi.Context,
 
 	var systemNodeDesiredCount pulumi.IntInput
 	if args.SystemNodeDesiredCount == nil {
+		if err := ctx.Log.Debug("No desired count provided, defaulting to 1", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
 		systemNodeDesiredCount = pulumi.Int(1)
 	} else {
 		systemNodeDesiredCount = *args.SystemNodeDesiredCount
@@ -997,8 +1009,7 @@ func NewCluster(ctx *pulumi.Context,
 	if args.EnableOtel {
 
 		if !args.EnableCertManager {
-			err := ctx.Log.Error("Cert Manager must be installed for telemetry to execute successfully.", &pulumi.LogArgs{Resource: component})
-			if err != nil {
+			if err := ctx.Log.Error("Cert Manager must be installed for telemetry to execute successfully.", &pulumi.LogArgs{Resource: component}); err != nil {
 				return nil, fmt.Errorf("error logging: %w", err)
 			}
 		}
