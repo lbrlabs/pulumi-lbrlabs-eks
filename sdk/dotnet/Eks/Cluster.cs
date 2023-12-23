@@ -72,6 +72,12 @@ namespace Lbrlabs.PulumiPackage.Eks
 
     public sealed class ClusterArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The ARN of the certificate to use for the ingress controller.
+        /// </summary>
+        [Input("certificateArn")]
+        public Input<string>? CertificateArn { get; set; }
+
         [Input("clusterSubnetIds", required: true)]
         private InputList<string>? _clusterSubnetIds;
         public InputList<string> ClusterSubnetIds

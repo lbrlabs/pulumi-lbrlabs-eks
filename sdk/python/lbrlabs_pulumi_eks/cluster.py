@@ -17,6 +17,7 @@ class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 certificate_arn: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
@@ -29,6 +30,7 @@ class ClusterArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Cluster resource.
+        :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
@@ -41,6 +43,8 @@ class ClusterArgs:
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
+        if certificate_arn is not None:
+            pulumi.set(__self__, "certificate_arn", certificate_arn)
         if enable_cert_manager is None:
             enable_cert_manager = True
         if enable_cert_manager is not None:
@@ -87,6 +91,18 @@ class ClusterArgs:
     @system_node_subnet_ids.setter
     def system_node_subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "system_node_subnet_ids", value)
+
+    @property
+    @pulumi.getter(name="certificateArn")
+    def certificate_arn(self) -> Optional[pulumi.Input[str]]:
+        """
+        The ARN of the certificate to use for the ingress controller.
+        """
+        return pulumi.get(self, "certificate_arn")
+
+    @certificate_arn.setter
+    def certificate_arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "certificate_arn", value)
 
     @property
     @pulumi.getter(name="enableCertManager")
@@ -211,6 +227,7 @@ class Cluster(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
@@ -228,6 +245,7 @@ class Cluster(pulumi.ComponentResource):
         Create a Cluster resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
@@ -261,6 +279,7 @@ class Cluster(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
@@ -284,6 +303,7 @@ class Cluster(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = ClusterArgs.__new__(ClusterArgs)
 
+            __props__.__dict__["certificate_arn"] = certificate_arn
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids

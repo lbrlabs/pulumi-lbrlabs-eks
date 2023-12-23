@@ -36,6 +36,7 @@ type ClusterArgs struct {
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
 	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
+	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
 	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
 }
 
@@ -520,6 +521,21 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating gp3 storage class: %w", err)
 	}
 
+	var externalAnnotations pulumi.Map
+
+	if args.CertificateArn != nil {
+		externalAnnotations = pulumi.Map{
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-cert":         *args.CertificateArn,
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+		}
+	} else {
+		externalAnnotations = pulumi.Map{
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+		}
+	}
+
 	nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
@@ -555,10 +571,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 				"ingressClass": pulumi.String("external"),
 				"service": pulumi.Map{
-					"annotations": pulumi.Map{
-						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
-						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
-					},
+					"annotations": externalAnnotations,
 				},
 			},
 			"defaultBackend": pulumi.Map{
@@ -575,6 +588,23 @@ func NewCluster(ctx *pulumi.Context,
 	}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
+	}
+
+	var internalAnnotations pulumi.Map
+
+	if args.CertificateArn != nil {
+		internalAnnotations = pulumi.Map{
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-cert":         *args.CertificateArn,
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+			"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
+			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+		}
+	} else {
+		internalAnnotations = pulumi.Map{
+			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+			"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
+			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+		}
 	}
 
 	nginxIngressInternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-int", name), helm.ChartArgs{
@@ -612,11 +642,7 @@ func NewCluster(ctx *pulumi.Context,
 				},
 				"ingressClass": pulumi.String("internal"),
 				"service": pulumi.Map{
-					"annotations": pulumi.Map{
-						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
-						"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
-						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
-					},
+					"annotations": internalAnnotations,
 				},
 			},
 			"defaultBackend": pulumi.Map{

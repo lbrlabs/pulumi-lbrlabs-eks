@@ -59,6 +59,7 @@ export class Cluster extends pulumi.ComponentResource {
             if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
+            resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
@@ -92,6 +93,10 @@ export class Cluster extends pulumi.ComponentResource {
  * The set of arguments for constructing a Cluster resource.
  */
 export interface ClusterArgs {
+    /**
+     * The ARN of the certificate to use for the ingress controller.
+     */
+    certificateArn?: pulumi.Input<string>;
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Whether to enable cert-manager with route 53 integration.

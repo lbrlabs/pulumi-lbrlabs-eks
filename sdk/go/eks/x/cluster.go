@@ -69,6 +69,8 @@ func NewCluster(ctx *pulumi.Context,
 }
 
 type clusterArgs struct {
+	// The ARN of the certificate to use for the ingress controller.
+	CertificateArn   *string  `pulumi:"certificateArn"`
 	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
 	// Whether to enable cert-manager with route 53 integration.
 	EnableCertManager *bool `pulumi:"enableCertManager"`
@@ -94,6 +96,8 @@ type clusterArgs struct {
 
 // The set of arguments for constructing a Cluster resource.
 type ClusterArgs struct {
+	// The ARN of the certificate to use for the ingress controller.
+	CertificateArn   pulumix.Input[*string]
 	ClusterSubnetIds pulumix.Input[[]string]
 	// Whether to enable cert-manager with route 53 integration.
 	EnableCertManager *bool
