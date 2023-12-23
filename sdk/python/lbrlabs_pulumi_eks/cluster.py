@@ -22,6 +22,7 @@ class ClusterArgs:
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -35,6 +36,7 @@ class ClusterArgs:
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
@@ -61,6 +63,10 @@ class ClusterArgs:
             enable_otel = False
         if enable_otel is not None:
             pulumi.set(__self__, "enable_otel", enable_otel)
+        if lb_type is None:
+            lb_type = 'nlb'
+        if lb_type is not None:
+            pulumi.set(__self__, "lb_type", lb_type)
         if lets_encrypt_email is not None:
             pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         if system_node_desired_count is not None:
@@ -153,6 +159,18 @@ class ClusterArgs:
         pulumi.set(self, "enable_otel", value)
 
     @property
+    @pulumi.getter(name="lbType")
+    def lb_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        The type of loadbalancer to provision.
+        """
+        return pulumi.get(self, "lb_type")
+
+    @lb_type.setter
+    def lb_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "lb_type", value)
+
+    @property
     @pulumi.getter(name="letsEncryptEmail")
     def lets_encrypt_email(self) -> Optional[pulumi.Input[str]]:
         """
@@ -233,6 +251,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -250,6 +269,7 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
@@ -285,6 +305,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -319,6 +340,9 @@ class Cluster(pulumi.ComponentResource):
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
+            if lb_type is None:
+                lb_type = 'nlb'
+            __props__.__dict__["lb_type"] = lb_type
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types

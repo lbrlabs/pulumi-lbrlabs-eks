@@ -36,6 +36,7 @@ type ClusterArgs struct {
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
 	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
+	LbType                  pulumi.StringInput       `pulumi:"lbType"`
 	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
 	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
 }
@@ -528,11 +529,13 @@ func NewCluster(ctx *pulumi.Context,
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-cert":         *args.CertificateArn,
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
 		}
 	} else {
 		externalAnnotations = pulumi.Map{
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
 		}
 	}
 
@@ -598,12 +601,14 @@ func NewCluster(ctx *pulumi.Context,
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
 		}
 	} else {
 		internalAnnotations = pulumi.Map{
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
 		}
 	}
 

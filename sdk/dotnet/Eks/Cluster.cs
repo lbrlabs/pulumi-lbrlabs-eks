@@ -111,6 +111,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableOtel { get; set; }
 
         /// <summary>
+        /// The type of loadbalancer to provision.
+        /// </summary>
+        [Input("lbType")]
+        public Input<string>? LbType { get; set; }
+
+        /// <summary>
         /// The email address to use to issue certificates from Lets Encrypt.
         /// </summary>
         [Input("letsEncryptEmail")]
@@ -168,6 +174,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableCloudWatchAgent = false;
             EnableExternalDns = true;
             EnableOtel = false;
+            LbType = "nlb";
         }
         public static new ClusterArgs Empty => new ClusterArgs();
     }

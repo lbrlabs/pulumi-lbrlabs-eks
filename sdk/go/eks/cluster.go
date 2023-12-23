@@ -59,6 +59,9 @@ func NewCluster(ctx *pulumi.Context,
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
 	}
+	if args.LbType == nil {
+		args.LbType = pulumi.StringPtr("nlb")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Cluster
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:Cluster", name, args, &resource, opts...)
@@ -80,6 +83,8 @@ type clusterArgs struct {
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
+	// The type of loadbalancer to provision.
+	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
 	// The initial number of nodes in the system autoscaling group.
@@ -107,6 +112,8 @@ type ClusterArgs struct {
 	EnableExternalDns *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
+	// The type of loadbalancer to provision.
+	LbType pulumi.StringPtrInput
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail pulumi.StringPtrInput
 	// The initial number of nodes in the system autoscaling group.

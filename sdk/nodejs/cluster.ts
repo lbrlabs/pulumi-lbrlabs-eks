@@ -65,6 +65,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
+            resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
@@ -114,6 +115,10 @@ export interface ClusterArgs {
      * Whether to enable the OTEL Distro for EKS.
      */
     enableOtel?: boolean;
+    /**
+     * The type of loadbalancer to provision.
+     */
+    lbType?: pulumi.Input<string>;
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
