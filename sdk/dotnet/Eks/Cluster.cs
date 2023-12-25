@@ -111,6 +111,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableOtel { get; set; }
 
         /// <summary>
+        /// The ARN of the certificate to use for the ingress controller.
+        /// </summary>
+        [Input("httpsTargetPort")]
+        public Input<string>? HttpsTargetPort { get; set; }
+
+        /// <summary>
         /// The type of loadbalancer to provision.
         /// </summary>
         [Input("lbType")]
@@ -174,6 +180,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableCloudWatchAgent = false;
             EnableExternalDns = true;
             EnableOtel = false;
+            HttpsTargetPort = "https";
             LbType = "nlb";
         }
         public static new ClusterArgs Empty => new ClusterArgs();
