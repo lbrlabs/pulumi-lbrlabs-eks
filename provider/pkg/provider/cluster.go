@@ -38,7 +38,6 @@ type ClusterArgs struct {
 	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
 	LbType                  pulumi.StringInput       `pulumi:"lbType"`
 	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
-	HTTPSTargetPort         pulumi.StringInput       `pulumi:"httpsTargetPort"`
 	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
 }
 
@@ -576,9 +575,6 @@ func NewCluster(ctx *pulumi.Context,
 				"ingressClass": pulumi.String("external"),
 				"service": pulumi.Map{
 					"annotations": externalAnnotations,
-					"targetPorts": pulumi.Map{
-						"https": args.HTTPSTargetPort,
-					},
 				},
 			},
 			"defaultBackend": pulumi.Map{
@@ -652,9 +648,6 @@ func NewCluster(ctx *pulumi.Context,
 				"ingressClass": pulumi.String("internal"),
 				"service": pulumi.Map{
 					"annotations": internalAnnotations,
-					"targetPorts": pulumi.Map{
-						"https": args.HTTPSTargetPort,
-					},
 				},
 			},
 			"defaultBackend": pulumi.Map{

@@ -22,7 +22,6 @@ class ClusterArgs:
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
-                 https_target_port: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
@@ -37,7 +36,6 @@ class ClusterArgs:
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
-        :param pulumi.Input[str] https_target_port: The ARN of the certificate to use for the ingress controller.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
@@ -65,10 +63,6 @@ class ClusterArgs:
             enable_otel = False
         if enable_otel is not None:
             pulumi.set(__self__, "enable_otel", enable_otel)
-        if https_target_port is None:
-            https_target_port = 'https'
-        if https_target_port is not None:
-            pulumi.set(__self__, "https_target_port", https_target_port)
         if lb_type is None:
             lb_type = 'nlb'
         if lb_type is not None:
@@ -165,18 +159,6 @@ class ClusterArgs:
         pulumi.set(self, "enable_otel", value)
 
     @property
-    @pulumi.getter(name="httpsTargetPort")
-    def https_target_port(self) -> Optional[pulumi.Input[str]]:
-        """
-        The ARN of the certificate to use for the ingress controller.
-        """
-        return pulumi.get(self, "https_target_port")
-
-    @https_target_port.setter
-    def https_target_port(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "https_target_port", value)
-
-    @property
     @pulumi.getter(name="lbType")
     def lb_type(self) -> Optional[pulumi.Input[str]]:
         """
@@ -269,7 +251,6 @@ class Cluster(pulumi.ComponentResource):
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
-                 https_target_port: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
@@ -288,7 +269,6 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
-        :param pulumi.Input[str] https_target_port: The ARN of the certificate to use for the ingress controller.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
@@ -325,7 +305,6 @@ class Cluster(pulumi.ComponentResource):
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
-                 https_target_port: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
@@ -361,9 +340,6 @@ class Cluster(pulumi.ComponentResource):
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
-            if https_target_port is None:
-                https_target_port = 'https'
-            __props__.__dict__["https_target_port"] = https_target_port
             if lb_type is None:
                 lb_type = 'nlb'
             __props__.__dict__["lb_type"] = lb_type

@@ -59,9 +59,6 @@ func NewCluster(ctx *pulumi.Context,
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
 	}
-	if args.HttpsTargetPort == nil {
-		args.HttpsTargetPort = pulumi.StringPtr("https")
-	}
 	if args.LbType == nil {
 		args.LbType = pulumi.StringPtr("nlb")
 	}
@@ -86,8 +83,6 @@ type clusterArgs struct {
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
-	// The ARN of the certificate to use for the ingress controller.
-	HttpsTargetPort *string `pulumi:"httpsTargetPort"`
 	// The type of loadbalancer to provision.
 	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
@@ -117,8 +112,6 @@ type ClusterArgs struct {
 	EnableExternalDns *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
-	// The ARN of the certificate to use for the ingress controller.
-	HttpsTargetPort pulumi.StringPtrInput
 	// The type of loadbalancer to provision.
 	LbType pulumi.StringPtrInput
 	// The email address to use to issue certificates from Lets Encrypt.

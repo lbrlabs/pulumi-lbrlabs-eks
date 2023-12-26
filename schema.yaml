@@ -69,10 +69,6 @@ resources:
       certificateArn:
         type: string
         description: The ARN of the certificate to use for the ingress controller.
-      httpsTargetPort:
-        type: string
-        description: The ARN of the certificate to use for the ingress controller.
-        default: "https"
       tags:
         type: object
         additionalProperties:
