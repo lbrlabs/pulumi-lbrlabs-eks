@@ -12,8 +12,10 @@ import (
 type NodeGroupArgs struct {
 	ClusterName      pulumi.StringInput              `pulumi:"clusterName"`
 	SubnetIds        pulumi.StringArrayInput         `pulumi:"subnetIds"`
+	CapacityType     *pulumi.StringInput             `pulumi:"capacityType"`
 	InstanceTypes    *pulumi.StringArrayInput        `pulumi:"instanceTypes"`
 	NodeMaxCount     *pulumi.IntInput                `pulumi:"nodeMaxCount"`
+	DiskSize         *pulumi.IntInput                `pulumi:"diskSize"`
 	NodeMinCount     *pulumi.IntInput                `pulumi:"nodeMinCount"`
 	NodeDesiredCount *pulumi.IntInput                `pulumi:"nodeDesiredCount"`
 	Taints           eks.NodeGroupTaintArrayInput    `pulumi:"taints"`
@@ -101,6 +103,18 @@ func NewNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
 	}
 
+	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{
+		RoleArn:  nodeRole.Arn,
+		Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+		Groups: pulumi.StringArray{
+			pulumi.String("system:bootstrappers"),
+			pulumi.String("system:nodes"),
+		},
+	}, pulumi.Parent(nodeRole))
+	if err != nil {
+		return nil, fmt.Errorf("error creating aws-auth role mapping: %w", err)
+	}
+
 	var instanceTypes pulumi.StringArrayInput
 
 	if args.InstanceTypes == nil {
@@ -114,22 +128,34 @@ func NewNodeGroup(ctx *pulumi.Context,
 		instanceTypes = *args.InstanceTypes
 	}
 
-	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{
-		RoleArn:  nodeRole.Arn,
-		Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
-		Groups: pulumi.StringArray{
-			pulumi.String("system:bootstrappers"),
-			pulumi.String("system:nodes"),
-		},
-	}, pulumi.Parent(nodeRole))
-	if err != nil {
-		return nil, fmt.Errorf("error creating aws-auth role mapping: %w", err)
+	var capacityType pulumi.StringInput
+
+	if args.CapacityType == nil {
+		if err := ctx.Log.Debug("No capacity type provider, default to ON_DEMAND", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
+		capacityType = pulumi.String("ON_DEMAND")
+	} else {
+		capacityType = *args.CapacityType
+	}
+
+	var diskSize pulumi.IntInput
+
+	if args.DiskSize == nil {
+		if err := ctx.Log.Debug("No disk size provided, default to 20gb", &pulumi.LogArgs{Resource: component}); err != nil {
+			return nil, err
+		}
+		diskSize = pulumi.Int(20)
+	} else {
+		diskSize = *args.DiskSize
 	}
 
 	nodeGroup, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-nodes", name), &eks.NodeGroupArgs{
 		ClusterName:   args.ClusterName,
 		SubnetIds:     args.SubnetIds,
+		CapacityType:  capacityType,
 		NodeRoleArn:   nodeRole.Arn,
+		DiskSize:      diskSize,
 		Taints:        args.Taints,
 		InstanceTypes: instanceTypes,
 		Labels:        args.Labels,

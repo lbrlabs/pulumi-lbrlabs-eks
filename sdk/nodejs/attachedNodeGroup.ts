@@ -41,7 +41,9 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
             if ((!args || args.subnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'subnetIds'");
             }
+            resourceInputs["capacityType"] = (args ? args.capacityType : undefined) ?? "ON_DEMAND";
             resourceInputs["clusterName"] = args ? args.clusterName : undefined;
+            resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? 20;
             resourceInputs["instanceTypes"] = args ? args.instanceTypes : undefined;
             resourceInputs["labels"] = args ? args.labels : undefined;
             resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
@@ -64,9 +66,17 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
  */
 export interface AttachedNodeGroupArgs {
     /**
+     * The capacity type of the nodegroup.
+     */
+    capacityType?: pulumi.Input<string>;
+    /**
      * The cluster name to attach the nodegroup tp.
      */
     clusterName: pulumi.Input<string>;
+    /**
+     * The size of the disk to attach to the nodes.
+     */
+    diskSize?: pulumi.Input<number>;
     instanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.

@@ -35,6 +35,12 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 	if args.SubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SubnetIds'")
 	}
+	if args.CapacityType == nil {
+		args.CapacityType = pulumix.Ptr("ON_DEMAND")
+	}
+	if args.DiskSize == nil {
+		args.DiskSize = pulumix.Ptr(20.0)
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AttachedNodeGroup
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:AttachedNodeGroup", name, args, &resource, opts...)
@@ -45,8 +51,12 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 }
 
 type attachedNodeGroupArgs struct {
+	// The capacity type of the nodegroup.
+	CapacityType *string `pulumi:"capacityType"`
 	// The cluster name to attach the nodegroup tp.
-	ClusterName   string   `pulumi:"clusterName"`
+	ClusterName string `pulumi:"clusterName"`
+	// The size of the disk to attach to the nodes.
+	DiskSize      *float64 `pulumi:"diskSize"`
 	InstanceTypes []string `pulumi:"instanceTypes"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels        map[string]string           `pulumi:"labels"`
@@ -59,8 +69,12 @@ type attachedNodeGroupArgs struct {
 
 // The set of arguments for constructing a AttachedNodeGroup resource.
 type AttachedNodeGroupArgs struct {
+	// The capacity type of the nodegroup.
+	CapacityType pulumix.Input[*string]
 	// The cluster name to attach the nodegroup tp.
-	ClusterName   pulumix.Input[string]
+	ClusterName pulumix.Input[string]
+	// The size of the disk to attach to the nodes.
+	DiskSize      pulumix.Input[*float64]
 	InstanceTypes pulumix.Input[[]string]
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels        pulumix.Input[map[string]string]

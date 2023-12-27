@@ -17,6 +17,8 @@ class AttachedNodeGroupArgs:
     def __init__(__self__, *,
                  cluster_name: pulumi.Input[str],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 capacity_type: Optional[pulumi.Input[str]] = None,
+                 disk_size: Optional[pulumi.Input[float]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input['pulumi_aws.eks.NodeGroupScalingConfigArgs']] = None,
@@ -25,11 +27,21 @@ class AttachedNodeGroupArgs:
         """
         The set of arguments for constructing a AttachedNodeGroup resource.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
+        :param pulumi.Input[str] capacity_type: The capacity type of the nodegroup.
+        :param pulumi.Input[float] disk_size: The size of the disk to attach to the nodes.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
         """
         pulumi.set(__self__, "cluster_name", cluster_name)
         pulumi.set(__self__, "subnet_ids", subnet_ids)
+        if capacity_type is None:
+            capacity_type = 'ON_DEMAND'
+        if capacity_type is not None:
+            pulumi.set(__self__, "capacity_type", capacity_type)
+        if disk_size is None:
+            disk_size = 20
+        if disk_size is not None:
+            pulumi.set(__self__, "disk_size", disk_size)
         if instance_types is not None:
             pulumi.set(__self__, "instance_types", instance_types)
         if labels is not None:
@@ -61,6 +73,30 @@ class AttachedNodeGroupArgs:
     @subnet_ids.setter
     def subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "subnet_ids", value)
+
+    @property
+    @pulumi.getter(name="capacityType")
+    def capacity_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        The capacity type of the nodegroup.
+        """
+        return pulumi.get(self, "capacity_type")
+
+    @capacity_type.setter
+    def capacity_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "capacity_type", value)
+
+    @property
+    @pulumi.getter(name="diskSize")
+    def disk_size(self) -> Optional[pulumi.Input[float]]:
+        """
+        The size of the disk to attach to the nodes.
+        """
+        return pulumi.get(self, "disk_size")
+
+    @disk_size.setter
+    def disk_size(self, value: Optional[pulumi.Input[float]]):
+        pulumi.set(self, "disk_size", value)
 
     @property
     @pulumi.getter(name="instanceTypes")
@@ -119,7 +155,9 @@ class AttachedNodeGroup(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 capacity_type: Optional[pulumi.Input[str]] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
+                 disk_size: Optional[pulumi.Input[float]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
@@ -131,7 +169,9 @@ class AttachedNodeGroup(pulumi.ComponentResource):
         Create a AttachedNodeGroup resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[str] capacity_type: The capacity type of the nodegroup.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
+        :param pulumi.Input[float] disk_size: The size of the disk to attach to the nodes.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
         """
@@ -158,7 +198,9 @@ class AttachedNodeGroup(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 capacity_type: Optional[pulumi.Input[str]] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
+                 disk_size: Optional[pulumi.Input[float]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  scaling_config: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.eks.NodeGroupScalingConfigArgs']]] = None,
@@ -176,9 +218,15 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = AttachedNodeGroupArgs.__new__(AttachedNodeGroupArgs)
 
+            if capacity_type is None:
+                capacity_type = 'ON_DEMAND'
+            __props__.__dict__["capacity_type"] = capacity_type
             if cluster_name is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_name'")
             __props__.__dict__["cluster_name"] = cluster_name
+            if disk_size is None:
+                disk_size = 20
+            __props__.__dict__["disk_size"] = disk_size
             __props__.__dict__["instance_types"] = instance_types
             __props__.__dict__["labels"] = labels
             __props__.__dict__["scaling_config"] = scaling_config

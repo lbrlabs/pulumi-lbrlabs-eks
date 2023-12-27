@@ -49,10 +49,22 @@ namespace Lbrlabs.PulumiPackage.Eks
     public sealed class AttachedNodeGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
+        /// The capacity type of the nodegroup.
+        /// </summary>
+        [Input("capacityType")]
+        public Input<string>? CapacityType { get; set; }
+
+        /// <summary>
         /// The cluster name to attach the nodegroup tp.
         /// </summary>
         [Input("clusterName", required: true)]
         public Input<string> ClusterName { get; set; } = null!;
+
+        /// <summary>
+        /// The size of the disk to attach to the nodes.
+        /// </summary>
+        [Input("diskSize")]
+        public Input<double>? DiskSize { get; set; }
 
         [Input("instanceTypes")]
         private InputList<string>? _instanceTypes;
@@ -107,6 +119,8 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public AttachedNodeGroupArgs()
         {
+            CapacityType = "ON_DEMAND";
+            DiskSize = 20;
         }
         public static new AttachedNodeGroupArgs Empty => new AttachedNodeGroupArgs();
     }
