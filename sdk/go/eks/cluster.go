@@ -55,6 +55,10 @@ func NewCluster(ctx *pulumi.Context,
 		enableExternalDns_ := true
 		args.EnableExternalDns = &enableExternalDns_
 	}
+	if args.EnableKarpenter == nil {
+		enableKarpenter_ := true
+		args.EnableKarpenter = &enableKarpenter_
+	}
 	if args.EnableOtel == nil {
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
@@ -81,6 +85,8 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
+	// Whether to enable karpenter.
+	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
 	// The type of loadbalancer to provision.
@@ -110,6 +116,8 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
+	// Whether to enable karpenter.
+	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
 	// The type of loadbalancer to provision.

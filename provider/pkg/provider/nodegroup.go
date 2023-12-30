@@ -92,7 +92,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
 	if err != nil {
-		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
+		return nil, fmt.Errorf("error attaching node ecr policy: %w", err)
 	}
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ssm-policy", name), &iam.RolePolicyAttachmentArgs{
@@ -100,7 +100,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
 	if err != nil {
-		return nil, fmt.Errorf("error attaching system node ecr policy: %w", err)
+		return nil, fmt.Errorf("error attaching node ecr policy: %w", err)
 	}
 
 	_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-aws-auth-role-mapping", name), &RoleMappingArgs{

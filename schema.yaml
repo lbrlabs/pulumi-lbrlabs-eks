@@ -62,6 +62,11 @@ resources:
         description: Whether to enable cert-manager with route 53 integration.
         default: true
         plain: true
+      enableKarpenter:
+        type: boolean
+        description: Whether to enable karpenter.
+        default: true
+        plain: true
       lbType:
         type: "string"
         description: The type of loadbalancer to provision.

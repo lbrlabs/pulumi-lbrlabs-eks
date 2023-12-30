@@ -64,6 +64,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
+            resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
@@ -111,6 +112,10 @@ export interface ClusterArgs {
      * Whether to enable external dns with route 53 integration.
      */
     enableExternalDns?: boolean;
+    /**
+     * Whether to enable karpenter.
+     */
+    enableKarpenter?: boolean;
     /**
      * Whether to enable the OTEL Distro for EKS.
      */

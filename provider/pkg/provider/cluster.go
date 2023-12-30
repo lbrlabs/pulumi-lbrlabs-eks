@@ -6,9 +6,11 @@ import (
 
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/kubeconfig"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cloudwatch"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/kms"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/sqs"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
 	apiextensionsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions/v1"
@@ -35,6 +37,7 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent   bool                     `pulumi:"enableCloudWatchAgent"`
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
+	EnableKarpenter         bool                     `pulumi:"enableKarpenter"`
 	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
 	LbType                  pulumi.StringInput       `pulumi:"lbType"`
 	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
@@ -51,6 +54,13 @@ type Cluster struct {
 	OidcProvider *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
 	KubeConfig   pulumi.StringOutput           `pulumi:"kubeconfig"`
 	ClusterIssue *apiextensions.CustomResource `pulumi:"clusterIssue"`
+}
+
+// event struct
+type Event struct {
+	Name         string
+	Description  string
+	EventPattern map[string][]string
 }
 
 // NewCluster creates a new EKS Cluster component resource.
@@ -72,6 +82,18 @@ func NewCluster(ctx *pulumi.Context,
 	err := ctx.RegisterComponentResource("lbrlabs-eks:index:Cluster", name, component, opts...)
 	if err != nil {
 		return nil, err
+	}
+
+	// callerIdentity, err := aws.GetCallerIdentity(ctx, nil, pulumi.Parent(component))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error getting caller identity: %w", err)
+	// }
+
+	//accountId := callerIdentity.AccountId
+
+	current, err := aws.GetPartition(ctx, nil, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error getting partition: %w", err)
 	}
 
 	region, err := aws.GetRegion(ctx, nil, nil)
@@ -1059,6 +1081,403 @@ func NewCluster(ctx *pulumi.Context,
 		if err != nil {
 			return nil, fmt.Errorf("error installing otel addon: %w", err)
 		}
+	}
+
+	if args.EnableKarpenter {
+
+		// create a spot termination queue
+		queue, err := sqs.NewQueue(ctx, fmt.Sprintf("%s-karpenter-spot", name), &sqs.QueueArgs{
+			MessageRetentionSeconds: pulumi.Int(300),
+			SqsManagedSseEnabled:    pulumi.Bool(true),
+			Tags:                    tags,
+		}, pulumi.Parent(component))
+		if err != nil {
+			return nil, fmt.Errorf("error creating spot termination queue: %w", err)
+		}
+
+		// add a queue policy
+		// FIXME: make this strongly typed instead of using interfaces
+		queuePolicy := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+			Statements: iam.GetPolicyDocumentStatementArray{
+				iam.GetPolicyDocumentStatementArgs{
+					Actions: pulumi.StringArray{
+						pulumi.String("sqs:SendMessage"),
+					},
+					Resources: pulumi.StringArray{
+						queue.Arn,
+					},
+					Principals: iam.GetPolicyDocumentStatementPrincipalArray{
+						iam.GetPolicyDocumentStatementPrincipalArgs{
+							Type: pulumi.String("Service"),
+							Identifiers: pulumi.StringArray{
+								pulumi.String("events.amazonaws.com"),
+								pulumi.String("sqs.amazonaws.com"),
+							},
+						},
+					},
+				},
+			},
+		}, pulumi.Parent(queue))
+
+		_, err = sqs.NewQueuePolicy(ctx, fmt.Sprintf("%s-karpenter-spot-policy", name), &sqs.QueuePolicyArgs{
+			QueueUrl: queue.Url,
+			Policy:   queuePolicy.Json(),
+		}, pulumi.Parent(queue))
+		if err != nil {
+			return nil, fmt.Errorf("error creating spot termination queue policy: %w", err)
+		}
+
+		events := map[string]Event{
+			fmt.Sprintf("%-s-health-event", name): {
+				Name:        "HealthEvent",
+				Description: "Karpenter interrupt - AWS health event",
+				EventPattern: map[string][]string{
+					"source":      {"aws.health"},
+					"detail-type": {"AWS Health Event"},
+				},
+			},
+			fmt.Sprintf("%s-spot-interrupt", name): {
+				Name:        "SpotInterrupt",
+				Description: "Karpenter interrupt - EC2 spot instance interruption warning",
+				EventPattern: map[string][]string{
+					"source":      {"aws.ec2"},
+					"detail-type": {"EC2 Spot Instance Interruption Warning"},
+				},
+			},
+			fmt.Sprintf("%s-instance-rebalance", name): {
+				Name:        "InstanceRebalance",
+				Description: "Karpenter interrupt - EC2 instance rebalance recommendation",
+				EventPattern: map[string][]string{
+					"source":      {"aws.ec2"},
+					"detail-type": {"EC2 Instance Rebalance Recommendation"},
+				},
+			},
+			fmt.Sprintf("%s-instance-state-change", name): {
+				Name:        "InstanceStateChange",
+				Description: "Karpenter interrupt - EC2 instance state-change notification",
+				EventPattern: map[string][]string{
+					"source":      {"aws.ec2"},
+					"detail-type": {"EC2 Instance State-change Notification"},
+				},
+			},
+		}
+
+		for key, event := range events {
+			eventPatternJSON, err := json.Marshal(event.EventPattern)
+			if err != nil {
+				return nil, fmt.Errorf("error marshalling event pattern json: %w", err)
+			}
+
+			eventRule, err := cloudwatch.NewEventRule(ctx, fmt.Sprintf("%s-%s-rule", name, key), &cloudwatch.EventRuleArgs{
+				Description:  pulumi.String(event.Description),
+				EventPattern: pulumi.String(string(eventPatternJSON)),
+				Tags:         tags,
+			}, pulumi.Parent(queue))
+			if err != nil {
+				return nil, fmt.Errorf("error creating event rule: %w", err)
+			}
+
+			_, err = cloudwatch.NewEventTarget(ctx, key, &cloudwatch.EventTargetArgs{
+				Rule:     eventRule.Name,
+				TargetId: pulumi.String("KarpenterInterruptionQueueTarget"),
+				Arn:      queue.Arn,
+			}, pulumi.Parent(queue))
+			if err != nil {
+				return nil, fmt.Errorf("error creating event target: %w", err)
+			}
+		}
+
+		// create a karpenter role
+		serviceAccount, err := corev1.NewServiceAccount(ctx, fmt.Sprintf("%s-karpenter", name), &corev1.ServiceAccountArgs{
+			Metadata: &metav1.ObjectMetaArgs{
+				Namespace: pulumi.String("kube-system"),
+			},
+		}, pulumi.Parent(controlPlane), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating karpenter service account: %w", err)
+		}
+
+		karpenterRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-karpenter-role", name), &IamServiceAccountRoleArgs{
+			OidcProviderArn:    oidcProvider.Arn,
+			OidcProviderURL:    oidcProvider.Url,
+			NamespaceName:      pulumi.String("kube-system"),
+			ServiceAccountName: serviceAccount.Metadata.Name().Elem(),
+			Tags:               &tags,
+		}, pulumi.Parent(controlPlane))
+		if err != nil {
+			return nil, fmt.Errorf("error creating iam service account role for karpenter: %w", err)
+		}
+
+		karpenterServiceAccountAnnotations, err := corev1.NewServiceAccountPatch(ctx, fmt.Sprintf("%s-karpenter-patch", name), &corev1.ServiceAccountPatchArgs{
+			Metadata: &metav1.ObjectMetaPatchArgs{
+				Namespace: serviceAccount.Metadata.Namespace(),
+				Name:      serviceAccount.Metadata.Name(),
+				Annotations: pulumi.StringMap{
+					"eks.amazonaws.com/role-arn": karpenterRole.Role.Arn,
+				},
+			},
+		}, pulumi.Parent(serviceAccount), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error patching karpenter service account: %w", err)
+		}
+
+		karpenterPolicyDoc := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
+			Statements: iam.GetPolicyDocumentStatementArray{
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowScopedEC2InstanceActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("ec2:RunInstances"),
+						pulumi.String("ec2:CreateFleet"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.Sprintf("arn:%s:ec2:%s::image/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s::snapshot/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:spot-instances-request/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:security-group/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:subnet/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:launch-template/*", current.Partition, region.Name),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowScopedEC2InstanceActionsWithTags"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("ec2:RunInstances"),
+						pulumi.String("ec2:CreateFleet"),
+						pulumi.String("ec2:CreateLaunchTemplate"),
+						pulumi.String("ec2:CreateTags"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.Sprintf("arn:%s:ec2:%s::fleet/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s::instance/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:volume/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:network-interface/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:launch-template/*", current.Partition, region.Name),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowScopedDeletion"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("ec2:RunInstances"),
+						pulumi.String("ec2:CreateFleet"),
+						pulumi.String("ec2:CreateLaunchTemplate"),
+						pulumi.String("ec2:CreateTags"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.Sprintf("arn:%s:ec2:%s::instance/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:launch-template/*", current.Partition, region.Name),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowReadActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("ec2:DescribeAvailabilityZones"),
+						pulumi.String("ec2:DescribeImages"),
+						pulumi.String("ec2:DescribeInstances"),
+						pulumi.String("ec2:DescribeInstanceTypeOfferings"),
+						pulumi.String("ec2:DescribeInstanceTypes"),
+						pulumi.String("ec2:DescribeLaunchTemplates"),
+						pulumi.String("ec2:DescribeSecurityGroups"),
+						pulumi.String("ec2:DescribeSpotPriceHistory"),
+						pulumi.String("ec2:DescribeSubnets"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowSSMReadActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("ssm:GetParameter"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.Sprintf("arn:%s:ssm:%s::parameter/aws/service/*", current.Partition, region.Name),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowPricingReadActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("pricing:GetProducts"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowInterruptionQueueActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("sqs:DeleteMessage"),
+						pulumi.String("sqs:GetQueueUrl"),
+						pulumi.String("sqs:ReceiveMessage"),
+					},
+					Resources: pulumi.StringArray{
+						queue.Arn,
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowPassingInstanceRole"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("iam:PassRole"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
+					Conditions: iam.GetPolicyDocumentStatementConditionArray{
+						iam.GetPolicyDocumentStatementConditionArgs{
+							Test:     pulumi.String("StringEquals"),
+							Values:   pulumi.StringArray{pulumi.String("ec2.amazonaws.com")},
+							Variable: pulumi.String("iam:PassedToService"),
+						},
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowScopedInstanceProfileCreationActions"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("iam:CreateInstanceProfile"),
+						pulumi.String("iam:TagInstanceProfile"),
+						pulumi.String("iam:AddRoleToInstanceProfile"),
+						pulumi.String("iam:RemoveRoleFromInstanceProfile"),
+						pulumi.String("iam:DeleteInstanceProfile"),
+						pulumi.String("iam:GetInstanceProfile"),
+					},
+					Resources: pulumi.StringArray{
+						pulumi.String("*"),
+					},
+				},
+				iam.GetPolicyDocumentStatementArgs{
+					Sid:    pulumi.String("AllowAPIServerEndpointDiscovery"),
+					Effect: pulumi.String("Allow"),
+					Actions: pulumi.StringArray{
+						pulumi.String("eks:DescribeCluster"),
+					},
+					Resources: pulumi.StringArray{
+						controlPlane.Arn,
+					},
+				},
+			},
+		}, pulumi.Parent(karpenterRole.Role))
+
+		karpenterPolicy, err := iam.NewPolicy(ctx, fmt.Sprintf("%s-karpenter-policy", name), &iam.PolicyArgs{
+			Policy: karpenterPolicyDoc.Json(),
+			Tags:   tags,
+		}, pulumi.Parent(karpenterRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error creating karpenter policy: %w", err)
+		}
+
+		iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-policy", name), &iam.RolePolicyAttachmentArgs{
+			Role:      karpenterRole.Role.Name,
+			PolicyArn: karpenterPolicy.Arn,
+		}, pulumi.Parent(karpenterRole.Role))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching karpenter policy to role: %w", err)
+		}
+
+		nodePolicyJSON, err := json.Marshal(map[string]interface{}{
+			"Statement": []map[string]interface{}{
+				{
+					"Action": "sts:AssumeRole",
+					"Effect": "Allow",
+					"Principal": map[string]interface{}{
+						"Service": "ec2.amazonaws.com",
+					},
+				},
+			},
+			"Version": "2012-10-17",
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling node policy: %w", err)
+		}
+
+		karpenterNodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-karpenter-node-role", name), &iam.RoleArgs{
+			AssumeRolePolicy: pulumi.String(nodePolicyJSON),
+			Tags:             tags,
+		}, pulumi.Parent(component))
+		if err != nil {
+			return nil, fmt.Errorf("error creating karpenter node role: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
+			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
+			Role:      karpenterNodeRole.Name,
+		}, pulumi.Parent(karpenterNodeRole))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching karpenter worker policy: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
+			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
+			Role:      karpenterNodeRole.Name,
+		}, pulumi.Parent(karpenterNodeRole))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching karpenter node ecr policy: %w", err)
+		}
+
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-ssm-policy", name), &iam.RolePolicyAttachmentArgs{
+			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"),
+			Role:      karpenterNodeRole.Name,
+		}, pulumi.Parent(karpenterNodeRole))
+		if err != nil {
+			return nil, fmt.Errorf("error attaching karpenter node ecr policy: %w", err)
+		}
+
+		_, err = NewRoleMapping(ctx, fmt.Sprintf("%s-karpenter-aws-auth-role-mapping", name), &RoleMappingArgs{
+			RoleArn:  karpenterNodeRole.Arn,
+			Username: pulumi.String("system:node:{{EC2PrivateDNSName}}"),
+			Groups: pulumi.StringArray{
+				pulumi.String("system:bootstrappers"),
+				pulumi.String("system:nodes"),
+			},
+		}, pulumi.Parent(karpenterNodeRole), pulumi.Provider(provider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating aws-auth karpenter role mapping: %w", err)
+		}
+
+		_, err = iam.NewInstanceProfile(ctx, fmt.Sprintf("%s-karpenter-node-instance-profile", name), &iam.InstanceProfileArgs{
+			Role: karpenterNodeRole.Name,
+			Tags: tags,
+		}, pulumi.Parent(karpenterNodeRole))
+		if err != nil {
+			return nil, fmt.Errorf("error creating karpenter node instance profile: %w", err)
+		}
+
+		_, err = helm.NewRelease(
+			ctx, fmt.Sprintf("%s-karpenter", name), &helm.ReleaseArgs{
+				Chart:     pulumi.String("oci://public.ecr.aws/karpenter/karpenter"),
+				Version:   pulumi.String("v0.33.1"),
+				Namespace: pulumi.String("kube-system"),
+				Values: pulumi.Map{
+					"tolerations": pulumi.MapArray{
+						pulumi.Map{
+							"key":      pulumi.String("node.lbrlabs.com/system"),
+							"operator": pulumi.String("Equal"),
+							"value":    pulumi.String("true"),
+							"effect":   pulumi.String("NoSchedule"),
+						},
+					},
+					"serviceAccount": pulumi.Map{
+						"create": pulumi.Bool(false),
+						"name":   serviceAccount.Metadata.Name(),
+					},
+					"settings": pulumi.Map{
+						"clusterName":       controlPlane.Name,
+						"interruptionQueue": queue.Name,
+					},
+				},
+			}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{karpenterServiceAccountAnnotations}),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error installing karpenter helm release: %w", err)
+		}
+
 	}
 
 	component.ClusterName = controlPlane.Name

@@ -24,54 +24,41 @@ resources:
       systemNodeInstanceTypes: [ "t3.large" ]
       systemNodeDesiredCount: 4
       letsEncryptEmail: "mail@lbrlabs.com"
-  workloadNodes:
-    type: lbrlabs-eks:index:AttachedNodeGroup
-    properties:
-      clusterName: ${cluster.controlPlane.name}
-      subnetIds: ${vpc.privateSubnetIds}
-      scalingConfig:
-        desiredSize: 3
-        maxSize: 10
-        minSize: 1
+      enableKarpenter: true
   provider:
     type: pulumi:providers:kubernetes
     properties:
       kubeconfig: ${cluster.kubeconfig}
-  rolemapping:
-    type: lbrlabs-eks:index:IamRoleMapping
-    properties:
-      roleArn: ${workloadNodes.nodeRole.arn}
-      username: system:node:{{EC2PrivateDNSName}}
-      groups:
-        - system:bootstrappers
-        - system:nodes
-    options:
-      provider: ${provider}
-  fargateProfile:
-    type: lbrlabs-eks:index:AttachedFargateProfile
-    properties:
-      clusterName: ${cluster.controlPlane.name}
-      subnetIds: ${vpc.privateSubnetIds}
-      selectors: [ namespace: kube-system ]
-  wordpress:
-    type: kubernetes:helm.sh/v3:Release
-    properties:
-      chart: wordpress
-      repositoryOpts:
-        repo: https://charts.bitnami.com/bitnami
-      values:
-        wordpressUsername: lbrlabs
-        wordpressPassword: correct-horse-battery-stable
-        wordpressEmail: mail@lbrlabs.com
-        ingress:
-          enabled: true
-          ingressClassName: external
-          hostname: wordpress.aws.briggs.work # this domain must in exist in route53
-          tls: true
-          annotations:
-            "cert-manager.io/cluster-issuer": "letsencrypt-prod"
-            "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
-    options:
-      provider: ${provider}
+  # workloadnodes:
+  #   type: lbrlabs-eks:index:AttachedNodeGroup
+  #   properties:
+  #     clusterName: ${cluster.controlPlane.name}
+  #     subnetIds: ${vpc.privateSubnetIds}
+  #     scalingConfig:
+  #       desiredSize: 3
+  #       maxSize: 10
+  #       minSize: 1
+  #   options:
+  #     provider: ${provider}
+  # wordpress:
+  #   type: kubernetes:helm.sh/v3:Release
+  #   properties:
+  #     chart: wordpress
+  #     repositoryOpts:
+  #       repo: https://charts.bitnami.com/bitnami
+  #     values:
+  #       wordpressUsername: lbrlabs
+  #       wordpressPassword: correct-horse-battery-stable
+  #       wordpressEmail: mail@lbrlabs.com
+  #       ingress:
+  #         enabled: true
+  #         ingressClassName: external
+  #         hostname: wordpress.lbrlabs.xyz # this domain must in exist in route53
+  #         tls: true
+  #         annotations:
+  #           "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+  #           "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+  #   options:
+  #     provider: ${provider}
 outputs:
   kubeconfig: ${cluster.kubeconfig}
