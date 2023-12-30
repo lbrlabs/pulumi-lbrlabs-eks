@@ -378,6 +378,7 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["tags"] = tags
             __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
+            __props__.__dict__["karpenter_node_role"] = None
             __props__.__dict__["kubeconfig"] = None
             __props__.__dict__["oidc_provider"] = None
             __props__.__dict__["system_nodes"] = None
@@ -403,6 +404,14 @@ class Cluster(pulumi.ComponentResource):
         The Cluster control plane
         """
         return pulumi.get(self, "control_plane")
+
+    @property
+    @pulumi.getter(name="karpenterNodeRole")
+    def karpenter_node_role(self) -> pulumi.Output[Optional['pulumi_aws.iam.Role']]:
+        """
+        The role created for karpenter nodes.
+        """
+        return pulumi.get(self, "karpenter_node_role")
 
     @property
     @pulumi.getter

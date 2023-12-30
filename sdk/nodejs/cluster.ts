@@ -30,6 +30,10 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public /*out*/ readonly controlPlane!: pulumi.Output<pulumiAws.eks.Cluster>;
     /**
+     * The role created for karpenter nodes.
+     */
+    public /*out*/ readonly karpenterNodeRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
+    /**
      * The kubeconfig for this cluster.
      */
     public /*out*/ readonly kubeconfig!: pulumi.Output<string>;
@@ -76,12 +80,14 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
+            resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
         } else {
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
+            resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;

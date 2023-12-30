@@ -22,6 +22,8 @@ type Cluster struct {
 	ClusterName pulumi.StringOutput `pulumi:"clusterName"`
 	// The Cluster control plane
 	ControlPlane eks.ClusterOutput `pulumi:"controlPlane"`
+	// The role created for karpenter nodes.
+	KarpenterNodeRole iam.RoleOutput `pulumi:"karpenterNodeRole"`
 	// The kubeconfig for this cluster.
 	Kubeconfig pulumi.StringOutput `pulumi:"kubeconfig"`
 	// The OIDC provider for this cluster.
@@ -255,6 +257,11 @@ func (o ClusterOutput) ClusterName() pulumi.StringOutput {
 // The Cluster control plane
 func (o ClusterOutput) ControlPlane() eks.ClusterOutput {
 	return o.ApplyT(func(v *Cluster) eks.ClusterOutput { return v.ControlPlane }).(eks.ClusterOutput)
+}
+
+// The role created for karpenter nodes.
+func (o ClusterOutput) KarpenterNodeRole() iam.RoleOutput {
+	return o.ApplyT(func(v *Cluster) iam.RoleOutput { return v.KarpenterNodeRole }).(iam.RoleOutput)
 }
 
 // The kubeconfig for this cluster.

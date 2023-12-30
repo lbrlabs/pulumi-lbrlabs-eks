@@ -16,6 +16,7 @@ resources:
           cidrMask: 19
           tags:
             "kubernetes.io/role/internal-elb": "1"
+            "karpenter.sh/discovery": "cluster-fd31ec4"
   cluster:
     type: lbrlabs-eks:index:Cluster
     properties:
@@ -62,3 +63,4 @@ resources:
   #     provider: ${provider}
 outputs:
   kubeconfig: ${cluster.kubeconfig}
+  karpenterNodeRole: ${cluster.karpenterNodeRole.name}

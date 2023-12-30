@@ -26,6 +26,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Output<Pulumi.Aws.Eks.Cluster> ControlPlane { get; private set; } = null!;
 
         /// <summary>
+        /// The role created for karpenter nodes.
+        /// </summary>
+        [Output("karpenterNodeRole")]
+        public Output<Pulumi.Aws.Iam.Role?> KarpenterNodeRole { get; private set; } = null!;
+
+        /// <summary>
         /// The kubeconfig for this cluster.
         /// </summary>
         [Output("kubeconfig")]

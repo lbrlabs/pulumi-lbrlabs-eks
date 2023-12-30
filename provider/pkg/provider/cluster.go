@@ -48,12 +48,13 @@ type ClusterArgs struct {
 type Cluster struct {
 	pulumi.ResourceState
 
-	ClusterName  pulumi.StringOutput           `pulumi:"clusterName"`
-	ControlPlane *eks.Cluster                  `pulumi:"controlPlane"`
-	SystemNodes  *NodeGroup                    `pulumi:"systemNodes"`
-	OidcProvider *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
-	KubeConfig   pulumi.StringOutput           `pulumi:"kubeconfig"`
-	ClusterIssue *apiextensions.CustomResource `pulumi:"clusterIssue"`
+	ClusterName       pulumi.StringOutput           `pulumi:"clusterName"`
+	ControlPlane      *eks.Cluster                  `pulumi:"controlPlane"`
+	SystemNodes       *NodeGroup                    `pulumi:"systemNodes"`
+	OidcProvider      *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
+	KubeConfig        pulumi.StringOutput           `pulumi:"kubeconfig"`
+	ClusterIssuer     *apiextensions.CustomResource `pulumi:"clusterIssuer"`
+	KarpenterNodeRole *iam.Role                     `pulumi:"karpenterNodeRole"`
 }
 
 // event struct
@@ -1083,6 +1084,8 @@ func NewCluster(ctx *pulumi.Context,
 		}
 	}
 
+	var karpenterNodeRole *iam.Role
+
 	if args.EnableKarpenter {
 
 		// create a spot termination queue
@@ -1373,7 +1376,7 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error creating karpenter policy: %w", err)
 		}
 
-		iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-policy", name), &iam.RolePolicyAttachmentArgs{
+		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-policy", name), &iam.RolePolicyAttachmentArgs{
 			Role:      karpenterRole.Role.Name,
 			PolicyArn: karpenterPolicy.Arn,
 		}, pulumi.Parent(karpenterRole.Role))
@@ -1397,7 +1400,7 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error marshalling node policy: %w", err)
 		}
 
-		karpenterNodeRole, err := iam.NewRole(ctx, fmt.Sprintf("%s-karpenter-node-role", name), &iam.RoleArgs{
+		karpenterNodeRole, err = iam.NewRole(ctx, fmt.Sprintf("%s-karpenter-node-role", name), &iam.RoleArgs{
 			AssumeRolePolicy: pulumi.String(nodePolicyJSON),
 			Tags:             tags,
 		}, pulumi.Parent(component))
@@ -1484,6 +1487,7 @@ func NewCluster(ctx *pulumi.Context,
 	component.ControlPlane = controlPlane
 	component.OidcProvider = oidcProvider
 	component.SystemNodes = systemNodes
+	component.KarpenterNodeRole = karpenterNodeRole
 	component.KubeConfig = kc
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
