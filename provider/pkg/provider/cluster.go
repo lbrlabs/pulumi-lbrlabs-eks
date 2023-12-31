@@ -55,7 +55,6 @@ type Cluster struct {
 	KubeConfig            pulumi.StringOutput           `pulumi:"kubeconfig"`
 	ClusterIssuer         *apiextensions.CustomResource `pulumi:"clusterIssuer"`
 	KarpenterNodeRole     *iam.Role                     `pulumi:"karpenterNodeRole"`
-	ClusterSecurityGroups pulumi.StringArrayOutput      `pulumi:"clusterSecurityGroups"`
 }
 
 // event struct
@@ -1235,8 +1234,8 @@ func NewCluster(ctx *pulumi.Context,
 						pulumi.String("ec2:CreateFleet"),
 					},
 					Resources: pulumi.StringArray{
-						pulumi.Sprintf("arn:%s:ec2:%s::image/*", current.Partition, region.Name),
-						pulumi.Sprintf("arn:%s:ec2:%s::snapshot/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:image/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:snapshot/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:spot-instances-request/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:security-group/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:subnet/*", current.Partition, region.Name),
@@ -1253,24 +1252,23 @@ func NewCluster(ctx *pulumi.Context,
 						pulumi.String("ec2:CreateTags"),
 					},
 					Resources: pulumi.StringArray{
-						pulumi.Sprintf("arn:%s:ec2:%s::fleet/*", current.Partition, region.Name),
-						pulumi.Sprintf("arn:%s:ec2:%s::instance/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:fleet/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:instance/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:volume/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:network-interface/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:launch-template/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:spot-instances-request/*", current.Partition, region.Name),
 					},
 				},
 				iam.GetPolicyDocumentStatementArgs{
 					Sid:    pulumi.String("AllowScopedDeletion"),
 					Effect: pulumi.String("Allow"),
 					Actions: pulumi.StringArray{
-						pulumi.String("ec2:RunInstances"),
-						pulumi.String("ec2:CreateFleet"),
-						pulumi.String("ec2:CreateLaunchTemplate"),
-						pulumi.String("ec2:CreateTags"),
+						pulumi.String("ec2:TerminateInstances"),
+						pulumi.String("ec2:DeleteLaunchTemplate"),
 					},
 					Resources: pulumi.StringArray{
-						pulumi.Sprintf("arn:%s:ec2:%s::instance/*", current.Partition, region.Name),
+						pulumi.Sprintf("arn:%s:ec2:%s:*:instance/*", current.Partition, region.Name),
 						pulumi.Sprintf("arn:%s:ec2:%s:*:launch-template/*", current.Partition, region.Name),
 					},
 				},
@@ -1490,7 +1488,6 @@ func NewCluster(ctx *pulumi.Context,
 	component.SystemNodes = systemNodes
 	component.KarpenterNodeRole = karpenterNodeRole
 	component.KubeConfig = kc
-	component.ClusterSecurityGroups = controlPlane.VpcConfig.SecurityGroupIds()
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
 		"clusterName":           controlPlane.Name,

@@ -22,8 +22,8 @@ resources:
     properties:
       clusterSubnetIds: ${vpc.publicSubnetIds}
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
-      systemNodeInstanceTypes: [ "t3.large" ]
-      systemNodeDesiredCount: 4
+      systemNodeInstanceTypes: [ "t3.medium" ]
+      systemNodeDesiredCount: 2
       letsEncryptEmail: "mail@lbrlabs.com"
       enableKarpenter: true
       tags:
@@ -32,6 +32,30 @@ resources:
     type: pulumi:providers:kubernetes
     properties:
       kubeconfig: ${cluster.kubeconfig}
+  autoscaled-nodes:
+    type: lbrlabs-eks:index:AutoscaledNodeGroup
+    properties:
+      nodeRole: ${cluster.karpenterNodeRole.name}
+      securityGroupIds: [ "${cluster.controlPlane.vpcConfig.clusterSecurityGroupId}" ]
+      subnetIds: "${vpc.privateSubnetIds}"
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["t"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["2"]
+    options:
+      provider: ${provider}
   # workloadnodes:
   #   type: lbrlabs-eks:index:AttachedNodeGroup
   #   properties:
@@ -65,4 +89,5 @@ resources:
   #     provider: ${provider}
 outputs:
   kubeconfig: ${cluster.kubeconfig}
-  karpenterNodeRole: ${cluster.karpenterNodeRole.name}
+  securityGroupId: ${cluster.controlPlane.vpcConfig.clusterSecurityGroupId}
+  privateSubnetIds: ${vpc.privateSubnetIds}

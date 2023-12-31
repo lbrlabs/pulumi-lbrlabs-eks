@@ -7,10 +7,12 @@ import typing
 # Export this package's modules as members:
 from .attached_fargate_profile import *
 from .attached_node_group import *
+from .autoscaled_node_group import *
 from .cluster import *
 from .iam_role_mapping import *
 from .iam_service_account_role import *
 from .provider import *
+from ._inputs import *
 _utilities.register(
     resource_modules="""
 [
@@ -21,6 +23,7 @@ _utilities.register(
   "classes": {
    "lbrlabs-eks:index:AttachedFargateProfile": "AttachedFargateProfile",
    "lbrlabs-eks:index:AttachedNodeGroup": "AttachedNodeGroup",
+   "lbrlabs-eks:index:AutoscaledNodeGroup": "AutoscaledNodeGroup",
    "lbrlabs-eks:index:Cluster": "Cluster",
    "lbrlabs-eks:index:IamRoleMapping": "IamRoleMapping",
    "lbrlabs-eks:index:IamServiceAccountRole": "IamServiceAccountRole"

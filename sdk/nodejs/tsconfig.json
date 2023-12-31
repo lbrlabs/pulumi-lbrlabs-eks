@@ -15,11 +15,15 @@
     "files": [
         "attachedFargateProfile.ts",
         "attachedNodeGroup.ts",
+        "autoscaledNodeGroup.ts",
         "cluster.ts",
         "iamRoleMapping.ts",
         "iamServiceAccountRole.ts",
         "index.ts",
         "provider.ts",
+        "types/index.ts",
+        "types/input.ts",
+        "types/output.ts",
         "utilities.ts"
     ]
 }

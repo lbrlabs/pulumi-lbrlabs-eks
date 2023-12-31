@@ -25,6 +25,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &AttachedFargateProfile{}
 	case "lbrlabs-eks:index:AttachedNodeGroup":
 		r = &AttachedNodeGroup{}
+	case "lbrlabs-eks:index:AutoscaledNodeGroup":
+		r = &AutoscaledNodeGroup{}
 	case "lbrlabs-eks:index:Cluster":
 		r = &Cluster{}
 	case "lbrlabs-eks:index:IamRoleMapping":
