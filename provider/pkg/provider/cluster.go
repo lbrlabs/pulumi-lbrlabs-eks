@@ -48,13 +48,14 @@ type ClusterArgs struct {
 type Cluster struct {
 	pulumi.ResourceState
 
-	ClusterName       pulumi.StringOutput           `pulumi:"clusterName"`
-	ControlPlane      *eks.Cluster                  `pulumi:"controlPlane"`
-	SystemNodes       *NodeGroup                    `pulumi:"systemNodes"`
-	OidcProvider      *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
-	KubeConfig        pulumi.StringOutput           `pulumi:"kubeconfig"`
-	ClusterIssuer     *apiextensions.CustomResource `pulumi:"clusterIssuer"`
-	KarpenterNodeRole *iam.Role                     `pulumi:"karpenterNodeRole"`
+	ClusterName           pulumi.StringOutput           `pulumi:"clusterName"`
+	ControlPlane          *eks.Cluster                  `pulumi:"controlPlane"`
+	SystemNodes           *NodeGroup                    `pulumi:"systemNodes"`
+	OidcProvider          *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
+	KubeConfig            pulumi.StringOutput           `pulumi:"kubeconfig"`
+	ClusterIssuer         *apiextensions.CustomResource `pulumi:"clusterIssuer"`
+	KarpenterNodeRole     *iam.Role                     `pulumi:"karpenterNodeRole"`
+	ClusterSecurityGroups pulumi.StringArrayOutput      `pulumi:"clusterSecurityGroups"`
 }
 
 // event struct
@@ -1489,12 +1490,14 @@ func NewCluster(ctx *pulumi.Context,
 	component.SystemNodes = systemNodes
 	component.KarpenterNodeRole = karpenterNodeRole
 	component.KubeConfig = kc
+	component.ClusterSecurityGroups = controlPlane.VpcConfig.SecurityGroupIds()
 
 	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
-		"clusterName":  controlPlane.Name,
-		"controlPlane": controlPlane,
-		"oidcProvider": oidcProvider,
-		"kubeconfig":   kc,
+		"clusterName":           controlPlane.Name,
+		"controlPlane":          controlPlane,
+		"oidcProvider":          oidcProvider,
+		"kubeconfig":            kc,
+		"clusterSecurityGroups": controlPlane.VpcConfig.SecurityGroupIds(),
 	}); err != nil {
 		return nil, err
 	}

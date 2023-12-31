@@ -25,6 +25,7 @@ export class Cluster extends pulumi.ComponentResource {
      * The cluster name
      */
     public /*out*/ readonly clusterName!: pulumi.Output<string>;
+    public /*out*/ readonly clusterSecurityGroups!: pulumi.Output<string[]>;
     /**
      * The Cluster control plane
      */
@@ -79,6 +80,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["clusterName"] = undefined /*out*/;
+            resourceInputs["clusterSecurityGroups"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
@@ -86,6 +88,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["systemNodes"] = undefined /*out*/;
         } else {
             resourceInputs["clusterName"] = undefined /*out*/;
+            resourceInputs["clusterSecurityGroups"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;

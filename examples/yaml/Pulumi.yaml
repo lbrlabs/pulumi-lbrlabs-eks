@@ -16,7 +16,7 @@ resources:
           cidrMask: 19
           tags:
             "kubernetes.io/role/internal-elb": "1"
-            "karpenter.sh/discovery": "cluster-fd31ec4"
+            "karpenter.sh/discovery": "cluster"
   cluster:
     type: lbrlabs-eks:index:Cluster
     properties:
@@ -26,6 +26,8 @@ resources:
       systemNodeDesiredCount: 4
       letsEncryptEmail: "mail@lbrlabs.com"
       enableKarpenter: true
+      tags:
+        example: "yaml"
   provider:
     type: pulumi:providers:kubernetes
     properties:
