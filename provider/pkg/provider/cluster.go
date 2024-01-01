@@ -48,13 +48,13 @@ type ClusterArgs struct {
 type Cluster struct {
 	pulumi.ResourceState
 
-	ClusterName           pulumi.StringOutput           `pulumi:"clusterName"`
-	ControlPlane          *eks.Cluster                  `pulumi:"controlPlane"`
-	SystemNodes           *NodeGroup                    `pulumi:"systemNodes"`
-	OidcProvider          *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
-	KubeConfig            pulumi.StringOutput           `pulumi:"kubeconfig"`
-	ClusterIssuer         *apiextensions.CustomResource `pulumi:"clusterIssuer"`
-	KarpenterNodeRole     *iam.Role                     `pulumi:"karpenterNodeRole"`
+	ClusterName       pulumi.StringOutput           `pulumi:"clusterName"`
+	ControlPlane      *eks.Cluster                  `pulumi:"controlPlane"`
+	SystemNodes       *NodeGroup                    `pulumi:"systemNodes"`
+	OidcProvider      *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
+	KubeConfig        pulumi.StringOutput           `pulumi:"kubeconfig"`
+	ClusterIssuer     *apiextensions.CustomResource `pulumi:"clusterIssuer"`
+	KarpenterNodeRole *iam.Role                     `pulumi:"karpenterNodeRole"`
 }
 
 // event struct

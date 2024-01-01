@@ -19,8 +19,7 @@ type Cluster struct {
 	pulumi.ResourceState
 
 	// The cluster name
-	ClusterName           pulumi.StringOutput      `pulumi:"clusterName"`
-	ClusterSecurityGroups pulumi.StringArrayOutput `pulumi:"clusterSecurityGroups"`
+	ClusterName pulumi.StringOutput `pulumi:"clusterName"`
 	// The Cluster control plane
 	ControlPlane eks.ClusterOutput `pulumi:"controlPlane"`
 	// The role created for karpenter nodes.
@@ -253,10 +252,6 @@ func (o ClusterOutput) ToOutput(ctx context.Context) pulumix.Output[*Cluster] {
 // The cluster name
 func (o ClusterOutput) ClusterName() pulumi.StringOutput {
 	return o.ApplyT(func(v *Cluster) pulumi.StringOutput { return v.ClusterName }).(pulumi.StringOutput)
-}
-
-func (o ClusterOutput) ClusterSecurityGroups() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Cluster) pulumi.StringArrayOutput { return v.ClusterSecurityGroups }).(pulumi.StringArrayOutput)
 }
 
 // The Cluster control plane

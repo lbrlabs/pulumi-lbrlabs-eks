@@ -19,9 +19,6 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Output("clusterName")]
         public Output<string> ClusterName { get; private set; } = null!;
 
-        [Output("clusterSecurityGroups")]
-        public Output<ImmutableArray<string>> ClusterSecurityGroups { get; private set; } = null!;
-
         /// <summary>
         /// The Cluster control plane
         /// </summary>

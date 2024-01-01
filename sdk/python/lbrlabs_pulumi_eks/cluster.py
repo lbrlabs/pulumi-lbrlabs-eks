@@ -377,7 +377,6 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
             __props__.__dict__["tags"] = tags
             __props__.__dict__["cluster_name"] = None
-            __props__.__dict__["cluster_security_groups"] = None
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["karpenter_node_role"] = None
             __props__.__dict__["kubeconfig"] = None
@@ -397,11 +396,6 @@ class Cluster(pulumi.ComponentResource):
         The cluster name
         """
         return pulumi.get(self, "cluster_name")
-
-    @property
-    @pulumi.getter(name="clusterSecurityGroups")
-    def cluster_security_groups(self) -> pulumi.Output[Sequence[str]]:
-        return pulumi.get(self, "cluster_security_groups")
 
     @property
     @pulumi.getter(name="controlPlane")
