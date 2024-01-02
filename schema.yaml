@@ -147,6 +147,12 @@ resources:
         type: string
         description: The capacity type of the nodegroup.
         default: "ON_DEMAND"
+      releaseVersion:
+        type: string
+        description: The release version for the nodegroup.
+      amiType:
+        type: string
+        description: The AMI Type for the nodegroup.
       tags:
         type: object
         additionalProperties:

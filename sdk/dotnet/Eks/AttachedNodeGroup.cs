@@ -49,6 +49,12 @@ namespace Lbrlabs.PulumiPackage.Eks
     public sealed class AttachedNodeGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
+        /// The AMI Type for the nodegroup.
+        /// </summary>
+        [Input("amiType")]
+        public Input<string>? AmiType { get; set; }
+
+        /// <summary>
         /// The capacity type of the nodegroup.
         /// </summary>
         [Input("capacityType")]
@@ -85,6 +91,12 @@ namespace Lbrlabs.PulumiPackage.Eks
             get => _labels ?? (_labels = new InputMap<string>());
             set => _labels = value;
         }
+
+        /// <summary>
+        /// The release version for the nodegroup.
+        /// </summary>
+        [Input("releaseVersion")]
+        public Input<string>? ReleaseVersion { get; set; }
 
         [Input("scalingConfig")]
         public Input<Pulumi.Aws.Eks.Inputs.NodeGroupScalingConfigArgs>? ScalingConfig { get; set; }

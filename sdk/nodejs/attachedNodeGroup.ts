@@ -41,11 +41,13 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
             if ((!args || args.subnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'subnetIds'");
             }
+            resourceInputs["amiType"] = args ? args.amiType : undefined;
             resourceInputs["capacityType"] = (args ? args.capacityType : undefined) ?? "ON_DEMAND";
             resourceInputs["clusterName"] = args ? args.clusterName : undefined;
             resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? 20;
             resourceInputs["instanceTypes"] = args ? args.instanceTypes : undefined;
             resourceInputs["labels"] = args ? args.labels : undefined;
+            resourceInputs["releaseVersion"] = args ? args.releaseVersion : undefined;
             resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -66,6 +68,10 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
  */
 export interface AttachedNodeGroupArgs {
     /**
+     * The AMI Type for the nodegroup.
+     */
+    amiType?: pulumi.Input<string>;
+    /**
      * The capacity type of the nodegroup.
      */
     capacityType?: pulumi.Input<string>;
@@ -82,6 +88,10 @@ export interface AttachedNodeGroupArgs {
      * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
      */
     labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * The release version for the nodegroup.
+     */
+    releaseVersion?: pulumi.Input<string>;
     scalingConfig?: pulumi.Input<pulumiAws.types.input.eks.NodeGroupScalingConfig>;
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**

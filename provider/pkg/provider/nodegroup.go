@@ -20,6 +20,8 @@ type NodeGroupArgs struct {
 	NodeDesiredCount *pulumi.IntInput                `pulumi:"nodeDesiredCount"`
 	Taints           eks.NodeGroupTaintArrayInput    `pulumi:"taints"`
 	Labels           pulumi.StringMapInput           `pulumi:"labels"`
+	AMIType          pulumi.StringPtrInput           `pulumi:"amiType"`
+	ReleaseVersion   pulumi.StringPtrInput           `pulumi:"releaseVersion"`
 	ScalingConfig    eks.NodeGroupScalingConfigInput `pulumi:"scalingConfig"`
 	Tags             *pulumi.StringMapInput          `pulumi:"tags"`
 }
@@ -151,16 +153,18 @@ func NewNodeGroup(ctx *pulumi.Context,
 	}
 
 	nodeGroup, err := eks.NewNodeGroup(ctx, fmt.Sprintf("%s-nodes", name), &eks.NodeGroupArgs{
-		ClusterName:   args.ClusterName,
-		SubnetIds:     args.SubnetIds,
-		CapacityType:  capacityType,
-		NodeRoleArn:   nodeRole.Arn,
-		DiskSize:      diskSize,
-		Taints:        args.Taints,
-		InstanceTypes: instanceTypes,
-		Labels:        args.Labels,
-		ScalingConfig: args.ScalingConfig,
-		Tags:          tags,
+		ClusterName:    args.ClusterName,
+		SubnetIds:      args.SubnetIds,
+		CapacityType:   capacityType,
+		NodeRoleArn:    nodeRole.Arn,
+		AmiType:        args.AMIType,
+		DiskSize:       diskSize,
+		ReleaseVersion: args.ReleaseVersion,
+		Taints:         args.Taints,
+		InstanceTypes:  instanceTypes,
+		Labels:         args.Labels,
+		ScalingConfig:  args.ScalingConfig,
+		Tags:           tags,
 	},
 		pulumi.Parent(component),
 		pulumi.IgnoreChanges([]string{"scalingConfig"}),

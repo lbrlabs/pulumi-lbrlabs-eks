@@ -51,6 +51,8 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 }
 
 type attachedNodeGroupArgs struct {
+	// The AMI Type for the nodegroup.
+	AmiType *string `pulumi:"amiType"`
 	// The capacity type of the nodegroup.
 	CapacityType *string `pulumi:"capacityType"`
 	// The cluster name to attach the nodegroup tp.
@@ -59,9 +61,11 @@ type attachedNodeGroupArgs struct {
 	DiskSize      *float64 `pulumi:"diskSize"`
 	InstanceTypes []string `pulumi:"instanceTypes"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
-	Labels        map[string]string           `pulumi:"labels"`
-	ScalingConfig *eks.NodeGroupScalingConfig `pulumi:"scalingConfig"`
-	SubnetIds     []string                    `pulumi:"subnetIds"`
+	Labels map[string]string `pulumi:"labels"`
+	// The release version for the nodegroup.
+	ReleaseVersion *string                     `pulumi:"releaseVersion"`
+	ScalingConfig  *eks.NodeGroupScalingConfig `pulumi:"scalingConfig"`
+	SubnetIds      []string                    `pulumi:"subnetIds"`
 	// Key-value map of tags to apply to the nodegroup.
 	Tags   map[string]string    `pulumi:"tags"`
 	Taints []eks.NodeGroupTaint `pulumi:"taints"`
@@ -69,6 +73,8 @@ type attachedNodeGroupArgs struct {
 
 // The set of arguments for constructing a AttachedNodeGroup resource.
 type AttachedNodeGroupArgs struct {
+	// The AMI Type for the nodegroup.
+	AmiType pulumix.Input[*string]
 	// The capacity type of the nodegroup.
 	CapacityType pulumix.Input[*string]
 	// The cluster name to attach the nodegroup tp.
@@ -77,9 +83,11 @@ type AttachedNodeGroupArgs struct {
 	DiskSize      pulumix.Input[*float64]
 	InstanceTypes pulumix.Input[[]string]
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
-	Labels        pulumix.Input[map[string]string]
-	ScalingConfig pulumix.Input[*eks.NodeGroupScalingConfigArgs]
-	SubnetIds     pulumix.Input[[]string]
+	Labels pulumix.Input[map[string]string]
+	// The release version for the nodegroup.
+	ReleaseVersion pulumix.Input[*string]
+	ScalingConfig  pulumix.Input[*eks.NodeGroupScalingConfigArgs]
+	SubnetIds      pulumix.Input[[]string]
 	// Key-value map of tags to apply to the nodegroup.
 	Tags   pulumix.Input[map[string]string]
 	Taints pulumix.Input[[]*eks.NodeGroupTaintArgs]
