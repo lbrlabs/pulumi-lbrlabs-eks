@@ -16,62 +16,78 @@ resources:
           cidrMask: 19
           tags:
             "kubernetes.io/role/internal-elb": "1"
+            "karpenter.sh/discovery": "cluster"
   cluster:
     type: lbrlabs-eks:index:Cluster
     properties:
       clusterSubnetIds: ${vpc.publicSubnetIds}
       systemNodeSubnetIds: ${vpc.privateSubnetIds}
-      systemNodeInstanceTypes: [ "t3.large" ]
-      systemNodeDesiredCount: 4
+      systemNodeInstanceTypes: [ "t3.medium" ]
+      systemNodeDesiredCount: 2
       letsEncryptEmail: "mail@lbrlabs.com"
-  workloadNodes:
-    type: lbrlabs-eks:index:AttachedNodeGroup
-    properties:
-      clusterName: ${cluster.controlPlane.name}
-      subnetIds: ${vpc.privateSubnetIds}
-      scalingConfig:
-        desiredSize: 3
-        maxSize: 10
-        minSize: 1
+      enableKarpenter: true
+      tags:
+        example: "yaml"
   provider:
     type: pulumi:providers:kubernetes
     properties:
       kubeconfig: ${cluster.kubeconfig}
-  rolemapping:
-    type: lbrlabs-eks:index:IamRoleMapping
+  autoscaled-nodes:
+    type: lbrlabs-eks:index:AutoscaledNodeGroup
     properties:
-      roleArn: ${workloadNodes.nodeRole.arn}
-      username: system:node:{{EC2PrivateDNSName}}
-      groups:
-        - system:bootstrappers
-        - system:nodes
+      nodeRole: ${cluster.karpenterNodeRole.name}
+      securityGroupIds: [ "${cluster.controlPlane.vpcConfig.clusterSecurityGroupId}" ]
+      subnetIds: "${vpc.privateSubnetIds}"
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["t"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["2"]
     options:
       provider: ${provider}
-  fargateProfile:
-    type: lbrlabs-eks:index:AttachedFargateProfile
-    properties:
-      clusterName: ${cluster.controlPlane.name}
-      subnetIds: ${vpc.privateSubnetIds}
-      selectors: [ namespace: kube-system ]
-  wordpress:
-    type: kubernetes:helm.sh/v3:Release
-    properties:
-      chart: wordpress
-      repositoryOpts:
-        repo: https://charts.bitnami.com/bitnami
-      values:
-        wordpressUsername: lbrlabs
-        wordpressPassword: correct-horse-battery-stable
-        wordpressEmail: mail@lbrlabs.com
-        ingress:
-          enabled: true
-          ingressClassName: external
-          hostname: wordpress.aws.briggs.work # this domain must in exist in route53
-          tls: true
-          annotations:
-            "cert-manager.io/cluster-issuer": "letsencrypt-prod"
-            "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
-    options:
-      provider: ${provider}
+  # workloadnodes:
+  #   type: lbrlabs-eks:index:AttachedNodeGroup
+  #   properties:
+  #     clusterName: ${cluster.controlPlane.name}
+  #     subnetIds: ${vpc.privateSubnetIds}
+  #     scalingConfig:
+  #       desiredSize: 3
+  #       maxSize: 10
+  #       minSize: 1
+  #   options:
+  #     provider: ${provider}
+  # wordpress:
+  #   type: kubernetes:helm.sh/v3:Release
+  #   properties:
+  #     chart: wordpress
+  #     repositoryOpts:
+  #       repo: https://charts.bitnami.com/bitnami
+  #     values:
+  #       wordpressUsername: lbrlabs
+  #       wordpressPassword: correct-horse-battery-stable
+  #       wordpressEmail: mail@lbrlabs.com
+  #       ingress:
+  #         enabled: true
+  #         ingressClassName: external
+  #         hostname: wordpress.lbrlabs.xyz # this domain must in exist in route53
+  #         tls: true
+  #         annotations:
+  #           "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+  #           "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+  #   options:
+  #     provider: ${provider}
 outputs:
   kubeconfig: ${cluster.kubeconfig}
+  securityGroupId: ${cluster.controlPlane.vpcConfig.clusterSecurityGroupId}
+  privateSubnetIds: ${vpc.privateSubnetIds}

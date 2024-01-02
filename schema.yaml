@@ -14,6 +14,22 @@ keywords:
   - kind/component
   - category/cloud
 repository: "https://github.com/lbrlabs/pulumi-lbrlabs-eks"
+types:
+  lbrlabs-eks:index:Requirement:
+    description: Represents a single requirement with key, operator, and values.
+    type: object
+    properties:
+      key:
+        type: string
+        description: "The key of the requirement."
+      operator:
+        type: string
+        description: "The operator for the requirement (e.g., In, Gt)."
+      values:
+        type: array
+        items:
+          type: string
+        description: "The list of values for the requirement."
 resources:
   lbrlabs-eks:index:Cluster:
     isComponent: true
@@ -62,6 +78,11 @@ resources:
         description: Whether to enable cert-manager with route 53 integration.
         default: true
         plain: true
+      enableKarpenter:
+        type: boolean
+        description: Whether to enable karpenter.
+        default: true
+        plain: true
       lbType:
         type: "string"
         description: The type of loadbalancer to provision.
@@ -93,6 +114,9 @@ resources:
       systemNodes:
         "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
         "description": The system node group.
+      karpenterNodeRole:
+        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "description": The role created for karpenter nodes.
       # clusterIssuer:
       #   "$ref": "/kubernetes/v3.29.1/schema.json#/resources/kubernetes:apiextensions.k8s.io:CustomResource"
     required:
@@ -232,6 +256,40 @@ resources:
     required:
       - role
       - profile
+  lbrlabs-eks:index:AutoscaledNodeGroup:
+    isComponent: true
+    inputProperties:
+      annotations:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Annotations to apply to the node group."
+      amiFamily:
+        type: string
+        description: "AMI family for the node group."
+      nodeRole:
+        type: string
+        description: "Node role for the node group."
+      subnetIds:
+        type: array
+        items:
+          type: string
+        description: "List of subnet selector terms for the node group."
+      securityGroupIds:
+        type: array
+        items:
+          type: string
+        description: "List of security group selector terms for the node group."
+      requirements:
+        type: array
+        items:
+          "$ref": "#/types/lbrlabs-eks:index:Requirement"
+        description: "List of requirements for the node group."
+    requiredInputs:
+      - nodeRole
+      - subnetIds
+      - securityGroupIds
+      - requirements
 language:
   csharp:
     packageReferences:

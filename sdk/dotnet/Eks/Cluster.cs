@@ -26,6 +26,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Output<Pulumi.Aws.Eks.Cluster> ControlPlane { get; private set; } = null!;
 
         /// <summary>
+        /// The role created for karpenter nodes.
+        /// </summary>
+        [Output("karpenterNodeRole")]
+        public Output<Pulumi.Aws.Iam.Role?> KarpenterNodeRole { get; private set; } = null!;
+
+        /// <summary>
         /// The kubeconfig for this cluster.
         /// </summary>
         [Output("kubeconfig")]
@@ -105,6 +111,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableExternalDns { get; set; }
 
         /// <summary>
+        /// Whether to enable karpenter.
+        /// </summary>
+        [Input("enableKarpenter")]
+        public bool? EnableKarpenter { get; set; }
+
+        /// <summary>
         /// Whether to enable the OTEL Distro for EKS.
         /// </summary>
         [Input("enableOtel")]
@@ -173,6 +185,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableCertManager = true;
             EnableCloudWatchAgent = false;
             EnableExternalDns = true;
+            EnableKarpenter = true;
             EnableOtel = false;
             LbType = "nlb";
         }

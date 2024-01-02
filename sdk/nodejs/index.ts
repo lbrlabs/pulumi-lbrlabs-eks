@@ -15,6 +15,11 @@ export type AttachedNodeGroup = import("./attachedNodeGroup").AttachedNodeGroup;
 export const AttachedNodeGroup: typeof import("./attachedNodeGroup").AttachedNodeGroup = null as any;
 utilities.lazyLoad(exports, ["AttachedNodeGroup"], () => require("./attachedNodeGroup"));
 
+export { AutoscaledNodeGroupArgs } from "./autoscaledNodeGroup";
+export type AutoscaledNodeGroup = import("./autoscaledNodeGroup").AutoscaledNodeGroup;
+export const AutoscaledNodeGroup: typeof import("./autoscaledNodeGroup").AutoscaledNodeGroup = null as any;
+utilities.lazyLoad(exports, ["AutoscaledNodeGroup"], () => require("./autoscaledNodeGroup"));
+
 export { ClusterArgs } from "./cluster";
 export type Cluster = import("./cluster").Cluster;
 export const Cluster: typeof import("./cluster").Cluster = null as any;
@@ -36,6 +41,13 @@ export const Provider: typeof import("./provider").Provider = null as any;
 utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
 
+// Export sub-modules:
+import * as types from "./types";
+
+export {
+    types,
+};
+
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
@@ -44,6 +56,8 @@ const _module = {
                 return new AttachedFargateProfile(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:AttachedNodeGroup":
                 return new AttachedNodeGroup(name, <any>undefined, { urn })
+            case "lbrlabs-eks:index:AutoscaledNodeGroup":
+                return new AutoscaledNodeGroup(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:Cluster":
                 return new Cluster(name, <any>undefined, { urn })
             case "lbrlabs-eks:index:IamRoleMapping":

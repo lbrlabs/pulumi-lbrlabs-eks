@@ -21,6 +21,7 @@ class ClusterArgs:
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
@@ -35,6 +36,7 @@ class ClusterArgs:
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
@@ -59,6 +61,10 @@ class ClusterArgs:
             enable_external_dns = True
         if enable_external_dns is not None:
             pulumi.set(__self__, "enable_external_dns", enable_external_dns)
+        if enable_karpenter is None:
+            enable_karpenter = True
+        if enable_karpenter is not None:
+            pulumi.set(__self__, "enable_karpenter", enable_karpenter)
         if enable_otel is None:
             enable_otel = False
         if enable_otel is not None:
@@ -145,6 +151,18 @@ class ClusterArgs:
     @enable_external_dns.setter
     def enable_external_dns(self, value: Optional[bool]):
         pulumi.set(self, "enable_external_dns", value)
+
+    @property
+    @pulumi.getter(name="enableKarpenter")
+    def enable_karpenter(self) -> Optional[bool]:
+        """
+        Whether to enable karpenter.
+        """
+        return pulumi.get(self, "enable_karpenter")
+
+    @enable_karpenter.setter
+    def enable_karpenter(self, value: Optional[bool]):
+        pulumi.set(self, "enable_karpenter", value)
 
     @property
     @pulumi.getter(name="enableOtel")
@@ -250,6 +268,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
@@ -268,6 +287,7 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
@@ -304,6 +324,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[pulumi.Input[str]] = None,
@@ -337,6 +358,9 @@ class Cluster(pulumi.ComponentResource):
             if enable_external_dns is None:
                 enable_external_dns = True
             __props__.__dict__["enable_external_dns"] = enable_external_dns
+            if enable_karpenter is None:
+                enable_karpenter = True
+            __props__.__dict__["enable_karpenter"] = enable_karpenter
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
@@ -354,6 +378,7 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["tags"] = tags
             __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
+            __props__.__dict__["karpenter_node_role"] = None
             __props__.__dict__["kubeconfig"] = None
             __props__.__dict__["oidc_provider"] = None
             __props__.__dict__["system_nodes"] = None
@@ -379,6 +404,14 @@ class Cluster(pulumi.ComponentResource):
         The Cluster control plane
         """
         return pulumi.get(self, "control_plane")
+
+    @property
+    @pulumi.getter(name="karpenterNodeRole")
+    def karpenter_node_role(self) -> pulumi.Output[Optional['pulumi_aws.iam.Role']]:
+        """
+        The role created for karpenter nodes.
+        """
+        return pulumi.get(self, "karpenter_node_role")
 
     @property
     @pulumi.getter

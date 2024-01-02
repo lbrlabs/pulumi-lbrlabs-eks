@@ -22,6 +22,8 @@ type Cluster struct {
 	ClusterName pulumi.StringOutput `pulumi:"clusterName"`
 	// The Cluster control plane
 	ControlPlane eks.ClusterOutput `pulumi:"controlPlane"`
+	// The role created for karpenter nodes.
+	KarpenterNodeRole iam.RoleOutput `pulumi:"karpenterNodeRole"`
 	// The kubeconfig for this cluster.
 	Kubeconfig pulumi.StringOutput `pulumi:"kubeconfig"`
 	// The OIDC provider for this cluster.
@@ -55,6 +57,10 @@ func NewCluster(ctx *pulumi.Context,
 		enableExternalDns_ := true
 		args.EnableExternalDns = &enableExternalDns_
 	}
+	if args.EnableKarpenter == nil {
+		enableKarpenter_ := true
+		args.EnableKarpenter = &enableKarpenter_
+	}
 	if args.EnableOtel == nil {
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
@@ -81,6 +87,8 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
+	// Whether to enable karpenter.
+	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
 	// The type of loadbalancer to provision.
@@ -110,6 +118,8 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
+	// Whether to enable karpenter.
+	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
 	// The type of loadbalancer to provision.
@@ -247,6 +257,11 @@ func (o ClusterOutput) ClusterName() pulumi.StringOutput {
 // The Cluster control plane
 func (o ClusterOutput) ControlPlane() eks.ClusterOutput {
 	return o.ApplyT(func(v *Cluster) eks.ClusterOutput { return v.ControlPlane }).(eks.ClusterOutput)
+}
+
+// The role created for karpenter nodes.
+func (o ClusterOutput) KarpenterNodeRole() iam.RoleOutput {
+	return o.ApplyT(func(v *Cluster) iam.RoleOutput { return v.KarpenterNodeRole }).(iam.RoleOutput)
 }
 
 // The kubeconfig for this cluster.

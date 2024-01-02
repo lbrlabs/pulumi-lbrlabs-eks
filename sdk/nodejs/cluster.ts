@@ -30,6 +30,10 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public /*out*/ readonly controlPlane!: pulumi.Output<pulumiAws.eks.Cluster>;
     /**
+     * The role created for karpenter nodes.
+     */
+    public /*out*/ readonly karpenterNodeRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
+    /**
      * The kubeconfig for this cluster.
      */
     public /*out*/ readonly kubeconfig!: pulumi.Output<string>;
@@ -64,6 +68,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
+            resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
@@ -75,12 +80,14 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
+            resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
         } else {
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
+            resourceInputs["karpenterNodeRole"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
@@ -111,6 +118,10 @@ export interface ClusterArgs {
      * Whether to enable external dns with route 53 integration.
      */
     enableExternalDns?: boolean;
+    /**
+     * Whether to enable karpenter.
+     */
+    enableKarpenter?: boolean;
     /**
      * Whether to enable the OTEL Distro for EKS.
      */

@@ -22,6 +22,8 @@ type Cluster struct {
 	ClusterName pulumix.Output[string] `pulumi:"clusterName"`
 	// The Cluster control plane
 	ControlPlane pulumix.GPtrOutput[eks.Cluster, eks.ClusterOutput] `pulumi:"controlPlane"`
+	// The role created for karpenter nodes.
+	KarpenterNodeRole pulumix.GPtrOutput[iam.Role, iam.RoleOutput] `pulumi:"karpenterNodeRole"`
 	// The kubeconfig for this cluster.
 	Kubeconfig pulumix.Output[string] `pulumi:"kubeconfig"`
 	// The OIDC provider for this cluster.
@@ -55,6 +57,10 @@ func NewCluster(ctx *pulumi.Context,
 		enableExternalDns_ := true
 		args.EnableExternalDns = &enableExternalDns_
 	}
+	if args.EnableKarpenter == nil {
+		enableKarpenter_ := true
+		args.EnableKarpenter = &enableKarpenter_
+	}
 	if args.EnableOtel == nil {
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
@@ -81,6 +87,8 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
+	// Whether to enable karpenter.
+	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
 	// The type of loadbalancer to provision.
@@ -110,6 +118,8 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
+	// Whether to enable karpenter.
+	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
 	// The type of loadbalancer to provision.
@@ -163,6 +173,13 @@ func (o ClusterOutput) ControlPlane() pulumix.GPtrOutput[eks.Cluster, eks.Cluste
 	value := pulumix.Apply[Cluster](o, func(v Cluster) pulumix.GPtrOutput[eks.Cluster, eks.ClusterOutput] { return v.ControlPlane })
 	unwrapped := pulumix.Flatten[*eks.Cluster, pulumix.GPtrOutput[eks.Cluster, eks.ClusterOutput]](value)
 	return pulumix.GPtrOutput[eks.Cluster, eks.ClusterOutput]{OutputState: unwrapped.OutputState}
+}
+
+// The role created for karpenter nodes.
+func (o ClusterOutput) KarpenterNodeRole() pulumix.GPtrOutput[iam.Role, iam.RoleOutput] {
+	value := pulumix.Apply[Cluster](o, func(v Cluster) pulumix.GPtrOutput[iam.Role, iam.RoleOutput] { return v.KarpenterNodeRole })
+	unwrapped := pulumix.Flatten[*iam.Role, pulumix.GPtrOutput[iam.Role, iam.RoleOutput]](value)
+	return pulumix.GPtrOutput[iam.Role, iam.RoleOutput]{OutputState: unwrapped.OutputState}
 }
 
 // The kubeconfig for this cluster.
