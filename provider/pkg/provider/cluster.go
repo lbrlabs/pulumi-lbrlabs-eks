@@ -38,7 +38,7 @@ type ClusterArgs struct {
 	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager       bool                     `pulumi:"enableCertManager"`
 	EnableKarpenter         bool                     `pulumi:"enableKarpenter"`
-	LetsEncryptEmail        *pulumi.StringInput      `pulumi:"letsEncryptEmail"`
+	LetsEncryptEmail        string                   `pulumi:"letsEncryptEmail"`
 	LbType                  pulumi.StringInput       `pulumi:"lbType"`
 	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
 	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
@@ -97,7 +97,7 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error getting partition: %w", err)
 	}
 
-	region, err := aws.GetRegion(ctx, nil, nil)
+	region, err := aws.GetRegion(ctx, nil, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error getting region: %w", err)
 	}
@@ -791,10 +791,6 @@ func NewCluster(ctx *pulumi.Context,
 
 	if args.EnableCertManager {
 
-		if args.LetsEncryptEmail == nil {
-			return nil, fmt.Errorf("lets encrypt email must be set if cert manager is enabled")
-		}
-
 		certManagerRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-cert-manager-role", name), &IamServiceAccountRoleArgs{
 			OidcProviderArn:    oidcProvider.Arn,
 			OidcProviderURL:    oidcProvider.Url,
@@ -942,38 +938,48 @@ func NewCluster(ctx *pulumi.Context,
 
 		_ = certManager
 
-		clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
-			ApiVersion: pulumi.String("cert-manager.io/v1"),
-			Kind:       pulumi.String("ClusterIssuer"),
-			Metadata: &metav1.ObjectMetaArgs{
-				Name: pulumi.String("letsencrypt-prod"),
-			},
-			OtherFields: map[string]interface{}{
-				"spec": map[string]interface{}{
-					"acme": map[string]interface{}{
-						"email":  args.LetsEncryptEmail,
-						"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
-						"privateKeySecretRef": map[string]interface{}{
-							"name": pulumi.String("letsencrypt"),
-						},
-						"solvers": []interface{}{
-							map[string]interface{}{
-								"dns01": map[string]interface{}{
-									"route53": map[string]interface{}{
-										"region": region.Name,
+		if args.LetsEncryptEmail == "" {
+
+			err = ctx.Log.Info("No LetsEncrypt email provided, skipping cluster issuer creation", &pulumi.LogArgs{Resource: component})
+			if err != nil {
+				return nil, fmt.Errorf("error logging: %w", err)
+			}
+
+		} else {
+
+			clusterIssuer, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-cluster-issuer", name), &apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("cert-manager.io/v1"),
+				Kind:       pulumi.String("ClusterIssuer"),
+				Metadata: &metav1.ObjectMetaArgs{
+					Name: pulumi.String("letsencrypt-prod"),
+				},
+				OtherFields: map[string]interface{}{
+					"spec": map[string]interface{}{
+						"acme": map[string]interface{}{
+							"email":  args.LetsEncryptEmail,
+							"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
+							"privateKeySecretRef": map[string]interface{}{
+								"name": pulumi.String("letsencrypt"),
+							},
+							"solvers": []interface{}{
+								map[string]interface{}{
+									"dns01": map[string]interface{}{
+										"route53": map[string]interface{}{
+											"region": pulumi.String(region.Name),
+										},
 									},
 								},
 							},
 						},
 					},
 				},
-			},
-		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
-		if err != nil {
-			return nil, fmt.Errorf("error installing cluster issuer: %w", err)
-		}
+			}, pulumi.DeletedWith(controlPlane), pulumi.Parent(certManager), pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
+			if err != nil {
+				return nil, fmt.Errorf("error installing cluster issuer: %w", err)
+			}
 
-		_ = clusterIssuer
+			_ = clusterIssuer
+		}
 	}
 
 	if args.EnableCloudWatchAgent {

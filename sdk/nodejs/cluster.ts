@@ -133,7 +133,7 @@ export interface ClusterArgs {
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
-    letsEncryptEmail?: pulumi.Input<string>;
+    letsEncryptEmail?: string;
     /**
      * The initial number of nodes in the system autoscaling group.
      */

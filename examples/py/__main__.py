@@ -31,11 +31,12 @@ cluster = lbrlabs_eks.Cluster(
     system_node_subnet_ids=vpc.private_subnet_ids,
     system_node_instance_types=["t3.large"],
     system_node_desired_count=4,
-    lets_encrypt_email="mail@lbrlabs.com",
 )
 
+provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
+
 workload_nodes = lbrlabs_eks.AttachedNodeGroup(
-    "workloadNodes",
+    "workload",
     cluster_name=cluster.control_plane.name,
     subnet_ids=vpc.private_subnet_ids,
     scaling_config=aws.eks.NodeGroupScalingConfigArgs(
@@ -43,9 +44,11 @@ workload_nodes = lbrlabs_eks.AttachedNodeGroup(
         max_size=10,
         min_size=1,
     ),
+    opts=pulumi.ResourceOptions(
+        parent=cluster,
+        providers={"kubernetes": provider},
+    ),
 )
-
-provider = kubernetes.Provider("provider", kubeconfig=cluster.kubeconfig)
 
 wordpress = kubernetes.helm.v3.Release(
     "wordpress",

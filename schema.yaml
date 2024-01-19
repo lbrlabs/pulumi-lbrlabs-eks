@@ -37,6 +37,7 @@ resources:
       letsEncryptEmail:
         type: string
         description: The email address to use to issue certificates from Lets Encrypt.
+        plain: true
       clusterSubnetIds:
         type: array
         items:

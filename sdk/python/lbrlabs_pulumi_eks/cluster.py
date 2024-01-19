@@ -24,7 +24,7 @@ class ClusterArgs:
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
-                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
+                 lets_encrypt_email: Optional[str] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -39,7 +39,7 @@ class ClusterArgs:
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
-        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -190,14 +190,14 @@ class ClusterArgs:
 
     @property
     @pulumi.getter(name="letsEncryptEmail")
-    def lets_encrypt_email(self) -> Optional[pulumi.Input[str]]:
+    def lets_encrypt_email(self) -> Optional[str]:
         """
         The email address to use to issue certificates from Lets Encrypt.
         """
         return pulumi.get(self, "lets_encrypt_email")
 
     @lets_encrypt_email.setter
-    def lets_encrypt_email(self, value: Optional[pulumi.Input[str]]):
+    def lets_encrypt_email(self, value: Optional[str]):
         pulumi.set(self, "lets_encrypt_email", value)
 
     @property
@@ -271,7 +271,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
-                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
+                 lets_encrypt_email: Optional[str] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -290,7 +290,7 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
-        :param pulumi.Input[str] lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -327,7 +327,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
-                 lets_encrypt_email: Optional[pulumi.Input[str]] = None,
+                 lets_encrypt_email: Optional[str] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,

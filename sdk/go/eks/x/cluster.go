@@ -125,7 +125,7 @@ type ClusterArgs struct {
 	// The type of loadbalancer to provision.
 	LbType pulumix.Input[*string]
 	// The email address to use to issue certificates from Lets Encrypt.
-	LetsEncryptEmail pulumix.Input[*string]
+	LetsEncryptEmail *string
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  pulumix.Input[*float64]
 	SystemNodeInstanceTypes pulumix.Input[[]string]
