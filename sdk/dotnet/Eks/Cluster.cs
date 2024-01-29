@@ -79,6 +79,12 @@ namespace Lbrlabs.PulumiPackage.Eks
     public sealed class ClusterArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
+        /// The version of the cert-manager helm chart to deploy.
+        /// </summary>
+        [Input("certManagerVersion")]
+        public Input<string>? CertManagerVersion { get; set; }
+
+        /// <summary>
         /// The ARN of the certificate to use for the ingress controller.
         /// </summary>
         [Input("certificateArn")]
@@ -91,6 +97,12 @@ namespace Lbrlabs.PulumiPackage.Eks
             get => _clusterSubnetIds ?? (_clusterSubnetIds = new InputList<string>());
             set => _clusterSubnetIds = value;
         }
+
+        /// <summary>
+        /// The version of the eks-iam-auth-controller helm chart to deploy.
+        /// </summary>
+        [Input("eksIamAuthControllerVersion")]
+        public Input<string>? EksIamAuthControllerVersion { get; set; }
 
         /// <summary>
         /// Whether to enable cert-manager with route 53 integration.
@@ -123,6 +135,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableOtel { get; set; }
 
         /// <summary>
+        /// The version of the external-dns helm chart to deploy.
+        /// </summary>
+        [Input("externalDNSVersion")]
+        public Input<string>? ExternalDNSVersion { get; set; }
+
+        /// <summary>
         /// The type of loadbalancer to provision.
         /// </summary>
         [Input("lbType")]
@@ -133,6 +151,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// </summary>
         [Input("letsEncryptEmail")]
         public string? LetsEncryptEmail { get; set; }
+
+        /// <summary>
+        /// The version of the nginx ingress controller helm chart to deploy.
+        /// </summary>
+        [Input("nginxIngressVersion")]
+        public Input<string>? NginxIngressVersion { get; set; }
 
         /// <summary>
         /// The initial number of nodes in the system autoscaling group.

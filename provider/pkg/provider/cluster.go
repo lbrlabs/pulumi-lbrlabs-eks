@@ -26,22 +26,26 @@ import (
 
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
-	ClusterSubnetIds        pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
-	SystemNodeSubnetIds     pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
-	SystemNodeInstanceTypes *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
-	SystemNodeMaxCount      *pulumi.IntInput         `pulumi:"systemNodeMaxCount"`
-	SystemNodeMinCount      *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
-	SystemNodeDesiredCount  *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
-	ClusterVersion          pulumi.StringPtrInput    `pulumi:"clusterVersion"`
-	EnableOtel              bool                     `pulumi:"enableOtel"`
-	EnableCloudWatchAgent   bool                     `pulumi:"enableCloudWatchAgent"`
-	EnableExternalDNS       bool                     `pulumi:"enableExternalDns"`
-	EnableCertManager       bool                     `pulumi:"enableCertManager"`
-	EnableKarpenter         bool                     `pulumi:"enableKarpenter"`
-	LetsEncryptEmail        string                   `pulumi:"letsEncryptEmail"`
-	LbType                  pulumi.StringInput       `pulumi:"lbType"`
-	CertificateArn          *pulumi.StringInput      `pulumi:"certificateArn"`
-	Tags                    *pulumi.StringMapInput   `pulumi:"tags"`
+	ClusterSubnetIds            pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
+	SystemNodeSubnetIds         pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
+	SystemNodeInstanceTypes     *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
+	SystemNodeMaxCount          *pulumi.IntInput         `pulumi:"systemNodeMaxCount"`
+	SystemNodeMinCount          *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
+	SystemNodeDesiredCount      *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
+	ClusterVersion              pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	EnableOtel                  bool                     `pulumi:"enableOtel"`
+	EnableCloudWatchAgent       bool                     `pulumi:"enableCloudWatchAgent"`
+	EnableExternalDNS           bool                     `pulumi:"enableExternalDns"`
+	EnableCertManager           bool                     `pulumi:"enableCertManager"`
+	EnableKarpenter             bool                     `pulumi:"enableKarpenter"`
+	LetsEncryptEmail            string                   `pulumi:"letsEncryptEmail"`
+	LbType                      pulumi.StringInput       `pulumi:"lbType"`
+	CertificateArn              *pulumi.StringInput      `pulumi:"certificateArn"`
+	Tags                        *pulumi.StringMapInput   `pulumi:"tags"`
+	NginxIngressVersion         pulumi.StringInput       `pulumi:"nginxIngressVersion"`
+	EksIamAuthControllerVersion pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
+	ExternalDNSVersion          pulumi.StringInput       `pulumi:"externalDNSVersion"`
+	CertManagerVersion          pulumi.StringInput       `pulumi:"certManagerVersion"`
 }
 
 // The Cluster component resource.
@@ -490,6 +494,7 @@ func NewCluster(ctx *pulumi.Context,
 	_, err = helm.NewRelease(ctx, fmt.Sprintf("%s-aws-auth", name), &helm.ReleaseArgs{
 		Chart:     pulumi.String("rustrial-aws-eks-iam-auth-controller"),
 		Namespace: pulumi.String("kube-system"),
+		Version:   args.EksIamAuthControllerVersion,
 		RepositoryOpts: &helm.RepositoryOptsArgs{
 			Repo: pulumi.String("https://rustrial.github.io/aws-eks-iam-auth-controller"),
 		},
@@ -565,6 +570,7 @@ func NewCluster(ctx *pulumi.Context,
 	nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
+		Version:   args.NginxIngressVersion,
 		FetchArgs: &helm.FetchArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
@@ -638,6 +644,7 @@ func NewCluster(ctx *pulumi.Context,
 	nginxIngressInternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-int", name), helm.ChartArgs{
 		Chart:     pulumi.String("ingress-nginx"),
 		Namespace: pulumi.String("kube-system"),
+		Version:   args.NginxIngressVersion,
 		FetchArgs: &helm.FetchArgs{
 			Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 		},
@@ -763,6 +770,7 @@ func NewCluster(ctx *pulumi.Context,
 		externalDNS, err := helm.NewRelease(ctx, fmt.Sprintf("%s-external-dns", name), &helm.ReleaseArgs{
 			Chart:     pulumi.String("external-dns"),
 			Namespace: pulumi.String("kube-system"),
+			Version:   args.ExternalDNSVersion,
 			Timeout:   pulumi.Int(600),
 			RepositoryOpts: &helm.RepositoryOptsArgs{
 				Repo: pulumi.String("https://kubernetes-sigs.github.io/external-dns/"),
@@ -879,6 +887,7 @@ func NewCluster(ctx *pulumi.Context,
 			Chart:           pulumi.String("cert-manager"),
 			Namespace:       pulumi.String("kube-system"),
 			DisableCRDHooks: pulumi.Bool(true),
+			Version:         args.CertManagerVersion,
 			SkipAwait:       pulumi.Bool(true), // FIXME: this is a very unreliable chart
 			Timeout:         pulumi.Int(600),
 			RepositoryOpts: &helm.RepositoryOptsArgs{

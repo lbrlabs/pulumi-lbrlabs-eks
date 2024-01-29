@@ -17,14 +17,18 @@ class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
+                 eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -32,14 +36,18 @@ class ClusterArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Cluster resource.
+        :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -47,8 +55,12 @@ class ClusterArgs:
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
+        if cert_manager_version is not None:
+            pulumi.set(__self__, "cert_manager_version", cert_manager_version)
         if certificate_arn is not None:
             pulumi.set(__self__, "certificate_arn", certificate_arn)
+        if eks_iam_auth_controller_version is not None:
+            pulumi.set(__self__, "eks_iam_auth_controller_version", eks_iam_auth_controller_version)
         if enable_cert_manager is None:
             enable_cert_manager = True
         if enable_cert_manager is not None:
@@ -69,12 +81,16 @@ class ClusterArgs:
             enable_otel = False
         if enable_otel is not None:
             pulumi.set(__self__, "enable_otel", enable_otel)
+        if external_dns_version is not None:
+            pulumi.set(__self__, "external_dns_version", external_dns_version)
         if lb_type is None:
             lb_type = 'nlb'
         if lb_type is not None:
             pulumi.set(__self__, "lb_type", lb_type)
         if lets_encrypt_email is not None:
             pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
+        if nginx_ingress_version is not None:
+            pulumi.set(__self__, "nginx_ingress_version", nginx_ingress_version)
         if system_node_desired_count is not None:
             pulumi.set(__self__, "system_node_desired_count", system_node_desired_count)
         if system_node_instance_types is not None:
@@ -105,6 +121,18 @@ class ClusterArgs:
         pulumi.set(self, "system_node_subnet_ids", value)
 
     @property
+    @pulumi.getter(name="certManagerVersion")
+    def cert_manager_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The version of the cert-manager helm chart to deploy.
+        """
+        return pulumi.get(self, "cert_manager_version")
+
+    @cert_manager_version.setter
+    def cert_manager_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "cert_manager_version", value)
+
+    @property
     @pulumi.getter(name="certificateArn")
     def certificate_arn(self) -> Optional[pulumi.Input[str]]:
         """
@@ -115,6 +143,18 @@ class ClusterArgs:
     @certificate_arn.setter
     def certificate_arn(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "certificate_arn", value)
+
+    @property
+    @pulumi.getter(name="eksIamAuthControllerVersion")
+    def eks_iam_auth_controller_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The version of the eks-iam-auth-controller helm chart to deploy.
+        """
+        return pulumi.get(self, "eks_iam_auth_controller_version")
+
+    @eks_iam_auth_controller_version.setter
+    def eks_iam_auth_controller_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "eks_iam_auth_controller_version", value)
 
     @property
     @pulumi.getter(name="enableCertManager")
@@ -177,6 +217,18 @@ class ClusterArgs:
         pulumi.set(self, "enable_otel", value)
 
     @property
+    @pulumi.getter(name="externalDNSVersion")
+    def external_dns_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The version of the external-dns helm chart to deploy.
+        """
+        return pulumi.get(self, "external_dns_version")
+
+    @external_dns_version.setter
+    def external_dns_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "external_dns_version", value)
+
+    @property
     @pulumi.getter(name="lbType")
     def lb_type(self) -> Optional[pulumi.Input[str]]:
         """
@@ -199,6 +251,18 @@ class ClusterArgs:
     @lets_encrypt_email.setter
     def lets_encrypt_email(self, value: Optional[str]):
         pulumi.set(self, "lets_encrypt_email", value)
+
+    @property
+    @pulumi.getter(name="nginxIngressVersion")
+    def nginx_ingress_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The version of the nginx ingress controller helm chart to deploy.
+        """
+        return pulumi.get(self, "nginx_ingress_version")
+
+    @nginx_ingress_version.setter
+    def nginx_ingress_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "nginx_ingress_version", value)
 
     @property
     @pulumi.getter(name="systemNodeDesiredCount")
@@ -263,15 +327,19 @@ class Cluster(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -283,14 +351,18 @@ class Cluster(pulumi.ComponentResource):
         Create a Cluster resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
+        :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -319,15 +391,19 @@ class Cluster(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[float]] = None,
@@ -345,10 +421,12 @@ class Cluster(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = ClusterArgs.__new__(ClusterArgs)
 
+            __props__.__dict__["cert_manager_version"] = cert_manager_version
             __props__.__dict__["certificate_arn"] = certificate_arn
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
+            __props__.__dict__["eks_iam_auth_controller_version"] = eks_iam_auth_controller_version
             if enable_cert_manager is None:
                 enable_cert_manager = True
             __props__.__dict__["enable_cert_manager"] = enable_cert_manager
@@ -364,10 +442,12 @@ class Cluster(pulumi.ComponentResource):
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
+            __props__.__dict__["external_dns_version"] = external_dns_version
             if lb_type is None:
                 lb_type = 'nlb'
             __props__.__dict__["lb_type"] = lb_type
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
+            __props__.__dict__["nginx_ingress_version"] = nginx_ingress_version
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types
             __props__.__dict__["system_node_max_count"] = system_node_max_count

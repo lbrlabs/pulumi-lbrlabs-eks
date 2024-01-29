@@ -42,6 +42,18 @@ resources:
         type: array
         items:
           type: string
+      nginxIngressVersion:
+        type: string
+        description: The version of the nginx ingress controller helm chart to deploy.
+      eksIamAuthControllerVersion:
+        type: string
+        description: The version of the eks-iam-auth-controller helm chart to deploy.
+      externalDNSVersion:
+        type: string
+        description: The version of the external-dns helm chart to deploy.
+      certManagerVersion:
+        type: string
+        description: The version of the cert-manager helm chart to deploy.
       systemNodeSubnetIds:
         type: array
         items:

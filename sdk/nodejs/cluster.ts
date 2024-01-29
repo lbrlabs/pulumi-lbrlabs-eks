@@ -63,15 +63,19 @@ export class Cluster extends pulumi.ComponentResource {
             if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
+            resourceInputs["certManagerVersion"] = args ? args.certManagerVersion : undefined;
             resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
+            resourceInputs["eksIamAuthControllerVersion"] = args ? args.eksIamAuthControllerVersion : undefined;
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
             resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
+            resourceInputs["externalDNSVersion"] = args ? args.externalDNSVersion : undefined;
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
+            resourceInputs["nginxIngressVersion"] = args ? args.nginxIngressVersion : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
             resourceInputs["systemNodeMaxCount"] = args ? args.systemNodeMaxCount : undefined;
@@ -102,10 +106,18 @@ export class Cluster extends pulumi.ComponentResource {
  */
 export interface ClusterArgs {
     /**
+     * The version of the cert-manager helm chart to deploy.
+     */
+    certManagerVersion?: pulumi.Input<string>;
+    /**
      * The ARN of the certificate to use for the ingress controller.
      */
     certificateArn?: pulumi.Input<string>;
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The version of the eks-iam-auth-controller helm chart to deploy.
+     */
+    eksIamAuthControllerVersion?: pulumi.Input<string>;
     /**
      * Whether to enable cert-manager with route 53 integration.
      */
@@ -127,6 +139,10 @@ export interface ClusterArgs {
      */
     enableOtel?: boolean;
     /**
+     * The version of the external-dns helm chart to deploy.
+     */
+    externalDNSVersion?: pulumi.Input<string>;
+    /**
      * The type of loadbalancer to provision.
      */
     lbType?: pulumi.Input<string>;
@@ -134,6 +150,10 @@ export interface ClusterArgs {
      * The email address to use to issue certificates from Lets Encrypt.
      */
     letsEncryptEmail?: string;
+    /**
+     * The version of the nginx ingress controller helm chart to deploy.
+     */
+    nginxIngressVersion?: pulumi.Input<string>;
     /**
      * The initial number of nodes in the system autoscaling group.
      */

@@ -78,9 +78,13 @@ func NewCluster(ctx *pulumi.Context,
 }
 
 type clusterArgs struct {
+	// The version of the cert-manager helm chart to deploy.
+	CertManagerVersion *string `pulumi:"certManagerVersion"`
 	// The ARN of the certificate to use for the ingress controller.
 	CertificateArn   *string  `pulumi:"certificateArn"`
 	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
+	// The version of the eks-iam-auth-controller helm chart to deploy.
+	EksIamAuthControllerVersion *string `pulumi:"eksIamAuthControllerVersion"`
 	// Whether to enable cert-manager with route 53 integration.
 	EnableCertManager *bool `pulumi:"enableCertManager"`
 	// Whether to enable cloudwatch container insights for EKS.
@@ -91,10 +95,14 @@ type clusterArgs struct {
 	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool `pulumi:"enableOtel"`
+	// The version of the external-dns helm chart to deploy.
+	ExternalDNSVersion *string `pulumi:"externalDNSVersion"`
 	// The type of loadbalancer to provision.
 	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
+	// The version of the nginx ingress controller helm chart to deploy.
+	NginxIngressVersion *string `pulumi:"nginxIngressVersion"`
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  *float64 `pulumi:"systemNodeDesiredCount"`
 	SystemNodeInstanceTypes []string `pulumi:"systemNodeInstanceTypes"`
@@ -109,9 +117,13 @@ type clusterArgs struct {
 
 // The set of arguments for constructing a Cluster resource.
 type ClusterArgs struct {
+	// The version of the cert-manager helm chart to deploy.
+	CertManagerVersion pulumix.Input[*string]
 	// The ARN of the certificate to use for the ingress controller.
 	CertificateArn   pulumix.Input[*string]
 	ClusterSubnetIds pulumix.Input[[]string]
+	// The version of the eks-iam-auth-controller helm chart to deploy.
+	EksIamAuthControllerVersion pulumix.Input[*string]
 	// Whether to enable cert-manager with route 53 integration.
 	EnableCertManager *bool
 	// Whether to enable cloudwatch container insights for EKS.
@@ -122,10 +134,14 @@ type ClusterArgs struct {
 	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.
 	EnableOtel *bool
+	// The version of the external-dns helm chart to deploy.
+	ExternalDNSVersion pulumix.Input[*string]
 	// The type of loadbalancer to provision.
 	LbType pulumix.Input[*string]
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail *string
+	// The version of the nginx ingress controller helm chart to deploy.
+	NginxIngressVersion pulumix.Input[*string]
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  pulumix.Input[*float64]
 	SystemNodeInstanceTypes pulumix.Input[[]string]
