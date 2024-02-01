@@ -66,6 +66,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["certManagerVersion"] = args ? args.certManagerVersion : undefined;
             resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
+            resourceInputs["clusterVersion"] = args ? args.clusterVersion : undefined;
             resourceInputs["eksIamAuthControllerVersion"] = args ? args.eksIamAuthControllerVersion : undefined;
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
@@ -114,6 +115,10 @@ export interface ClusterArgs {
      */
     certificateArn?: pulumi.Input<string>;
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The version of the EKS cluster to create.
+     */
+    clusterVersion?: pulumi.Input<string>;
     /**
      * The version of the eks-iam-auth-controller helm chart to deploy.
      */

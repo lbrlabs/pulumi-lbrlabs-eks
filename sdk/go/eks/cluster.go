@@ -83,6 +83,8 @@ type clusterArgs struct {
 	// The ARN of the certificate to use for the ingress controller.
 	CertificateArn   *string  `pulumi:"certificateArn"`
 	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
+	// The version of the EKS cluster to create.
+	ClusterVersion *string `pulumi:"clusterVersion"`
 	// The version of the eks-iam-auth-controller helm chart to deploy.
 	EksIamAuthControllerVersion *string `pulumi:"eksIamAuthControllerVersion"`
 	// Whether to enable cert-manager with route 53 integration.
@@ -122,6 +124,8 @@ type ClusterArgs struct {
 	// The ARN of the certificate to use for the ingress controller.
 	CertificateArn   pulumi.StringPtrInput
 	ClusterSubnetIds pulumi.StringArrayInput
+	// The version of the EKS cluster to create.
+	ClusterVersion pulumi.StringPtrInput
 	// The version of the eks-iam-auth-controller helm chart to deploy.
 	EksIamAuthControllerVersion pulumi.StringPtrInput
 	// Whether to enable cert-manager with route 53 integration.

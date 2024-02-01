@@ -99,6 +99,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         }
 
         /// <summary>
+        /// The version of the EKS cluster to create.
+        /// </summary>
+        [Input("clusterVersion")]
+        public Input<string>? ClusterVersion { get; set; }
+
+        /// <summary>
         /// The version of the eks-iam-auth-controller helm chart to deploy.
         /// </summary>
         [Input("eksIamAuthControllerVersion")]

@@ -19,6 +19,7 @@ class ClusterArgs:
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
+                 cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
@@ -38,6 +39,7 @@ class ClusterArgs:
         The set of arguments for constructing a Cluster resource.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[str] cluster_version: The version of the EKS cluster to create.
         :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
@@ -59,6 +61,8 @@ class ClusterArgs:
             pulumi.set(__self__, "cert_manager_version", cert_manager_version)
         if certificate_arn is not None:
             pulumi.set(__self__, "certificate_arn", certificate_arn)
+        if cluster_version is not None:
+            pulumi.set(__self__, "cluster_version", cluster_version)
         if eks_iam_auth_controller_version is not None:
             pulumi.set(__self__, "eks_iam_auth_controller_version", eks_iam_auth_controller_version)
         if enable_cert_manager is None:
@@ -143,6 +147,18 @@ class ClusterArgs:
     @certificate_arn.setter
     def certificate_arn(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "certificate_arn", value)
+
+    @property
+    @pulumi.getter(name="clusterVersion")
+    def cluster_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The version of the EKS cluster to create.
+        """
+        return pulumi.get(self, "cluster_version")
+
+    @cluster_version.setter
+    def cluster_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "cluster_version", value)
 
     @property
     @pulumi.getter(name="eksIamAuthControllerVersion")
@@ -330,6 +346,7 @@ class Cluster(pulumi.ComponentResource):
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
@@ -353,6 +370,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[str] cluster_version: The version of the EKS cluster to create.
         :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
@@ -394,6 +412,7 @@ class Cluster(pulumi.ComponentResource):
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
@@ -426,6 +445,7 @@ class Cluster(pulumi.ComponentResource):
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
+            __props__.__dict__["cluster_version"] = cluster_version
             __props__.__dict__["eks_iam_auth_controller_version"] = eks_iam_auth_controller_version
             if enable_cert_manager is None:
                 enable_cert_manager = True
