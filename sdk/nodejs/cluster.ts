@@ -73,6 +73,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
             resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
+            resourceInputs["enabledClusterLogTypes"] = args ? args.enabledClusterLogTypes : undefined;
             resourceInputs["externalDNSVersion"] = args ? args.externalDNSVersion : undefined;
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
@@ -143,6 +144,7 @@ export interface ClusterArgs {
      * Whether to enable the OTEL Distro for EKS.
      */
     enableOtel?: boolean;
+    enabledClusterLogTypes?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * The version of the external-dns helm chart to deploy.
      */

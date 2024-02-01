@@ -140,6 +140,14 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("enableOtel")]
         public bool? EnableOtel { get; set; }
 
+        [Input("enabledClusterLogTypes")]
+        private InputList<string>? _enabledClusterLogTypes;
+        public InputList<string> EnabledClusterLogTypes
+        {
+            get => _enabledClusterLogTypes ?? (_enabledClusterLogTypes = new InputList<string>());
+            set => _enabledClusterLogTypes = value;
+        }
+
         /// <summary>
         /// The version of the external-dns helm chart to deploy.
         /// </summary>

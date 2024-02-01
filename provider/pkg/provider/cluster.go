@@ -46,6 +46,7 @@ type ClusterArgs struct {
 	EksIamAuthControllerVersion pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
 	ExternalDNSVersion          pulumi.StringInput       `pulumi:"externalDNSVersion"`
 	CertManagerVersion          pulumi.StringInput       `pulumi:"certManagerVersion"`
+	EnabledClusterLogTypes      *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
 }
 
 // The Cluster component resource.
@@ -194,6 +195,20 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching cluster policy for KMS: %w", err)
 	}
 
+	var enabledClusterLogTypes pulumi.StringArrayInput
+
+	if args.EnabledClusterLogTypes == nil {
+		enabledClusterLogTypes = pulumi.StringArray{
+			pulumi.String("api"),
+			pulumi.String("audit"),
+			pulumi.String("authenticator"),
+			pulumi.String("controllerManager"),
+			pulumi.String("scheduler"),
+		}
+	} else {
+		enabledClusterLogTypes = *args.EnabledClusterLogTypes
+	}
+
 	controlPlane, err := eks.NewCluster(ctx, name, &eks.ClusterArgs{
 		RoleArn: role.Arn,
 		Version: args.ClusterVersion,
@@ -208,14 +223,8 @@ func NewCluster(ctx *pulumi.Context,
 				KeyArn: kmsKey.Arn,
 			},
 		},
-		EnabledClusterLogTypes: pulumi.StringArray{
-			pulumi.String("api"),
-			pulumi.String("audit"),
-			pulumi.String("authenticator"),
-			pulumi.String("controllerManager"),
-			pulumi.String("scheduler"),
-		},
-		Tags: tags,
+		EnabledClusterLogTypes: enabledClusterLogTypes,
+		Tags:                   tags,
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)

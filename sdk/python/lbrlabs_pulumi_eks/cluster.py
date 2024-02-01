@@ -26,6 +26,7 @@ class ClusterArgs:
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
@@ -85,6 +86,8 @@ class ClusterArgs:
             enable_otel = False
         if enable_otel is not None:
             pulumi.set(__self__, "enable_otel", enable_otel)
+        if enabled_cluster_log_types is not None:
+            pulumi.set(__self__, "enabled_cluster_log_types", enabled_cluster_log_types)
         if external_dns_version is not None:
             pulumi.set(__self__, "external_dns_version", external_dns_version)
         if lb_type is None:
@@ -233,6 +236,15 @@ class ClusterArgs:
         pulumi.set(self, "enable_otel", value)
 
     @property
+    @pulumi.getter(name="enabledClusterLogTypes")
+    def enabled_cluster_log_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        return pulumi.get(self, "enabled_cluster_log_types")
+
+    @enabled_cluster_log_types.setter
+    def enabled_cluster_log_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "enabled_cluster_log_types", value)
+
+    @property
     @pulumi.getter(name="externalDNSVersion")
     def external_dns_version(self) -> Optional[pulumi.Input[str]]:
         """
@@ -353,6 +365,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
@@ -419,6 +432,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_external_dns: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
+                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
@@ -462,6 +476,7 @@ class Cluster(pulumi.ComponentResource):
             if enable_otel is None:
                 enable_otel = False
             __props__.__dict__["enable_otel"] = enable_otel
+            __props__.__dict__["enabled_cluster_log_types"] = enabled_cluster_log_types
             __props__.__dict__["external_dns_version"] = external_dns_version
             if lb_type is None:
                 lb_type = 'nlb'

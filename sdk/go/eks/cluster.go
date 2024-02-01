@@ -96,7 +96,8 @@ type clusterArgs struct {
 	// Whether to enable karpenter.
 	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
-	EnableOtel *bool `pulumi:"enableOtel"`
+	EnableOtel             *bool    `pulumi:"enableOtel"`
+	EnabledClusterLogTypes []string `pulumi:"enabledClusterLogTypes"`
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion *string `pulumi:"externalDNSVersion"`
 	// The type of loadbalancer to provision.
@@ -137,7 +138,8 @@ type ClusterArgs struct {
 	// Whether to enable karpenter.
 	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.
-	EnableOtel *bool
+	EnableOtel             *bool
+	EnabledClusterLogTypes pulumi.StringArrayInput
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion pulumi.StringPtrInput
 	// The type of loadbalancer to provision.

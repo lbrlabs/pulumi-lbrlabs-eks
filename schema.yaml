@@ -65,6 +65,10 @@ resources:
         type: array
         items:
           type: string
+      enabledClusterLogTypes:
+        type: array
+        items:
+          type: string
       systemNodeMaxCount:
         type: number
         description: The maximum number of nodes in the system autoscaling group.
