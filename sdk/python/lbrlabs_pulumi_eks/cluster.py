@@ -24,6 +24,8 @@ class ClusterArgs:
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_external_ingress: Optional[bool] = None,
+                 enable_internal_ingress: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -45,6 +47,8 @@ class ClusterArgs:
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_external_ingress: Whether to create an ingress controller for external traffic.
+        :param bool enable_internal_ingress: Whether to create an ingress controller for internal traffic.
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
@@ -78,6 +82,14 @@ class ClusterArgs:
             enable_external_dns = True
         if enable_external_dns is not None:
             pulumi.set(__self__, "enable_external_dns", enable_external_dns)
+        if enable_external_ingress is None:
+            enable_external_ingress = True
+        if enable_external_ingress is not None:
+            pulumi.set(__self__, "enable_external_ingress", enable_external_ingress)
+        if enable_internal_ingress is None:
+            enable_internal_ingress = True
+        if enable_internal_ingress is not None:
+            pulumi.set(__self__, "enable_internal_ingress", enable_internal_ingress)
         if enable_karpenter is None:
             enable_karpenter = True
         if enable_karpenter is not None:
@@ -210,6 +222,30 @@ class ClusterArgs:
     @enable_external_dns.setter
     def enable_external_dns(self, value: Optional[bool]):
         pulumi.set(self, "enable_external_dns", value)
+
+    @property
+    @pulumi.getter(name="enableExternalIngress")
+    def enable_external_ingress(self) -> Optional[bool]:
+        """
+        Whether to create an ingress controller for external traffic.
+        """
+        return pulumi.get(self, "enable_external_ingress")
+
+    @enable_external_ingress.setter
+    def enable_external_ingress(self, value: Optional[bool]):
+        pulumi.set(self, "enable_external_ingress", value)
+
+    @property
+    @pulumi.getter(name="enableInternalIngress")
+    def enable_internal_ingress(self) -> Optional[bool]:
+        """
+        Whether to create an ingress controller for internal traffic.
+        """
+        return pulumi.get(self, "enable_internal_ingress")
+
+    @enable_internal_ingress.setter
+    def enable_internal_ingress(self, value: Optional[bool]):
+        pulumi.set(self, "enable_internal_ingress", value)
 
     @property
     @pulumi.getter(name="enableKarpenter")
@@ -363,6 +399,8 @@ class Cluster(pulumi.ComponentResource):
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_external_ingress: Optional[bool] = None,
+                 enable_internal_ingress: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -388,6 +426,8 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param bool enable_external_dns: Whether to enable external dns with route 53 integration.
+        :param bool enable_external_ingress: Whether to create an ingress controller for external traffic.
+        :param bool enable_internal_ingress: Whether to create an ingress controller for internal traffic.
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
@@ -430,6 +470,8 @@ class Cluster(pulumi.ComponentResource):
                  enable_cert_manager: Optional[bool] = None,
                  enable_cloud_watch_agent: Optional[bool] = None,
                  enable_external_dns: Optional[bool] = None,
+                 enable_external_ingress: Optional[bool] = None,
+                 enable_internal_ingress: Optional[bool] = None,
                  enable_karpenter: Optional[bool] = None,
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -470,6 +512,12 @@ class Cluster(pulumi.ComponentResource):
             if enable_external_dns is None:
                 enable_external_dns = True
             __props__.__dict__["enable_external_dns"] = enable_external_dns
+            if enable_external_ingress is None:
+                enable_external_ingress = True
+            __props__.__dict__["enable_external_ingress"] = enable_external_ingress
+            if enable_internal_ingress is None:
+                enable_internal_ingress = True
+            __props__.__dict__["enable_internal_ingress"] = enable_internal_ingress
             if enable_karpenter is None:
                 enable_karpenter = True
             __props__.__dict__["enable_karpenter"] = enable_karpenter

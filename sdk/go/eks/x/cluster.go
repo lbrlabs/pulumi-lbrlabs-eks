@@ -57,6 +57,14 @@ func NewCluster(ctx *pulumi.Context,
 		enableExternalDns_ := true
 		args.EnableExternalDns = &enableExternalDns_
 	}
+	if args.EnableExternalIngress == nil {
+		enableExternalIngress_ := true
+		args.EnableExternalIngress = &enableExternalIngress_
+	}
+	if args.EnableInternalIngress == nil {
+		enableInternalIngress_ := true
+		args.EnableInternalIngress = &enableInternalIngress_
+	}
 	if args.EnableKarpenter == nil {
 		enableKarpenter_ := true
 		args.EnableKarpenter = &enableKarpenter_
@@ -93,6 +101,10 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
+	// Whether to create an ingress controller for external traffic.
+	EnableExternalIngress *bool `pulumi:"enableExternalIngress"`
+	// Whether to create an ingress controller for internal traffic.
+	EnableInternalIngress *bool `pulumi:"enableInternalIngress"`
 	// Whether to enable karpenter.
 	EnableKarpenter *bool `pulumi:"enableKarpenter"`
 	// Whether to enable the OTEL Distro for EKS.
@@ -135,6 +147,10 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
+	// Whether to create an ingress controller for external traffic.
+	EnableExternalIngress *bool
+	// Whether to create an ingress controller for internal traffic.
+	EnableInternalIngress *bool
 	// Whether to enable karpenter.
 	EnableKarpenter *bool
 	// Whether to enable the OTEL Distro for EKS.

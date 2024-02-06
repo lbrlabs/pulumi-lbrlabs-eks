@@ -71,6 +71,8 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
             resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
+            resourceInputs["enableExternalIngress"] = (args ? args.enableExternalIngress : undefined) ?? true;
+            resourceInputs["enableInternalIngress"] = (args ? args.enableInternalIngress : undefined) ?? true;
             resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
             resourceInputs["enabledClusterLogTypes"] = args ? args.enabledClusterLogTypes : undefined;
@@ -136,6 +138,14 @@ export interface ClusterArgs {
      * Whether to enable external dns with route 53 integration.
      */
     enableExternalDns?: boolean;
+    /**
+     * Whether to create an ingress controller for external traffic.
+     */
+    enableExternalIngress?: boolean;
+    /**
+     * Whether to create an ingress controller for internal traffic.
+     */
+    enableInternalIngress?: boolean;
     /**
      * Whether to enable karpenter.
      */

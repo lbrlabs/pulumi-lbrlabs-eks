@@ -129,6 +129,18 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableExternalDns { get; set; }
 
         /// <summary>
+        /// Whether to create an ingress controller for external traffic.
+        /// </summary>
+        [Input("enableExternalIngress")]
+        public bool? EnableExternalIngress { get; set; }
+
+        /// <summary>
+        /// Whether to create an ingress controller for internal traffic.
+        /// </summary>
+        [Input("enableInternalIngress")]
+        public bool? EnableInternalIngress { get; set; }
+
+        /// <summary>
         /// Whether to enable karpenter.
         /// </summary>
         [Input("enableKarpenter")]
@@ -223,6 +235,8 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableCertManager = true;
             EnableCloudWatchAgent = false;
             EnableExternalDns = true;
+            EnableExternalIngress = true;
+            EnableInternalIngress = true;
             EnableKarpenter = true;
             EnableOtel = false;
             LbType = "nlb";

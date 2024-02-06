@@ -93,6 +93,16 @@ resources:
         description: Whether to enable external dns with route 53 integration.
         default: true
         plain: true
+      enableInternalIngress:
+        type: boolean
+        description: Whether to create an ingress controller for internal traffic.
+        default: true
+        plain: true
+      enableExternalIngress:
+        type: boolean
+        description: Whether to create an ingress controller for external traffic.
+        default: true
+        plain: true
       enableCertManager:
         type: boolean
         description: Whether to enable cert-manager with route 53 integration.
