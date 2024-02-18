@@ -156,6 +156,16 @@ func (o RequirementArrayOutput) Index(i pulumi.IntInput) RequirementOutput {
 	}).(RequirementOutput)
 }
 
+// Represents a taint for a karpenter node.
+type Taint struct {
+	// The effect of the taint.
+	Effect []string `pulumi:"effect"`
+	// The key of the taint.
+	Key *string `pulumi:"key"`
+	// The value of the taint.
+	Value *string `pulumi:"value"`
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})

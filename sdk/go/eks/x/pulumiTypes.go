@@ -87,6 +87,16 @@ func (o RequirementOutput) Values() pulumix.ArrayOutput[string] {
 	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
 }
 
+// Represents a taint for a karpenter node.
+type Taint struct {
+	// The effect of the taint.
+	Effect []string `pulumi:"effect"`
+	// The key of the taint.
+	Key *string `pulumi:"key"`
+	// The value of the taint.
+	Value *string `pulumi:"value"`
+}
+
 func init() {
 	pulumi.RegisterOutputType(RequirementOutput{})
 }

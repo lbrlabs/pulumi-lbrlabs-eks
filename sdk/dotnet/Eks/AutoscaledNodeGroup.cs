@@ -101,6 +101,18 @@ namespace Lbrlabs.PulumiPackage.Eks
             set => _subnetIds = value;
         }
 
+        [Input("taints")]
+        private InputList<Pulumi.Kubernetes.Types.Inputs.Core.V1.TaintArgs>? _taints;
+
+        /// <summary>
+        /// Optional node taints.
+        /// </summary>
+        public InputList<Pulumi.Kubernetes.Types.Inputs.Core.V1.TaintArgs> Taints
+        {
+            get => _taints ?? (_taints = new InputList<Pulumi.Kubernetes.Types.Inputs.Core.V1.TaintArgs>());
+            set => _taints = value;
+        }
+
         public AutoscaledNodeGroupArgs()
         {
         }

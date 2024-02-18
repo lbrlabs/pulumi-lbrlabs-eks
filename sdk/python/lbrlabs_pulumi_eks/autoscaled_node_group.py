@@ -9,6 +9,7 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 from ._inputs import *
+import pulumi_kubernetes
 
 __all__ = ['AutoscaledNodeGroupArgs', 'AutoscaledNodeGroup']
 
@@ -20,7 +21,8 @@ class AutoscaledNodeGroupArgs:
                  security_group_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  ami_family: Optional[pulumi.Input[str]] = None,
-                 annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
         :param pulumi.Input[str] node_role: Node role for the node group.
@@ -29,6 +31,7 @@ class AutoscaledNodeGroupArgs:
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet selector terms for the node group.
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]] taints: Optional node taints.
         """
         pulumi.set(__self__, "node_role", node_role)
         pulumi.set(__self__, "requirements", requirements)
@@ -38,6 +41,8 @@ class AutoscaledNodeGroupArgs:
             pulumi.set(__self__, "ami_family", ami_family)
         if annotations is not None:
             pulumi.set(__self__, "annotations", annotations)
+        if taints is not None:
+            pulumi.set(__self__, "taints", taints)
 
     @property
     @pulumi.getter(name="nodeRole")
@@ -111,6 +116,18 @@ class AutoscaledNodeGroupArgs:
     def annotations(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "annotations", value)
 
+    @property
+    @pulumi.getter
+    def taints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]:
+        """
+        Optional node taints.
+        """
+        return pulumi.get(self, "taints")
+
+    @taints.setter
+    def taints(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]):
+        pulumi.set(self, "taints", value)
+
 
 class AutoscaledNodeGroup(pulumi.ComponentResource):
     @overload
@@ -123,6 +140,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
                  __props__=None):
         """
         Create a AutoscaledNodeGroup resource with the given unique name, props, and options.
@@ -134,6 +152,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet selector terms for the node group.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]] taints: Optional node taints.
         """
         ...
     @overload
@@ -164,6 +183,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -189,6 +209,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
             if subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'subnet_ids'")
             __props__.__dict__["subnet_ids"] = subnet_ids
+            __props__.__dict__["taints"] = taints
         super(AutoscaledNodeGroup, __self__).__init__(
             'lbrlabs-eks:index:AutoscaledNodeGroup',
             resource_name,
