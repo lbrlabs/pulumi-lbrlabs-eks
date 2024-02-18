@@ -7,15 +7,10 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-type Requirement struct {
-	Key      pulumi.StringInput      `pulumi:"key"`
-	Operator pulumi.StringInput      `pulumi:"operator"`
-	Values   pulumi.StringArrayInput `pulumi:"values"`
-}
-
 type AutoscaledNodeGroupArgs struct {
 	Annotations      *pulumi.StringMapInput  `pulumi:"annotations"`
 	AMIFamily        *pulumi.StringInput     `pulumi:"amiFamily"`
+	Taints           pulumi.ArrayInput       `pulumi:"taints"`
 	NodeRole         pulumi.StringInput      `pulumi:"nodeRole"`
 	SubnetIds        pulumi.StringArrayInput `pulumi:"subnetIds"`
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
@@ -119,6 +114,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 						"nodeClassRef": map[string]interface{}{
 							"name": nodeClass.Metadata.Name(),
 						},
+						"taints": args.Taints,
 					},
 				},
 			},

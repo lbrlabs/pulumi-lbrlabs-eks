@@ -6,6 +6,8 @@ import * as inputs from "./types/input";
 import * as outputs from "./types/output";
 import * as utilities from "./utilities";
 
+import * as pulumiKubernetes from "@pulumi/kubernetes";
+
 export class AutoscaledNodeGroup extends pulumi.ComponentResource {
     /** @internal */
     public static readonly __pulumiType = 'lbrlabs-eks:index:AutoscaledNodeGroup';
@@ -51,6 +53,7 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             resourceInputs["requirements"] = args ? args.requirements : undefined;
             resourceInputs["securityGroupIds"] = args ? args.securityGroupIds : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
+            resourceInputs["taints"] = args ? args.taints : undefined;
         } else {
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -86,4 +89,8 @@ export interface AutoscaledNodeGroupArgs {
      * List of subnet selector terms for the node group.
      */
     subnetIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Optional node taints.
+     */
+    taints?: pulumi.Input<pulumi.Input<pulumiKubernetes.types.input.core.v1.Taint>[]>;
 }

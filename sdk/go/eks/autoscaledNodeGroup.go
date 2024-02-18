@@ -9,6 +9,7 @@ import (
 
 	"errors"
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
+	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -58,6 +59,8 @@ type autoscaledNodeGroupArgs struct {
 	SecurityGroupIds []string `pulumi:"securityGroupIds"`
 	// List of subnet selector terms for the node group.
 	SubnetIds []string `pulumi:"subnetIds"`
+	// Optional node taints.
+	Taints []corev1.Taint `pulumi:"taints"`
 }
 
 // The set of arguments for constructing a AutoscaledNodeGroup resource.
@@ -74,6 +77,8 @@ type AutoscaledNodeGroupArgs struct {
 	SecurityGroupIds pulumi.StringArrayInput
 	// List of subnet selector terms for the node group.
 	SubnetIds pulumi.StringArrayInput
+	// Optional node taints.
+	Taints corev1.TaintArrayInput
 }
 
 func (AutoscaledNodeGroupArgs) ElementType() reflect.Type {

@@ -30,6 +30,21 @@ types:
         items:
           type: string
         description: "The list of values for the requirement."
+  lbrlabs-eks:index:Taint:
+    description: Represents a taint for a karpenter node.
+    type: object
+    properties:
+      key:
+        type: string
+        description: "The key of the taint."
+      value:
+        type: string
+        description: "The value of the taint."
+      effect:
+        type: array
+        items:
+          type: string
+        description: "The effect of the taint."
 resources:
   lbrlabs-eks:index:Cluster:
     isComponent: true
@@ -321,6 +336,11 @@ resources:
         items:
           "$ref": "#/types/lbrlabs-eks:index:Requirement"
         description: "List of requirements for the node group."
+      taints:
+        type: array
+        items:
+          "$ref": "/kubernetes/v4.7.1/schema.json#/types/kubernetes:core%2Fv1:Taint"
+        description: "Optional node taints."
     requiredInputs:
       - nodeRole
       - subnetIds
