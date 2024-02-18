@@ -10,6 +10,7 @@ import (
 type AutoscaledNodeGroupArgs struct {
 	Annotations      *pulumi.StringMapInput  `pulumi:"annotations"`
 	AMIFamily        *pulumi.StringInput     `pulumi:"amiFamily"`
+	DiskSize         pulumi.StringInput      `pulumi:"diskSize"`
 	Taints           pulumi.ArrayInput       `pulumi:"taints"`
 	NodeRole         pulumi.StringInput      `pulumi:"nodeRole"`
 	SubnetIds        pulumi.StringArrayInput `pulumi:"subnetIds"`
@@ -93,6 +94,16 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 				"role":                       args.NodeRole,
 				"subnetSelectorTerms":        subnetSelectorTermsProcessed,
 				"securityGroupSelectorTerms": securityGroupSelectorTermsProcessed,
+				"blockDeviceMappings": []map[string]interface{}{
+					{
+						"deviceName": "/dev/xvda",
+						"ebs": map[string]interface{}{
+							"encrypted":  pulumi.Bool(true),
+							"volumeSize": args.DiskSize,
+							"volumeType": pulumi.String("gp3"),
+						},
+					},
+				},
 			},
 		},
 	}, pulumi.Parent(component))

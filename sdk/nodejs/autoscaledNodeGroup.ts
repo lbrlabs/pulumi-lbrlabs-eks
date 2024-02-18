@@ -35,6 +35,9 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
+            if ((!args || args.diskSize === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'diskSize'");
+            }
             if ((!args || args.nodeRole === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'nodeRole'");
             }
@@ -49,6 +52,7 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             }
             resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
             resourceInputs["annotations"] = args ? args.annotations : undefined;
+            resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
             resourceInputs["nodeRole"] = args ? args.nodeRole : undefined;
             resourceInputs["requirements"] = args ? args.requirements : undefined;
             resourceInputs["securityGroupIds"] = args ? args.securityGroupIds : undefined;
@@ -73,6 +77,10 @@ export interface AutoscaledNodeGroupArgs {
      * Annotations to apply to the node group.
      */
     annotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Disk size for the node group.
+     */
+    diskSize: pulumi.Input<string>;
     /**
      * Node role for the node group.
      */

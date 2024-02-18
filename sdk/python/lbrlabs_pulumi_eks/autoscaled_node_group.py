@@ -16,6 +16,7 @@ __all__ = ['AutoscaledNodeGroupArgs', 'AutoscaledNodeGroup']
 @pulumi.input_type
 class AutoscaledNodeGroupArgs:
     def __init__(__self__, *,
+                 disk_size: Optional[pulumi.Input[str]] = None,
                  node_role: pulumi.Input[str],
                  requirements: pulumi.Input[Sequence[pulumi.Input['RequirementArgs']]],
                  security_group_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
@@ -25,6 +26,7 @@ class AutoscaledNodeGroupArgs:
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
+        :param pulumi.Input[str] disk_size: Disk size for the node group.
         :param pulumi.Input[str] node_role: Node role for the node group.
         :param pulumi.Input[Sequence[pulumi.Input['RequirementArgs']]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
@@ -33,6 +35,9 @@ class AutoscaledNodeGroupArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]] taints: Optional node taints.
         """
+        if disk_size is None:
+            disk_size = '20Gi'
+        pulumi.set(__self__, "disk_size", disk_size)
         pulumi.set(__self__, "node_role", node_role)
         pulumi.set(__self__, "requirements", requirements)
         pulumi.set(__self__, "security_group_ids", security_group_ids)
@@ -43,6 +48,18 @@ class AutoscaledNodeGroupArgs:
             pulumi.set(__self__, "annotations", annotations)
         if taints is not None:
             pulumi.set(__self__, "taints", taints)
+
+    @property
+    @pulumi.getter(name="diskSize")
+    def disk_size(self) -> pulumi.Input[str]:
+        """
+        Disk size for the node group.
+        """
+        return pulumi.get(self, "disk_size")
+
+    @disk_size.setter
+    def disk_size(self, value: pulumi.Input[str]):
+        pulumi.set(self, "disk_size", value)
 
     @property
     @pulumi.getter(name="nodeRole")
@@ -136,6 +153,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  ami_family: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 disk_size: Optional[pulumi.Input[str]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -148,6 +166,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
+        :param pulumi.Input[str] disk_size: Disk size for the node group.
         :param pulumi.Input[str] node_role: Node role for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
@@ -179,6 +198,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  ami_family: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 disk_size: Optional[pulumi.Input[str]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -197,6 +217,11 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
 
             __props__.__dict__["ami_family"] = ami_family
             __props__.__dict__["annotations"] = annotations
+            if disk_size is None:
+                disk_size = '20Gi'
+            if disk_size is None and not opts.urn:
+                raise TypeError("Missing required property 'disk_size'")
+            __props__.__dict__["disk_size"] = disk_size
             if node_role is None and not opts.urn:
                 raise TypeError("Missing required property 'node_role'")
             __props__.__dict__["node_role"] = node_role

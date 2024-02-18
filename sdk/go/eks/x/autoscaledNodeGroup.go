@@ -37,6 +37,9 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	if args.SubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SubnetIds'")
 	}
+	if args.DiskSize == nil {
+		args.DiskSize = pulumix.Val("20Gi")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AutoscaledNodeGroup
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:AutoscaledNodeGroup", name, args, &resource, opts...)
@@ -51,6 +54,8 @@ type autoscaledNodeGroupArgs struct {
 	AmiFamily *string `pulumi:"amiFamily"`
 	// Annotations to apply to the node group.
 	Annotations map[string]string `pulumi:"annotations"`
+	// Disk size for the node group.
+	DiskSize string `pulumi:"diskSize"`
 	// Node role for the node group.
 	NodeRole string `pulumi:"nodeRole"`
 	// List of requirements for the node group.
@@ -69,6 +74,8 @@ type AutoscaledNodeGroupArgs struct {
 	AmiFamily pulumix.Input[*string]
 	// Annotations to apply to the node group.
 	Annotations pulumix.Input[map[string]string]
+	// Disk size for the node group.
+	DiskSize pulumix.Input[string]
 	// Node role for the node group.
 	NodeRole pulumix.Input[string]
 	// List of requirements for the node group.

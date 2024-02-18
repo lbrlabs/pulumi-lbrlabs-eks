@@ -60,6 +60,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         }
 
         /// <summary>
+        /// Disk size for the node group.
+        /// </summary>
+        [Input("diskSize", required: true)]
+        public Input<string> DiskSize { get; set; } = null!;
+
+        /// <summary>
         /// Node role for the node group.
         /// </summary>
         [Input("nodeRole", required: true)]
@@ -115,6 +121,7 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public AutoscaledNodeGroupArgs()
         {
+            DiskSize = "20Gi";
         }
         public static new AutoscaledNodeGroupArgs Empty => new AutoscaledNodeGroupArgs();
     }

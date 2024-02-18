@@ -321,6 +321,10 @@ resources:
       nodeRole:
         type: string
         description: "Node role for the node group."
+      diskSize:
+        type: string
+        description: "Disk size for the node group."
+        default: "20Gi"
       subnetIds:
         type: array
         items:
@@ -343,6 +347,7 @@ resources:
         description: "Optional node taints."
     requiredInputs:
       - nodeRole
+      - diskSize
       - subnetIds
       - securityGroupIds
       - requirements
