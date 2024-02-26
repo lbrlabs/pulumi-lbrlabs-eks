@@ -68,7 +68,7 @@ const workloadNodes = new lbrlabs_eks.AttachedNodeGroup("workload", {
 const roleMapping = new lbrlabs_eks.IamRoleMapping("roleMapping", {
   roleArn: workloadNodes.nodeRole.arn,
   username: "system:node:{{EC2PrivateDNSName}}",
-  grups: ["system:bootstrappers", "system:nodes"],
+  groups: ["system:bootstrappers", "system:nodes"],
 })
 
 const provider = new kubernetes.Provider("provider", {
