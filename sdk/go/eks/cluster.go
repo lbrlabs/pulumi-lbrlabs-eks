@@ -45,6 +45,12 @@ func NewCluster(ctx *pulumi.Context,
 	if args.SystemNodeSubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SystemNodeSubnetIds'")
 	}
+	if args.ClusterEndpointPrivateAccess == nil {
+		args.ClusterEndpointPrivateAccess = pulumi.BoolPtr(false)
+	}
+	if args.ClusterEndpointPublicAccess == nil {
+		args.ClusterEndpointPublicAccess = pulumi.BoolPtr(true)
+	}
 	if args.EnableCertManager == nil {
 		enableCertManager_ := true
 		args.EnableCertManager = &enableCertManager_
@@ -89,8 +95,12 @@ type clusterArgs struct {
 	// The version of the cert-manager helm chart to deploy.
 	CertManagerVersion *string `pulumi:"certManagerVersion"`
 	// The ARN of the certificate to use for the ingress controller.
-	CertificateArn   *string  `pulumi:"certificateArn"`
-	ClusterSubnetIds []string `pulumi:"clusterSubnetIds"`
+	CertificateArn *string `pulumi:"certificateArn"`
+	// Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+	ClusterEndpointPrivateAccess *bool `pulumi:"clusterEndpointPrivateAccess"`
+	// Indicates whether or not the Amazon EKS public API server endpoint is enabled.
+	ClusterEndpointPublicAccess *bool    `pulumi:"clusterEndpointPublicAccess"`
+	ClusterSubnetIds            []string `pulumi:"clusterSubnetIds"`
 	// The version of the EKS cluster to create.
 	ClusterVersion *string `pulumi:"clusterVersion"`
 	// The version of the eks-iam-auth-controller helm chart to deploy.
@@ -135,8 +145,12 @@ type ClusterArgs struct {
 	// The version of the cert-manager helm chart to deploy.
 	CertManagerVersion pulumi.StringPtrInput
 	// The ARN of the certificate to use for the ingress controller.
-	CertificateArn   pulumi.StringPtrInput
-	ClusterSubnetIds pulumi.StringArrayInput
+	CertificateArn pulumi.StringPtrInput
+	// Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+	ClusterEndpointPrivateAccess pulumi.BoolPtrInput
+	// Indicates whether or not the Amazon EKS public API server endpoint is enabled.
+	ClusterEndpointPublicAccess pulumi.BoolPtrInput
+	ClusterSubnetIds            pulumi.StringArrayInput
 	// The version of the EKS cluster to create.
 	ClusterVersion pulumi.StringPtrInput
 	// The version of the eks-iam-auth-controller helm chart to deploy.

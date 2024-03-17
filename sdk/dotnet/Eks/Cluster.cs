@@ -90,6 +90,18 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("certificateArn")]
         public Input<string>? CertificateArn { get; set; }
 
+        /// <summary>
+        /// Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+        /// </summary>
+        [Input("clusterEndpointPrivateAccess")]
+        public Input<bool>? ClusterEndpointPrivateAccess { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not the Amazon EKS public API server endpoint is enabled.
+        /// </summary>
+        [Input("clusterEndpointPublicAccess")]
+        public Input<bool>? ClusterEndpointPublicAccess { get; set; }
+
         [Input("clusterSubnetIds", required: true)]
         private InputList<string>? _clusterSubnetIds;
         public InputList<string> ClusterSubnetIds
@@ -232,6 +244,8 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public ClusterArgs()
         {
+            ClusterEndpointPrivateAccess = false;
+            ClusterEndpointPublicAccess = true;
             EnableCertManager = true;
             EnableCloudWatchAgent = false;
             EnableExternalDns = true;
