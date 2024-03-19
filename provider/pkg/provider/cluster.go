@@ -26,29 +26,31 @@ import (
 
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
-	ClusterSubnetIds            pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
-	SystemNodeSubnetIds         pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
-	SystemNodeInstanceTypes     *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
-	SystemNodeMaxCount          *pulumi.IntInput         `pulumi:"systemNodeMaxCount"`
-	SystemNodeMinCount          *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
-	SystemNodeDesiredCount      *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
-	ClusterVersion              pulumi.StringPtrInput    `pulumi:"clusterVersion"`
-	EnableOtel                  bool                     `pulumi:"enableOtel"`
-	EnableCloudWatchAgent       bool                     `pulumi:"enableCloudWatchAgent"`
-	EnableExternalDNS           bool                     `pulumi:"enableExternalDns"`
-	EnableCertManager           bool                     `pulumi:"enableCertManager"`
-	EnableKarpenter             bool                     `pulumi:"enableKarpenter"`
-	LetsEncryptEmail            string                   `pulumi:"letsEncryptEmail"`
-	EnableInternalIngress       bool                     `pulumi:"enableInternalIngress"`
-	EnableExternalIngress       bool                     `pulumi:"enableExternalIngress"`
-	LbType                      pulumi.StringInput       `pulumi:"lbType"`
-	CertificateArn              *pulumi.StringInput      `pulumi:"certificateArn"`
-	Tags                        *pulumi.StringMapInput   `pulumi:"tags"`
-	NginxIngressVersion         pulumi.StringInput       `pulumi:"nginxIngressVersion"`
-	EksIamAuthControllerVersion pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
-	ExternalDNSVersion          pulumi.StringInput       `pulumi:"externalDNSVersion"`
-	CertManagerVersion          pulumi.StringInput       `pulumi:"certManagerVersion"`
-	EnabledClusterLogTypes      *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
+	ClusterSubnetIds             pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
+	ClusterEndpointPublicAccess  pulumi.BoolInput         `pulumi:"clusterEndpointPublicAccess"`
+	ClusterEndpointPrivateAccess pulumi.BoolInput         `pulumi:"clusterEndpointPrivateAccess"`
+	SystemNodeSubnetIds          pulumi.StringArrayInput  `pulumi:"systemNodeSubnetIds"`
+	SystemNodeInstanceTypes      *pulumi.StringArrayInput `pulumi:"systemNodeInstanceTypes"`
+	SystemNodeMaxCount           *pulumi.IntInput         `pulumi:"systemNodeMaxCount"`
+	SystemNodeMinCount           *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
+	SystemNodeDesiredCount       *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
+	ClusterVersion               pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	EnableOtel                   bool                     `pulumi:"enableOtel"`
+	EnableCloudWatchAgent        bool                     `pulumi:"enableCloudWatchAgent"`
+	EnableExternalDNS            bool                     `pulumi:"enableExternalDns"`
+	EnableCertManager            bool                     `pulumi:"enableCertManager"`
+	EnableKarpenter              bool                     `pulumi:"enableKarpenter"`
+	LetsEncryptEmail             string                   `pulumi:"letsEncryptEmail"`
+	EnableInternalIngress        bool                     `pulumi:"enableInternalIngress"`
+	EnableExternalIngress        bool                     `pulumi:"enableExternalIngress"`
+	LbType                       pulumi.StringInput       `pulumi:"lbType"`
+	CertificateArn               *pulumi.StringInput      `pulumi:"certificateArn"`
+	Tags                         *pulumi.StringMapInput   `pulumi:"tags"`
+	NginxIngressVersion          pulumi.StringInput       `pulumi:"nginxIngressVersion"`
+	EksIamAuthControllerVersion  pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
+	ExternalDNSVersion           pulumi.StringInput       `pulumi:"externalDNSVersion"`
+	CertManagerVersion           pulumi.StringInput       `pulumi:"certManagerVersion"`
+	EnabledClusterLogTypes       *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
 }
 
 // The Cluster component resource.
@@ -215,7 +217,9 @@ func NewCluster(ctx *pulumi.Context,
 		RoleArn: role.Arn,
 		Version: args.ClusterVersion,
 		VpcConfig: &eks.ClusterVpcConfigArgs{
-			SubnetIds: args.ClusterSubnetIds,
+			SubnetIds:             args.ClusterSubnetIds,
+			EndpointPublicAccess:  args.ClusterEndpointPublicAccess,
+			EndpointPrivateAccess: args.ClusterEndpointPrivateAccess,
 		},
 		EncryptionConfig: &eks.ClusterEncryptionConfigArgs{
 			Resources: pulumi.StringArray{

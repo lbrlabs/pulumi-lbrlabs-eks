@@ -65,6 +65,8 @@ export class Cluster extends pulumi.ComponentResource {
             }
             resourceInputs["certManagerVersion"] = args ? args.certManagerVersion : undefined;
             resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
+            resourceInputs["clusterEndpointPrivateAccess"] = (args ? args.clusterEndpointPrivateAccess : undefined) ?? false;
+            resourceInputs["clusterEndpointPublicAccess"] = (args ? args.clusterEndpointPublicAccess : undefined) ?? true;
             resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
             resourceInputs["clusterVersion"] = args ? args.clusterVersion : undefined;
             resourceInputs["eksIamAuthControllerVersion"] = args ? args.eksIamAuthControllerVersion : undefined;
@@ -117,6 +119,14 @@ export interface ClusterArgs {
      * The ARN of the certificate to use for the ingress controller.
      */
     certificateArn?: pulumi.Input<string>;
+    /**
+     * Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+     */
+    clusterEndpointPrivateAccess?: pulumi.Input<boolean>;
+    /**
+     * Indicates whether or not the Amazon EKS public API server endpoint is enabled.
+     */
+    clusterEndpointPublicAccess?: pulumi.Input<boolean>;
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * The version of the EKS cluster to create.

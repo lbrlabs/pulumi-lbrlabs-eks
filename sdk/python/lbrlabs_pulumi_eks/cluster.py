@@ -19,6 +19,8 @@ class ClusterArgs:
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
+                 cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
+                 cluster_endpoint_public_access: Optional[pulumi.Input[bool]] = None,
                  cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
                  enable_cert_manager: Optional[bool] = None,
@@ -42,6 +44,8 @@ class ClusterArgs:
         The set of arguments for constructing a Cluster resource.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+        :param pulumi.Input[bool] cluster_endpoint_public_access: Indicates whether or not the Amazon EKS public API server endpoint is enabled.
         :param pulumi.Input[str] cluster_version: The version of the EKS cluster to create.
         :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
@@ -66,6 +70,14 @@ class ClusterArgs:
             pulumi.set(__self__, "cert_manager_version", cert_manager_version)
         if certificate_arn is not None:
             pulumi.set(__self__, "certificate_arn", certificate_arn)
+        if cluster_endpoint_private_access is None:
+            cluster_endpoint_private_access = False
+        if cluster_endpoint_private_access is not None:
+            pulumi.set(__self__, "cluster_endpoint_private_access", cluster_endpoint_private_access)
+        if cluster_endpoint_public_access is None:
+            cluster_endpoint_public_access = True
+        if cluster_endpoint_public_access is not None:
+            pulumi.set(__self__, "cluster_endpoint_public_access", cluster_endpoint_public_access)
         if cluster_version is not None:
             pulumi.set(__self__, "cluster_version", cluster_version)
         if eks_iam_auth_controller_version is not None:
@@ -162,6 +174,30 @@ class ClusterArgs:
     @certificate_arn.setter
     def certificate_arn(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "certificate_arn", value)
+
+    @property
+    @pulumi.getter(name="clusterEndpointPrivateAccess")
+    def cluster_endpoint_private_access(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+        """
+        return pulumi.get(self, "cluster_endpoint_private_access")
+
+    @cluster_endpoint_private_access.setter
+    def cluster_endpoint_private_access(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "cluster_endpoint_private_access", value)
+
+    @property
+    @pulumi.getter(name="clusterEndpointPublicAccess")
+    def cluster_endpoint_public_access(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Indicates whether or not the Amazon EKS public API server endpoint is enabled.
+        """
+        return pulumi.get(self, "cluster_endpoint_public_access")
+
+    @cluster_endpoint_public_access.setter
+    def cluster_endpoint_public_access(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "cluster_endpoint_public_access", value)
 
     @property
     @pulumi.getter(name="clusterVersion")
@@ -393,6 +429,8 @@ class Cluster(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
+                 cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
+                 cluster_endpoint_public_access: Optional[pulumi.Input[bool]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
@@ -421,6 +459,8 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
+        :param pulumi.Input[bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
+        :param pulumi.Input[bool] cluster_endpoint_public_access: Indicates whether or not the Amazon EKS public API server endpoint is enabled.
         :param pulumi.Input[str] cluster_version: The version of the EKS cluster to create.
         :param pulumi.Input[str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
@@ -464,6 +504,8 @@ class Cluster(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
+                 cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
+                 cluster_endpoint_public_access: Optional[pulumi.Input[bool]] = None,
                  cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  cluster_version: Optional[pulumi.Input[str]] = None,
                  eks_iam_auth_controller_version: Optional[pulumi.Input[str]] = None,
@@ -498,6 +540,12 @@ class Cluster(pulumi.ComponentResource):
 
             __props__.__dict__["cert_manager_version"] = cert_manager_version
             __props__.__dict__["certificate_arn"] = certificate_arn
+            if cluster_endpoint_private_access is None:
+                cluster_endpoint_private_access = False
+            __props__.__dict__["cluster_endpoint_private_access"] = cluster_endpoint_private_access
+            if cluster_endpoint_public_access is None:
+                cluster_endpoint_public_access = True
+            __props__.__dict__["cluster_endpoint_public_access"] = cluster_endpoint_public_access
             if cluster_subnet_ids is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids

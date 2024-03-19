@@ -91,7 +91,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 14.x
+        - 20.x
         pythonversion:
         - "3.7"
   prerequisites:
@@ -155,7 +155,7 @@ jobs:
         goversion:
         - 1.21.x
         nodeversion:
-        - 14.x
+        - 20.x
         pythonversion:
         - "3.7"
   publish:
@@ -198,7 +198,7 @@ jobs:
         goversion:
         - 1.21.x
         nodeversion:
-        - 14.x
+        - 20.x
         pythonversion:
         - "3.7"
   publish_sdk:
@@ -273,7 +273,7 @@ jobs:
         goversion:
         - 1.21.x
         nodeversion:
-        - 14.x
+        - 20.x
         pythonversion:
         - "3.7"
   test:
@@ -355,7 +355,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 14.x
+        - 20.x
         pythonversion:
         - "3.7"
 name: main
