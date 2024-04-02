@@ -14,6 +14,284 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+// Configuration for the ingress controller.
+type IngressConfig struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas *float64 `pulumi:"controllerReplicas"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics *bool `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stackl.
+	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace *string `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for IngressConfig
+func (val *IngressConfig) Defaults() *IngressConfig {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ControllerReplicas == nil {
+		controllerReplicas_ := 1.0
+		tmp.ControllerReplicas = &controllerReplicas_
+	}
+	if tmp.EnableMetrics == nil {
+		enableMetrics_ := false
+		tmp.EnableMetrics = &enableMetrics_
+	}
+	if tmp.EnableServiceMonitor == nil {
+		enableServiceMonitor_ := false
+		tmp.EnableServiceMonitor = &enableServiceMonitor_
+	}
+	return &tmp
+}
+
+// IngressConfigInput is an input type that accepts IngressConfigArgs and IngressConfigOutput values.
+// You can construct a concrete instance of `IngressConfigInput` via:
+//
+//	IngressConfigArgs{...}
+type IngressConfigInput interface {
+	pulumi.Input
+
+	ToIngressConfigOutput() IngressConfigOutput
+	ToIngressConfigOutputWithContext(context.Context) IngressConfigOutput
+}
+
+// Configuration for the ingress controller.
+type IngressConfigArgs struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig pulumi.StringMapInput `pulumi:"additionalConfig"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas pulumi.Float64PtrInput `pulumi:"controllerReplicas"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stackl.
+	EnableServiceMonitor pulumi.BoolPtrInput `pulumi:"enableServiceMonitor"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace pulumi.StringPtrInput `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for IngressConfigArgs
+func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ControllerReplicas == nil {
+		tmp.ControllerReplicas = pulumi.Float64Ptr(1.0)
+	}
+	if tmp.EnableMetrics == nil {
+		tmp.EnableMetrics = pulumi.BoolPtr(false)
+	}
+	if tmp.EnableServiceMonitor == nil {
+		tmp.EnableServiceMonitor = pulumi.BoolPtr(false)
+	}
+	return &tmp
+}
+func (IngressConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*IngressConfig)(nil)).Elem()
+}
+
+func (i IngressConfigArgs) ToIngressConfigOutput() IngressConfigOutput {
+	return i.ToIngressConfigOutputWithContext(context.Background())
+}
+
+func (i IngressConfigArgs) ToIngressConfigOutputWithContext(ctx context.Context) IngressConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigOutput)
+}
+
+func (i IngressConfigArgs) ToOutput(ctx context.Context) pulumix.Output[IngressConfig] {
+	return pulumix.Output[IngressConfig]{
+		OutputState: i.ToIngressConfigOutputWithContext(ctx).OutputState,
+	}
+}
+
+func (i IngressConfigArgs) ToIngressConfigPtrOutput() IngressConfigPtrOutput {
+	return i.ToIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (i IngressConfigArgs) ToIngressConfigPtrOutputWithContext(ctx context.Context) IngressConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigOutput).ToIngressConfigPtrOutputWithContext(ctx)
+}
+
+// IngressConfigPtrInput is an input type that accepts IngressConfigArgs, IngressConfigPtr and IngressConfigPtrOutput values.
+// You can construct a concrete instance of `IngressConfigPtrInput` via:
+//
+//	        IngressConfigArgs{...}
+//
+//	or:
+//
+//	        nil
+type IngressConfigPtrInput interface {
+	pulumi.Input
+
+	ToIngressConfigPtrOutput() IngressConfigPtrOutput
+	ToIngressConfigPtrOutputWithContext(context.Context) IngressConfigPtrOutput
+}
+
+type ingressConfigPtrType IngressConfigArgs
+
+func IngressConfigPtr(v *IngressConfigArgs) IngressConfigPtrInput {
+	return (*ingressConfigPtrType)(v)
+}
+
+func (*ingressConfigPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**IngressConfig)(nil)).Elem()
+}
+
+func (i *ingressConfigPtrType) ToIngressConfigPtrOutput() IngressConfigPtrOutput {
+	return i.ToIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (i *ingressConfigPtrType) ToIngressConfigPtrOutputWithContext(ctx context.Context) IngressConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigPtrOutput)
+}
+
+func (i *ingressConfigPtrType) ToOutput(ctx context.Context) pulumix.Output[*IngressConfig] {
+	return pulumix.Output[*IngressConfig]{
+		OutputState: i.ToIngressConfigPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Configuration for the ingress controller.
+type IngressConfigOutput struct{ *pulumi.OutputState }
+
+func (IngressConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*IngressConfig)(nil)).Elem()
+}
+
+func (o IngressConfigOutput) ToIngressConfigOutput() IngressConfigOutput {
+	return o
+}
+
+func (o IngressConfigOutput) ToIngressConfigOutputWithContext(ctx context.Context) IngressConfigOutput {
+	return o
+}
+
+func (o IngressConfigOutput) ToIngressConfigPtrOutput() IngressConfigPtrOutput {
+	return o.ToIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (o IngressConfigOutput) ToIngressConfigPtrOutputWithContext(ctx context.Context) IngressConfigPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v IngressConfig) *IngressConfig {
+		return &v
+	}).(IngressConfigPtrOutput)
+}
+
+func (o IngressConfigOutput) ToOutput(ctx context.Context) pulumix.Output[IngressConfig] {
+	return pulumix.Output[IngressConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Additional configuration for the ingress controller.
+func (o IngressConfigOutput) AdditionalConfig() pulumi.StringMapOutput {
+	return o.ApplyT(func(v IngressConfig) map[string]string { return v.AdditionalConfig }).(pulumi.StringMapOutput)
+}
+
+// The number of replicas of the ingress controller.
+func (o IngressConfigOutput) ControllerReplicas() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v IngressConfig) *float64 { return v.ControllerReplicas }).(pulumi.Float64PtrOutput)
+}
+
+// Enable metrics for the ingress controller.
+func (o IngressConfigOutput) EnableMetrics() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableMetrics }).(pulumi.BoolPtrOutput)
+}
+
+// Enable the service monitor for kube-prometheus-stackl.
+func (o IngressConfigOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableServiceMonitor }).(pulumi.BoolPtrOutput)
+}
+
+// The namespace to deploy the service monitor to.
+func (o IngressConfigOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *string { return v.ServiceMonitorNamespace }).(pulumi.StringPtrOutput)
+}
+
+type IngressConfigPtrOutput struct{ *pulumi.OutputState }
+
+func (IngressConfigPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**IngressConfig)(nil)).Elem()
+}
+
+func (o IngressConfigPtrOutput) ToIngressConfigPtrOutput() IngressConfigPtrOutput {
+	return o
+}
+
+func (o IngressConfigPtrOutput) ToIngressConfigPtrOutputWithContext(ctx context.Context) IngressConfigPtrOutput {
+	return o
+}
+
+func (o IngressConfigPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*IngressConfig] {
+	return pulumix.Output[*IngressConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o IngressConfigPtrOutput) Elem() IngressConfigOutput {
+	return o.ApplyT(func(v *IngressConfig) IngressConfig {
+		if v != nil {
+			return *v
+		}
+		var ret IngressConfig
+		return ret
+	}).(IngressConfigOutput)
+}
+
+// Additional configuration for the ingress controller.
+func (o IngressConfigPtrOutput) AdditionalConfig() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *IngressConfig) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.AdditionalConfig
+	}).(pulumi.StringMapOutput)
+}
+
+// The number of replicas of the ingress controller.
+func (o IngressConfigPtrOutput) ControllerReplicas() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.ControllerReplicas
+	}).(pulumi.Float64PtrOutput)
+}
+
+// Enable metrics for the ingress controller.
+func (o IngressConfigPtrOutput) EnableMetrics() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableMetrics
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Enable the service monitor for kube-prometheus-stackl.
+func (o IngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableServiceMonitor
+	}).(pulumi.BoolPtrOutput)
+}
+
+// The namespace to deploy the service monitor to.
+func (o IngressConfigPtrOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ServiceMonitorNamespace
+	}).(pulumi.StringPtrOutput)
+}
+
 // Represents a single requirement with key, operator, and values.
 type Requirement struct {
 	// The key of the requirement.
@@ -167,8 +445,12 @@ type Taint struct {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigInput)(nil)).Elem(), IngressConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigPtrInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})
+	pulumi.RegisterOutputType(IngressConfigOutput{})
+	pulumi.RegisterOutputType(IngressConfigPtrOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})
 	pulumi.RegisterOutputType(RequirementArrayOutput{})
 }

@@ -10,8 +10,103 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 
 __all__ = [
+    'IngressConfigArgs',
     'RequirementArgs',
 ]
+
+@pulumi.input_type
+class IngressConfigArgs:
+    def __init__(__self__, *,
+                 additional_config: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 controller_replicas: Optional[pulumi.Input[float]] = None,
+                 enable_metrics: Optional[pulumi.Input[bool]] = None,
+                 enable_service_monitor: Optional[pulumi.Input[bool]] = None,
+                 service_monitor_namespace: Optional[pulumi.Input[str]] = None):
+        """
+        Configuration for the ingress controller.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] additional_config: Additional configuration for the ingress controller.
+        :param pulumi.Input[float] controller_replicas: The number of replicas of the ingress controller.
+        :param pulumi.Input[bool] enable_metrics: Enable metrics for the ingress controller.
+        :param pulumi.Input[bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stackl.
+        :param pulumi.Input[str] service_monitor_namespace: The namespace to deploy the service monitor to.
+        """
+        if additional_config is not None:
+            pulumi.set(__self__, "additional_config", additional_config)
+        if controller_replicas is None:
+            controller_replicas = 1
+        if controller_replicas is not None:
+            pulumi.set(__self__, "controller_replicas", controller_replicas)
+        if enable_metrics is None:
+            enable_metrics = False
+        if enable_metrics is not None:
+            pulumi.set(__self__, "enable_metrics", enable_metrics)
+        if enable_service_monitor is None:
+            enable_service_monitor = False
+        if enable_service_monitor is not None:
+            pulumi.set(__self__, "enable_service_monitor", enable_service_monitor)
+        if service_monitor_namespace is not None:
+            pulumi.set(__self__, "service_monitor_namespace", service_monitor_namespace)
+
+    @property
+    @pulumi.getter(name="additionalConfig")
+    def additional_config(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Additional configuration for the ingress controller.
+        """
+        return pulumi.get(self, "additional_config")
+
+    @additional_config.setter
+    def additional_config(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "additional_config", value)
+
+    @property
+    @pulumi.getter(name="controllerReplicas")
+    def controller_replicas(self) -> Optional[pulumi.Input[float]]:
+        """
+        The number of replicas of the ingress controller.
+        """
+        return pulumi.get(self, "controller_replicas")
+
+    @controller_replicas.setter
+    def controller_replicas(self, value: Optional[pulumi.Input[float]]):
+        pulumi.set(self, "controller_replicas", value)
+
+    @property
+    @pulumi.getter(name="enableMetrics")
+    def enable_metrics(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Enable metrics for the ingress controller.
+        """
+        return pulumi.get(self, "enable_metrics")
+
+    @enable_metrics.setter
+    def enable_metrics(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_metrics", value)
+
+    @property
+    @pulumi.getter(name="enableServiceMonitor")
+    def enable_service_monitor(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Enable the service monitor for kube-prometheus-stackl.
+        """
+        return pulumi.get(self, "enable_service_monitor")
+
+    @enable_service_monitor.setter
+    def enable_service_monitor(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_service_monitor", value)
+
+    @property
+    @pulumi.getter(name="serviceMonitorNamespace")
+    def service_monitor_namespace(self) -> Optional[pulumi.Input[str]]:
+        """
+        The namespace to deploy the service monitor to.
+        """
+        return pulumi.get(self, "service_monitor_namespace")
+
+    @service_monitor_namespace.setter
+    def service_monitor_namespace(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "service_monitor_namespace", value)
+
 
 @pulumi.input_type
 class RequirementArgs:

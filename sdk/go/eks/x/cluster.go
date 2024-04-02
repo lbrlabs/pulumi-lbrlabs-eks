@@ -79,6 +79,9 @@ func NewCluster(ctx *pulumi.Context,
 		enableOtel_ := false
 		args.EnableOtel = &enableOtel_
 	}
+	if args.IngressConfig != nil {
+		args.IngressConfig = pulumix.Apply(args.IngressConfig, func(o *IngressConfigArgs) *IngressConfigArgs { return o.Defaults() })
+	}
 	if args.LbType == nil {
 		args.LbType = pulumix.Ptr("nlb")
 	}
@@ -122,6 +125,8 @@ type clusterArgs struct {
 	EnabledClusterLogTypes []string `pulumi:"enabledClusterLogTypes"`
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion *string `pulumi:"externalDNSVersion"`
+	// Configuration for the ingress controller.
+	IngressConfig *IngressConfig `pulumi:"ingressConfig"`
 	// The type of loadbalancer to provision.
 	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
@@ -172,6 +177,8 @@ type ClusterArgs struct {
 	EnabledClusterLogTypes pulumix.Input[[]string]
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion pulumix.Input[*string]
+	// Configuration for the ingress controller.
+	IngressConfig pulumix.Input[*IngressConfigArgs]
 	// The type of loadbalancer to provision.
 	LbType pulumix.Input[*string]
 	// The email address to use to issue certificates from Lets Encrypt.
