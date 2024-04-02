@@ -2,6 +2,8 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "./types/input";
+import * as outputs from "./types/output";
 import * as utilities from "./utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -79,6 +81,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
             resourceInputs["enabledClusterLogTypes"] = args ? args.enabledClusterLogTypes : undefined;
             resourceInputs["externalDNSVersion"] = args ? args.externalDNSVersion : undefined;
+            resourceInputs["ingressConfig"] = args ? (args.ingressConfig ? pulumi.output(args.ingressConfig).apply(inputs.ingressConfigArgsProvideDefaults) : undefined) : undefined;
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["nginxIngressVersion"] = args ? args.nginxIngressVersion : undefined;
@@ -169,6 +172,10 @@ export interface ClusterArgs {
      * The version of the external-dns helm chart to deploy.
      */
     externalDNSVersion?: pulumi.Input<string>;
+    /**
+     * Configuration for the ingress controller.
+     */
+    ingressConfig?: pulumi.Input<inputs.IngressConfigArgs>;
     /**
      * The type of loadbalancer to provision.
      */

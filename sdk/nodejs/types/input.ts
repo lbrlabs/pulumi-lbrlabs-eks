@@ -5,6 +5,45 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
+import * as utilities from "../utilities";
+
+/**
+ * Configuration for the ingress controller.
+ */
+export interface IngressConfigArgs {
+    /**
+     * Additional configuration for the ingress controller.
+     */
+    additionalConfig?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * The number of replicas of the ingress controller.
+     */
+    controllerReplicas?: pulumi.Input<number>;
+    /**
+     * Enable metrics for the ingress controller.
+     */
+    enableMetrics?: pulumi.Input<boolean>;
+    /**
+     * Enable the service monitor for kube-prometheus-stackl.
+     */
+    enableServiceMonitor?: pulumi.Input<boolean>;
+    /**
+     * The namespace to deploy the service monitor to.
+     */
+    serviceMonitorNamespace?: pulumi.Input<string>;
+}
+/**
+ * ingressConfigArgsProvideDefaults sets the appropriate defaults for IngressConfigArgs
+ */
+export function ingressConfigArgsProvideDefaults(val: IngressConfigArgs): IngressConfigArgs {
+    return {
+        ...val,
+        controllerReplicas: (val.controllerReplicas) ?? 1,
+        enableMetrics: (val.enableMetrics) ?? false,
+        enableServiceMonitor: (val.enableServiceMonitor) ?? false,
+    };
+}
+
 /**
  * Represents a single requirement with key, operator, and values.
  */

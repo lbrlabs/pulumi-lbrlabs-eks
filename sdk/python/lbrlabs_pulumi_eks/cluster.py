@@ -8,6 +8,7 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
+from ._inputs import *
 import pulumi_aws
 
 __all__ = ['ClusterArgs', 'Cluster']
@@ -32,6 +33,7 @@ class ClusterArgs:
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
+                 ingress_config: Optional[pulumi.Input['IngressConfigArgs']] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
@@ -56,6 +58,7 @@ class ClusterArgs:
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
+        :param pulumi.Input['IngressConfigArgs'] ingress_config: Configuration for the ingress controller.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
@@ -114,6 +117,8 @@ class ClusterArgs:
             pulumi.set(__self__, "enabled_cluster_log_types", enabled_cluster_log_types)
         if external_dns_version is not None:
             pulumi.set(__self__, "external_dns_version", external_dns_version)
+        if ingress_config is not None:
+            pulumi.set(__self__, "ingress_config", ingress_config)
         if lb_type is None:
             lb_type = 'nlb'
         if lb_type is not None:
@@ -329,6 +334,18 @@ class ClusterArgs:
         pulumi.set(self, "external_dns_version", value)
 
     @property
+    @pulumi.getter(name="ingressConfig")
+    def ingress_config(self) -> Optional[pulumi.Input['IngressConfigArgs']]:
+        """
+        Configuration for the ingress controller.
+        """
+        return pulumi.get(self, "ingress_config")
+
+    @ingress_config.setter
+    def ingress_config(self, value: Optional[pulumi.Input['IngressConfigArgs']]):
+        pulumi.set(self, "ingress_config", value)
+
+    @property
     @pulumi.getter(name="lbType")
     def lb_type(self) -> Optional[pulumi.Input[str]]:
         """
@@ -443,6 +460,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
+                 ingress_config: Optional[pulumi.Input[pulumi.InputType['IngressConfigArgs']]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
@@ -471,6 +489,7 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
+        :param pulumi.Input[pulumi.InputType['IngressConfigArgs']] ingress_config: Configuration for the ingress controller.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
@@ -518,6 +537,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
+                 ingress_config: Optional[pulumi.Input[pulumi.InputType['IngressConfigArgs']]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
@@ -574,6 +594,7 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["enable_otel"] = enable_otel
             __props__.__dict__["enabled_cluster_log_types"] = enabled_cluster_log_types
             __props__.__dict__["external_dns_version"] = external_dns_version
+            __props__.__dict__["ingress_config"] = ingress_config
             if lb_type is None:
                 lb_type = 'nlb'
             __props__.__dict__["lb_type"] = lb_type

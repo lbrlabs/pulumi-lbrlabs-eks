@@ -24,6 +24,15 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// ingress configuration args
+type IngressConfig struct {
+	EnableMetrics           pulumi.BoolInput   `pulumi:"enableMetrics"`
+	EnableServiceMonitor    pulumi.BoolInput   `pulumi:"enableServiceMonitor"`
+	ServiceMonitorNamespace pulumi.StringInput `pulumi:"serviceMonitorNamespace"`
+	ControllerReplicas      pulumi.IntInput    `pulumi:"controllerReplicas"`
+	AdditionalConfig        pulumi.MapInput    `pulumi:"additionalConfig"`
+}
+
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
 	ClusterSubnetIds             pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
@@ -41,6 +50,7 @@ type ClusterArgs struct {
 	EnableCertManager            bool                     `pulumi:"enableCertManager"`
 	EnableKarpenter              bool                     `pulumi:"enableKarpenter"`
 	LetsEncryptEmail             string                   `pulumi:"letsEncryptEmail"`
+	IngressConfig                *IngressConfig           `pulumi:"ingressConfig"`
 	EnableInternalIngress        bool                     `pulumi:"enableInternalIngress"`
 	EnableExternalIngress        bool                     `pulumi:"enableExternalIngress"`
 	LbType                       pulumi.StringInput       `pulumi:"lbType"`
@@ -582,6 +592,18 @@ func NewCluster(ctx *pulumi.Context,
 		}
 	}
 
+	var realisedIngressConfig IngressConfig
+
+	if args.IngressConfig == nil {
+		realisedIngressConfig = IngressConfig{
+			EnableMetrics:        pulumi.Bool(false),
+			EnableServiceMonitor: pulumi.Bool(false),
+			ControllerReplicas:   pulumi.Int(1),
+		}
+	} else {
+		realisedIngressConfig = *args.IngressConfig
+	}
+
 	if args.EnableExternalIngress {
 		nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
 			Chart:     pulumi.String("ingress-nginx"),
@@ -592,6 +614,15 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"metrics": pulumi.Map{
+						"enabled": realisedIngressConfig.EnableMetrics,
+						"serviceMonitor": pulumi.Map{
+							"enabled":   realisedIngressConfig.EnableServiceMonitor,
+							"namespace": realisedIngressConfig.ServiceMonitorNamespace,
+						},
+					},
+					"config":       realisedIngressConfig.AdditionalConfig,
+					"replicaCount": realisedIngressConfig.ControllerReplicas,
 					"admissionWebhooks": pulumi.Map{
 						"patch": pulumi.Map{
 							"tolerations": pulumi.MapArray{
@@ -671,6 +702,15 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"replicaCount": realisedIngressConfig.ControllerReplicas,
+					"metrics": pulumi.Map{
+						"enabled": realisedIngressConfig.EnableMetrics,
+						"serviceMonitor": pulumi.Map{
+							"enabled":   realisedIngressConfig.EnableServiceMonitor,
+							"namespace": realisedIngressConfig.ServiceMonitorNamespace,
+						},
+					},
+					"config": realisedIngressConfig.AdditionalConfig,
 					"admissionWebhooks": pulumi.Map{
 						"patch": pulumi.Map{
 							"tolerations": pulumi.MapArray{

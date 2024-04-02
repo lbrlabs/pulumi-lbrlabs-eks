@@ -15,6 +15,30 @@ keywords:
   - category/cloud
 repository: "https://github.com/lbrlabs/pulumi-lbrlabs-eks"
 types:
+  lbrlabs-eks:index:IngressConfig:
+    description: Configuration for the ingress controller.
+    type: object
+    properties:
+      enableMetrics:
+        type: boolean
+        default: false
+        description: Enable metrics for the ingress controller.
+      enableServiceMonitor:
+        type: boolean
+        default: false
+        description: Enable the service monitor for kube-prometheus-stackl.
+      serviceMonitorNamespace:
+        type: string
+        description: The namespace to deploy the service monitor to.
+      controllerReplicas:
+        type: number
+        default: 1
+        description: The number of replicas of the ingress controller.
+      additionalConfig:
+        type: object
+        additionalProperties:
+          type: string
+        description: Additional configuration for the ingress controller.
   lbrlabs-eks:index:Requirement:
     description: Represents a single requirement with key, operator, and values.
     type: object
@@ -49,6 +73,9 @@ resources:
   lbrlabs-eks:index:Cluster:
     isComponent: true
     inputProperties:
+      ingressConfig:
+        "$ref": "#/types/lbrlabs-eks:index:IngressConfig"
+        description: Configuration for the ingress controller.
       clusterVersion:
         type: string
         description: The version of the EKS cluster to create.
@@ -248,7 +275,7 @@ resources:
       serviceAccountName:
         type: string
         description: The name of the service account to bind to the role
-      tags: 
+      tags:
         type: object
         additionalProperties:
           type: string
@@ -311,7 +338,7 @@ resources:
       role:
         "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
       profile:
-         "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FfargateProfile:FargateProfile"
+        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FfargateProfile:FargateProfile"
     required:
       - role
       - profile

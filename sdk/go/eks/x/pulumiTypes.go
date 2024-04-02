@@ -14,6 +14,135 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+// Configuration for the ingress controller.
+type IngressConfig struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas *float64 `pulumi:"controllerReplicas"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics *bool `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stackl.
+	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace *string `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for IngressConfig
+func (val *IngressConfig) Defaults() *IngressConfig {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ControllerReplicas == nil {
+		controllerReplicas_ := 1.0
+		tmp.ControllerReplicas = &controllerReplicas_
+	}
+	if tmp.EnableMetrics == nil {
+		enableMetrics_ := false
+		tmp.EnableMetrics = &enableMetrics_
+	}
+	if tmp.EnableServiceMonitor == nil {
+		enableServiceMonitor_ := false
+		tmp.EnableServiceMonitor = &enableServiceMonitor_
+	}
+	return &tmp
+}
+
+// Configuration for the ingress controller.
+type IngressConfigArgs struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig pulumix.Input[map[string]string] `pulumi:"additionalConfig"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas pulumix.Input[*float64] `pulumi:"controllerReplicas"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics pulumix.Input[*bool] `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stackl.
+	EnableServiceMonitor pulumix.Input[*bool] `pulumi:"enableServiceMonitor"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace pulumix.Input[*string] `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for IngressConfigArgs
+func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ControllerReplicas == nil {
+		tmp.ControllerReplicas = pulumix.Ptr(1.0)
+	}
+	if tmp.EnableMetrics == nil {
+		tmp.EnableMetrics = pulumix.Ptr(false)
+	}
+	if tmp.EnableServiceMonitor == nil {
+		tmp.EnableServiceMonitor = pulumix.Ptr(false)
+	}
+	return &tmp
+}
+func (IngressConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*IngressConfig)(nil)).Elem()
+}
+
+func (i IngressConfigArgs) ToIngressConfigOutput() IngressConfigOutput {
+	return i.ToIngressConfigOutputWithContext(context.Background())
+}
+
+func (i IngressConfigArgs) ToIngressConfigOutputWithContext(ctx context.Context) IngressConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigOutput)
+}
+
+func (i *IngressConfigArgs) ToOutput(ctx context.Context) pulumix.Output[*IngressConfigArgs] {
+	return pulumix.Val(i)
+}
+
+// Configuration for the ingress controller.
+type IngressConfigOutput struct{ *pulumi.OutputState }
+
+func (IngressConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*IngressConfig)(nil)).Elem()
+}
+
+func (o IngressConfigOutput) ToIngressConfigOutput() IngressConfigOutput {
+	return o
+}
+
+func (o IngressConfigOutput) ToIngressConfigOutputWithContext(ctx context.Context) IngressConfigOutput {
+	return o
+}
+
+func (o IngressConfigOutput) ToOutput(ctx context.Context) pulumix.Output[IngressConfig] {
+	return pulumix.Output[IngressConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Additional configuration for the ingress controller.
+func (o IngressConfigOutput) AdditionalConfig() pulumix.MapOutput[string] {
+	value := pulumix.Apply[IngressConfig](o, func(v IngressConfig) map[string]string { return v.AdditionalConfig })
+	return pulumix.MapOutput[string]{OutputState: value.OutputState}
+}
+
+// The number of replicas of the ingress controller.
+func (o IngressConfigOutput) ControllerReplicas() pulumix.Output[*float64] {
+	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *float64 { return v.ControllerReplicas })
+}
+
+// Enable metrics for the ingress controller.
+func (o IngressConfigOutput) EnableMetrics() pulumix.Output[*bool] {
+	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *bool { return v.EnableMetrics })
+}
+
+// Enable the service monitor for kube-prometheus-stackl.
+func (o IngressConfigOutput) EnableServiceMonitor() pulumix.Output[*bool] {
+	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *bool { return v.EnableServiceMonitor })
+}
+
+// The namespace to deploy the service monitor to.
+func (o IngressConfigOutput) ServiceMonitorNamespace() pulumix.Output[*string] {
+	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *string { return v.ServiceMonitorNamespace })
+}
+
 // Represents a single requirement with key, operator, and values.
 type Requirement struct {
 	// The key of the requirement.
@@ -98,5 +227,6 @@ type Taint struct {
 }
 
 func init() {
+	pulumi.RegisterOutputType(IngressConfigOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})
 }

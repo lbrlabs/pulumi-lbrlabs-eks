@@ -179,6 +179,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<string>? ExternalDNSVersion { get; set; }
 
         /// <summary>
+        /// Configuration for the ingress controller.
+        /// </summary>
+        [Input("ingressConfig")]
+        public Input<Inputs.IngressConfigArgs>? IngressConfig { get; set; }
+
+        /// <summary>
         /// The type of loadbalancer to provision.
         /// </summary>
         [Input("lbType")]
