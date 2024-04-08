@@ -24,6 +24,8 @@ type IngressConfig struct {
 	EnableMetrics *bool `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
 	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType *string `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
 	ServiceMonitorNamespace *string `pulumi:"serviceMonitorNamespace"`
 }
@@ -45,6 +47,10 @@ func (val *IngressConfig) Defaults() *IngressConfig {
 	if tmp.EnableServiceMonitor == nil {
 		enableServiceMonitor_ := false
 		tmp.EnableServiceMonitor = &enableServiceMonitor_
+	}
+	if tmp.NlbTargetType == nil {
+		nlbTargetType_ := "ip"
+		tmp.NlbTargetType = &nlbTargetType_
 	}
 	return &tmp
 }
@@ -70,6 +76,8 @@ type IngressConfigArgs struct {
 	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
 	EnableServiceMonitor pulumi.BoolPtrInput `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType pulumi.StringPtrInput `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
 	ServiceMonitorNamespace pulumi.StringPtrInput `pulumi:"serviceMonitorNamespace"`
 }
@@ -88,6 +96,9 @@ func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
 	}
 	if tmp.EnableServiceMonitor == nil {
 		tmp.EnableServiceMonitor = pulumi.BoolPtr(false)
+	}
+	if tmp.NlbTargetType == nil {
+		tmp.NlbTargetType = pulumi.StringPtr("ip")
 	}
 	return &tmp
 }
@@ -207,6 +218,11 @@ func (o IngressConfigOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableServiceMonitor }).(pulumi.BoolPtrOutput)
 }
 
+// NLB target type for NLB loadbalancers.
+func (o IngressConfigOutput) NlbTargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *string { return v.NlbTargetType }).(pulumi.StringPtrOutput)
+}
+
 // The namespace to deploy the service monitor to.
 func (o IngressConfigOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *string { return v.ServiceMonitorNamespace }).(pulumi.StringPtrOutput)
@@ -280,6 +296,16 @@ func (o IngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 		}
 		return v.EnableServiceMonitor
 	}).(pulumi.BoolPtrOutput)
+}
+
+// NLB target type for NLB loadbalancers.
+func (o IngressConfigPtrOutput) NlbTargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NlbTargetType
+	}).(pulumi.StringPtrOutput)
 }
 
 // The namespace to deploy the service monitor to.

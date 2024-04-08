@@ -28,6 +28,10 @@ export interface IngressConfigArgs {
      */
     enableServiceMonitor?: pulumi.Input<boolean>;
     /**
+     * NLB target type for NLB loadbalancers.
+     */
+    nlbTargetType?: pulumi.Input<string>;
+    /**
      * The namespace to deploy the service monitor to.
      */
     serviceMonitorNamespace?: pulumi.Input<string>;
@@ -41,6 +45,7 @@ export function ingressConfigArgsProvideDefaults(val: IngressConfigArgs): Ingres
         controllerReplicas: (val.controllerReplicas) ?? 1,
         enableMetrics: (val.enableMetrics) ?? false,
         enableServiceMonitor: (val.enableServiceMonitor) ?? false,
+        nlbTargetType: (val.nlbTargetType) ?? "ip",
     };
 }
 

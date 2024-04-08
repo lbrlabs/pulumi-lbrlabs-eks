@@ -21,6 +21,7 @@ class IngressConfigArgs:
                  controller_replicas: Optional[pulumi.Input[float]] = None,
                  enable_metrics: Optional[pulumi.Input[bool]] = None,
                  enable_service_monitor: Optional[pulumi.Input[bool]] = None,
+                 nlb_target_type: Optional[pulumi.Input[str]] = None,
                  service_monitor_namespace: Optional[pulumi.Input[str]] = None):
         """
         Configuration for the ingress controller.
@@ -28,6 +29,7 @@ class IngressConfigArgs:
         :param pulumi.Input[float] controller_replicas: The number of replicas of the ingress controller.
         :param pulumi.Input[bool] enable_metrics: Enable metrics for the ingress controller.
         :param pulumi.Input[bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stackl.
+        :param pulumi.Input[str] nlb_target_type: NLB target type for NLB loadbalancers.
         :param pulumi.Input[str] service_monitor_namespace: The namespace to deploy the service monitor to.
         """
         if additional_config is not None:
@@ -44,6 +46,10 @@ class IngressConfigArgs:
             enable_service_monitor = False
         if enable_service_monitor is not None:
             pulumi.set(__self__, "enable_service_monitor", enable_service_monitor)
+        if nlb_target_type is None:
+            nlb_target_type = 'ip'
+        if nlb_target_type is not None:
+            pulumi.set(__self__, "nlb_target_type", nlb_target_type)
         if service_monitor_namespace is not None:
             pulumi.set(__self__, "service_monitor_namespace", service_monitor_namespace)
 
@@ -94,6 +100,18 @@ class IngressConfigArgs:
     @enable_service_monitor.setter
     def enable_service_monitor(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "enable_service_monitor", value)
+
+    @property
+    @pulumi.getter(name="nlbTargetType")
+    def nlb_target_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        NLB target type for NLB loadbalancers.
+        """
+        return pulumi.get(self, "nlb_target_type")
+
+    @nlb_target_type.setter
+    def nlb_target_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "nlb_target_type", value)
 
     @property
     @pulumi.getter(name="serviceMonitorNamespace")

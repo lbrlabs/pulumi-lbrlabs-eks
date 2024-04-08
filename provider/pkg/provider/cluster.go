@@ -31,6 +31,7 @@ type IngressConfig struct {
 	ServiceMonitorNamespace pulumi.StringInput `pulumi:"serviceMonitorNamespace"`
 	ControllerReplicas      pulumi.IntInput    `pulumi:"controllerReplicas"`
 	AdditionalConfig        pulumi.MapInput    `pulumi:"additionalConfig"`
+	NlbTargetType           pulumi.StringInput `pulumi:"nlbTargetType"`
 }
 
 // The set of arguments for creating a Cluster component resource.
@@ -583,12 +584,14 @@ func NewCluster(ctx *pulumi.Context,
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+			"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":  args.IngressConfig.NlbTargetType,
 		}
 	} else {
 		externalAnnotations = pulumi.Map{
 			"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
 			"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 			"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+			"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":  args.IngressConfig.NlbTargetType,
 		}
 	}
 
@@ -683,6 +686,7 @@ func NewCluster(ctx *pulumi.Context,
 				"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 				"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 				"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+				"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":  args.IngressConfig.NlbTargetType,
 			}
 		} else {
 			internalAnnotations = pulumi.Map{
@@ -690,6 +694,7 @@ func NewCluster(ctx *pulumi.Context,
 				"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 				"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 				"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+				"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":  args.IngressConfig.NlbTargetType,
 			}
 		}
 

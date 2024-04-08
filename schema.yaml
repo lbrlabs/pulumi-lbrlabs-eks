@@ -34,6 +34,12 @@ types:
         type: number
         default: 1
         description: The number of replicas of the ingress controller.
+      nlbTargetType:
+        type: string
+        additionalProperties:
+          type: string
+        description: NLB target type for NLB loadbalancers.
+        default: "ip"
       additionalConfig:
         type: object
         additionalProperties:
