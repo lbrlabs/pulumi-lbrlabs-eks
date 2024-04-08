@@ -47,6 +47,12 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         public Input<bool>? EnableServiceMonitor { get; set; }
 
         /// <summary>
+        /// NLB target type for NLB loadbalancers.
+        /// </summary>
+        [Input("nlbTargetType")]
+        public Input<string>? NlbTargetType { get; set; }
+
+        /// <summary>
         /// The namespace to deploy the service monitor to.
         /// </summary>
         [Input("serviceMonitorNamespace")]
@@ -57,6 +63,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
             ControllerReplicas = 1;
             EnableMetrics = false;
             EnableServiceMonitor = false;
+            NlbTargetType = "ip";
         }
         public static new IngressConfigArgs Empty => new IngressConfigArgs();
     }

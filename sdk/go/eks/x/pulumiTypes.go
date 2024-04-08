@@ -24,6 +24,8 @@ type IngressConfig struct {
 	EnableMetrics *bool `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
 	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType *string `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
 	ServiceMonitorNamespace *string `pulumi:"serviceMonitorNamespace"`
 }
@@ -46,6 +48,10 @@ func (val *IngressConfig) Defaults() *IngressConfig {
 		enableServiceMonitor_ := false
 		tmp.EnableServiceMonitor = &enableServiceMonitor_
 	}
+	if tmp.NlbTargetType == nil {
+		nlbTargetType_ := "ip"
+		tmp.NlbTargetType = &nlbTargetType_
+	}
 	return &tmp
 }
 
@@ -59,6 +65,8 @@ type IngressConfigArgs struct {
 	EnableMetrics pulumix.Input[*bool] `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
 	EnableServiceMonitor pulumix.Input[*bool] `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType pulumix.Input[*string] `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
 	ServiceMonitorNamespace pulumix.Input[*string] `pulumi:"serviceMonitorNamespace"`
 }
@@ -77,6 +85,9 @@ func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
 	}
 	if tmp.EnableServiceMonitor == nil {
 		tmp.EnableServiceMonitor = pulumix.Ptr(false)
+	}
+	if tmp.NlbTargetType == nil {
+		tmp.NlbTargetType = pulumix.Ptr("ip")
 	}
 	return &tmp
 }
@@ -136,6 +147,11 @@ func (o IngressConfigOutput) EnableMetrics() pulumix.Output[*bool] {
 // Enable the service monitor for kube-prometheus-stackl.
 func (o IngressConfigOutput) EnableServiceMonitor() pulumix.Output[*bool] {
 	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *bool { return v.EnableServiceMonitor })
+}
+
+// NLB target type for NLB loadbalancers.
+func (o IngressConfigOutput) NlbTargetType() pulumix.Output[*string] {
+	return pulumix.Apply[IngressConfig](o, func(v IngressConfig) *string { return v.NlbTargetType })
 }
 
 // The namespace to deploy the service monitor to.
