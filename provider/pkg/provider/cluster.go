@@ -703,7 +703,6 @@ func NewCluster(ctx *pulumi.Context,
 				"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
 				"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
 				"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
-				"service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":  args.IngressConfig.NlbTargetType,
 			}
 			if args.IngressConfig != nil && args.IngressConfig.NlbTargetType != nil {
 				internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.IngressConfig.NlbTargetType
