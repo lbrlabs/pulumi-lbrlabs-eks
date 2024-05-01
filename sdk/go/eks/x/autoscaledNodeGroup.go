@@ -40,6 +40,9 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	if args.DiskSize == nil {
 		args.DiskSize = pulumix.Val("20Gi")
 	}
+	if args.Disruption != nil {
+		args.Disruption = pulumix.Apply(args.Disruption, func(o *DisruptionConfigArgs) *DisruptionConfigArgs { return o.Defaults() })
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AutoscaledNodeGroup
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:AutoscaledNodeGroup", name, args, &resource, opts...)
@@ -55,7 +58,10 @@ type autoscaledNodeGroupArgs struct {
 	// Annotations to apply to the node group.
 	Annotations map[string]string `pulumi:"annotations"`
 	// Disk size for the node group.
-	DiskSize string `pulumi:"diskSize"`
+	DiskSize   string            `pulumi:"diskSize"`
+	Disruption *DisruptionConfig `pulumi:"disruption"`
+	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+	Labels map[string]string `pulumi:"labels"`
 	// Node role for the node group.
 	NodeRole string `pulumi:"nodeRole"`
 	// List of requirements for the node group.
@@ -75,7 +81,10 @@ type AutoscaledNodeGroupArgs struct {
 	// Annotations to apply to the node group.
 	Annotations pulumix.Input[map[string]string]
 	// Disk size for the node group.
-	DiskSize pulumix.Input[string]
+	DiskSize   pulumix.Input[string]
+	Disruption pulumix.Input[*DisruptionConfigArgs]
+	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+	Labels pulumix.Input[map[string]string]
 	// Node role for the node group.
 	NodeRole pulumix.Input[string]
 	// List of requirements for the node group.

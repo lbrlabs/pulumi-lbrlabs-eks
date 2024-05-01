@@ -23,6 +23,8 @@ class AutoscaledNodeGroupArgs:
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  ami_family: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 disruption: Optional[pulumi.Input['DisruptionConfigArgs']] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
@@ -33,6 +35,7 @@ class AutoscaledNodeGroupArgs:
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet selector terms for the node group.
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]] taints: Optional node taints.
         """
         if disk_size is None:
@@ -46,6 +49,10 @@ class AutoscaledNodeGroupArgs:
             pulumi.set(__self__, "ami_family", ami_family)
         if annotations is not None:
             pulumi.set(__self__, "annotations", annotations)
+        if disruption is not None:
+            pulumi.set(__self__, "disruption", disruption)
+        if labels is not None:
+            pulumi.set(__self__, "labels", labels)
         if taints is not None:
             pulumi.set(__self__, "taints", taints)
 
@@ -135,6 +142,27 @@ class AutoscaledNodeGroupArgs:
 
     @property
     @pulumi.getter
+    def disruption(self) -> Optional[pulumi.Input['DisruptionConfigArgs']]:
+        return pulumi.get(self, "disruption")
+
+    @disruption.setter
+    def disruption(self, value: Optional[pulumi.Input['DisruptionConfigArgs']]):
+        pulumi.set(self, "disruption", value)
+
+    @property
+    @pulumi.getter
+    def labels(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        """
+        return pulumi.get(self, "labels")
+
+    @labels.setter
+    def labels(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "labels", value)
+
+    @property
+    @pulumi.getter
     def taints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]:
         """
         Optional node taints.
@@ -154,6 +182,8 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
+                 disruption: Optional[pulumi.Input[pulumi.InputType['DisruptionConfigArgs']]] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -167,6 +197,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
         :param pulumi.Input[str] disk_size: Disk size for the node group.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[str] node_role: Node role for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
@@ -199,6 +230,8 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
+                 disruption: Optional[pulumi.Input[pulumi.InputType['DisruptionConfigArgs']]] = None,
+                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -222,6 +255,8 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
             if disk_size is None and not opts.urn:
                 raise TypeError("Missing required property 'disk_size'")
             __props__.__dict__["disk_size"] = disk_size
+            __props__.__dict__["disruption"] = disruption
+            __props__.__dict__["labels"] = labels
             if node_role is None and not opts.urn:
                 raise TypeError("Missing required property 'node_role'")
             __props__.__dict__["node_role"] = node_role

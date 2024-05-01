@@ -10,9 +10,72 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 
 __all__ = [
+    'DisruptionConfigArgs',
     'IngressConfigArgs',
     'RequirementArgs',
 ]
+
+@pulumi.input_type
+class DisruptionConfigArgs:
+    def __init__(__self__, *,
+                 consolidate_after: Optional[pulumi.Input[str]] = None,
+                 consolidation_policy: Optional[pulumi.Input[str]] = None,
+                 expire_after: Optional[pulumi.Input[str]] = None):
+        """
+        Configuration for Autoscaled nodes disruption.
+        :param pulumi.Input[str] consolidate_after: The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+        :param pulumi.Input[str] consolidation_policy: Describes which types of Nodes Karpenter should consider for consolidation.
+        :param pulumi.Input[str] expire_after: The amount of time a Node can live on the cluster before being removed.
+        """
+        if consolidate_after is None:
+            consolidate_after = '30s'
+        if consolidate_after is not None:
+            pulumi.set(__self__, "consolidate_after", consolidate_after)
+        if consolidation_policy is None:
+            consolidation_policy = 'WhenUnderutilized'
+        if consolidation_policy is not None:
+            pulumi.set(__self__, "consolidation_policy", consolidation_policy)
+        if expire_after is None:
+            expire_after = '720h'
+        if expire_after is not None:
+            pulumi.set(__self__, "expire_after", expire_after)
+
+    @property
+    @pulumi.getter(name="consolidateAfter")
+    def consolidate_after(self) -> Optional[pulumi.Input[str]]:
+        """
+        The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+        """
+        return pulumi.get(self, "consolidate_after")
+
+    @consolidate_after.setter
+    def consolidate_after(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "consolidate_after", value)
+
+    @property
+    @pulumi.getter(name="consolidationPolicy")
+    def consolidation_policy(self) -> Optional[pulumi.Input[str]]:
+        """
+        Describes which types of Nodes Karpenter should consider for consolidation.
+        """
+        return pulumi.get(self, "consolidation_policy")
+
+    @consolidation_policy.setter
+    def consolidation_policy(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "consolidation_policy", value)
+
+    @property
+    @pulumi.getter(name="expireAfter")
+    def expire_after(self) -> Optional[pulumi.Input[str]]:
+        """
+        The amount of time a Node can live on the cluster before being removed.
+        """
+        return pulumi.get(self, "expire_after")
+
+    @expire_after.setter
+    def expire_after(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "expire_after", value)
+
 
 @pulumi.input_type
 class IngressConfigArgs:

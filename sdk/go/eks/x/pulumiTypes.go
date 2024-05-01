@@ -14,6 +14,116 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfig struct {
+	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+	ConsolidateAfter *string `pulumi:"consolidateAfter"`
+	// Describes which types of Nodes Karpenter should consider for consolidation.
+	ConsolidationPolicy *string `pulumi:"consolidationPolicy"`
+	// The amount of time a Node can live on the cluster before being removed.
+	ExpireAfter *string `pulumi:"expireAfter"`
+}
+
+// Defaults sets the appropriate defaults for DisruptionConfig
+func (val *DisruptionConfig) Defaults() *DisruptionConfig {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		consolidateAfter_ := "30s"
+		tmp.ConsolidateAfter = &consolidateAfter_
+	}
+	if tmp.ConsolidationPolicy == nil {
+		consolidationPolicy_ := "WhenUnderutilized"
+		tmp.ConsolidationPolicy = &consolidationPolicy_
+	}
+	if tmp.ExpireAfter == nil {
+		expireAfter_ := "720h"
+		tmp.ExpireAfter = &expireAfter_
+	}
+	return &tmp
+}
+
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfigArgs struct {
+	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+	ConsolidateAfter pulumix.Input[*string] `pulumi:"consolidateAfter"`
+	// Describes which types of Nodes Karpenter should consider for consolidation.
+	ConsolidationPolicy pulumix.Input[*string] `pulumi:"consolidationPolicy"`
+	// The amount of time a Node can live on the cluster before being removed.
+	ExpireAfter pulumix.Input[*string] `pulumi:"expireAfter"`
+}
+
+// Defaults sets the appropriate defaults for DisruptionConfigArgs
+func (val *DisruptionConfigArgs) Defaults() *DisruptionConfigArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		tmp.ConsolidateAfter = pulumix.Ptr("30s")
+	}
+	if tmp.ConsolidationPolicy == nil {
+		tmp.ConsolidationPolicy = pulumix.Ptr("WhenUnderutilized")
+	}
+	if tmp.ExpireAfter == nil {
+		tmp.ExpireAfter = pulumix.Ptr("720h")
+	}
+	return &tmp
+}
+func (DisruptionConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DisruptionConfig)(nil)).Elem()
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigOutput() DisruptionConfigOutput {
+	return i.ToDisruptionConfigOutputWithContext(context.Background())
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigOutputWithContext(ctx context.Context) DisruptionConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigOutput)
+}
+
+func (i *DisruptionConfigArgs) ToOutput(ctx context.Context) pulumix.Output[*DisruptionConfigArgs] {
+	return pulumix.Val(i)
+}
+
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfigOutput struct{ *pulumi.OutputState }
+
+func (DisruptionConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DisruptionConfig)(nil)).Elem()
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigOutput() DisruptionConfigOutput {
+	return o
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigOutputWithContext(ctx context.Context) DisruptionConfigOutput {
+	return o
+}
+
+func (o DisruptionConfigOutput) ToOutput(ctx context.Context) pulumix.Output[DisruptionConfig] {
+	return pulumix.Output[DisruptionConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+func (o DisruptionConfigOutput) ConsolidateAfter() pulumix.Output[*string] {
+	return pulumix.Apply[DisruptionConfig](o, func(v DisruptionConfig) *string { return v.ConsolidateAfter })
+}
+
+// Describes which types of Nodes Karpenter should consider for consolidation.
+func (o DisruptionConfigOutput) ConsolidationPolicy() pulumix.Output[*string] {
+	return pulumix.Apply[DisruptionConfig](o, func(v DisruptionConfig) *string { return v.ConsolidationPolicy })
+}
+
+// The amount of time a Node can live on the cluster before being removed.
+func (o DisruptionConfigOutput) ExpireAfter() pulumix.Output[*string] {
+	return pulumix.Apply[DisruptionConfig](o, func(v DisruptionConfig) *string { return v.ExpireAfter })
+}
+
 // Configuration for the ingress controller.
 type IngressConfig struct {
 	// Additional configuration for the ingress controller.
@@ -243,6 +353,7 @@ type Taint struct {
 }
 
 func init() {
+	pulumi.RegisterOutputType(DisruptionConfigOutput{})
 	pulumi.RegisterOutputType(IngressConfigOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})
 }

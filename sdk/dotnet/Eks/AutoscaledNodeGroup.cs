@@ -65,6 +65,21 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("diskSize", required: true)]
         public Input<string> DiskSize { get; set; } = null!;
 
+        [Input("disruption")]
+        public Input<Inputs.DisruptionConfigArgs>? Disruption { get; set; }
+
+        [Input("labels")]
+        private InputMap<string>? _labels;
+
+        /// <summary>
+        /// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        /// </summary>
+        public InputMap<string> Labels
+        {
+            get => _labels ?? (_labels = new InputMap<string>());
+            set => _labels = value;
+        }
+
         /// <summary>
         /// Node role for the node group.
         /// </summary>

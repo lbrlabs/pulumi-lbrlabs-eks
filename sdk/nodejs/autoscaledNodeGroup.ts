@@ -53,6 +53,8 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
             resourceInputs["annotations"] = args ? args.annotations : undefined;
             resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
+            resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["labels"] = args ? args.labels : undefined;
             resourceInputs["nodeRole"] = args ? args.nodeRole : undefined;
             resourceInputs["requirements"] = args ? args.requirements : undefined;
             resourceInputs["securityGroupIds"] = args ? args.securityGroupIds : undefined;
@@ -81,6 +83,11 @@ export interface AutoscaledNodeGroupArgs {
      * Disk size for the node group.
      */
     diskSize: pulumi.Input<string>;
+    disruption?: pulumi.Input<inputs.DisruptionConfigArgs>;
+    /**
+     * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+     */
+    labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * Node role for the node group.
      */

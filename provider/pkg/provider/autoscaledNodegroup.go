@@ -7,6 +7,19 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+type BudgetConfig struct {
+	Nodes    pulumi.StringInput `pulumi:"nodes"`
+	Schedule pulumi.StringInput `pulumi:"schedule"`
+	Duration pulumi.StringInput `pulumi:"duration"`
+}
+
+type DisruptionConfig struct {
+	ConsolidationPolicy pulumi.StringInput `pulumi:"consolidationPolicy"`
+	ConsolidateAfter    pulumi.StringInput `pulumi:"consolidateAfter"`
+	ExpireAfter         pulumi.StringInput `pulumi:"expireAfter"`
+	//Budgets             []BudgetConfig     `pulumi:"budgets"`
+}
+
 type AutoscaledNodeGroupArgs struct {
 	Annotations      *pulumi.StringMapInput  `pulumi:"annotations"`
 	AMIFamily        *pulumi.StringInput     `pulumi:"amiFamily"`
@@ -16,6 +29,8 @@ type AutoscaledNodeGroupArgs struct {
 	SubnetIds        pulumi.StringArrayInput `pulumi:"subnetIds"`
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
 	Requirements     pulumi.ArrayInput       `pulumi:"requirements"`
+	Labels           *pulumi.StringMapInput  `pulumi:"labels"`
+	Disruption       *DisruptionConfig       `pulumi:"disruption"`
 }
 
 type AutoscaledNodeGroup struct {
@@ -48,6 +63,23 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		annotations = pulumi.StringMap{}
 	} else {
 		annotations = *args.Annotations
+	}
+
+	var labels pulumi.StringMapInput
+	if args.Labels == nil {
+		labels = pulumi.StringMap{
+			"node.lbrlabs.com/name": pulumi.String(name),
+		}
+	} else {
+		labels = *args.Labels
+	}
+
+	var disruption DisruptionConfig
+
+	if args.Disruption == nil {
+		disruption = DisruptionConfig{}
+	} else {
+		disruption = *args.Disruption
 	}
 
 	subnetSelectorTermsProcessed := args.SubnetIds.ToStringArrayOutput().ApplyT(func(input interface{}) ([]interface{}, error) {
@@ -111,6 +143,15 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating autoscaled node class: %w", err)
 	}
 
+	// var budgetsInput []interface{}
+	// for _, budget := range disruption.Budgets {
+	// 	budgetsInput = append(budgetsInput, map[string]interface{}{
+	// 		"nodes":    budget.Nodes,
+	// 		"schedule": budget.Schedule,
+	// 		"duration": budget.Duration,
+	// 	})
+	// }
+
 	_, err = apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-nodepool", name), &apiextensions.CustomResourceArgs{
 		ApiVersion: pulumi.String("karpenter.sh/v1beta1"),
 		Kind:       pulumi.String("NodePool"),
@@ -119,7 +160,16 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		},
 		OtherFields: map[string]interface{}{
 			"spec": map[string]interface{}{
+				"disruption": map[string]interface{}{
+					"consolidationPolicy": disruption.ConsolidationPolicy,
+					"consolidateAfter":    disruption.ConsolidateAfter,
+					"expireAfter":         disruption.ExpireAfter,
+					//"budgets":             budgetsInput,
+				},
 				"template": map[string]interface{}{
+					"metadata": map[string]interface{}{
+						"labels": labels,
+					},
 					"spec": map[string]interface{}{
 						"requirements": args.Requirements,
 						"nodeClassRef": map[string]interface{}{
