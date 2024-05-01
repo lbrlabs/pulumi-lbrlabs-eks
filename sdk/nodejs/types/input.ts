@@ -8,6 +8,35 @@ import * as outputs from "../types/output";
 import * as utilities from "../utilities";
 
 /**
+ * Configuration for Autoscaled nodes disruption.
+ */
+export interface DisruptionConfigArgs {
+    /**
+     * The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+     */
+    consolidateAfter?: pulumi.Input<string>;
+    /**
+     * Describes which types of Nodes Karpenter should consider for consolidation.
+     */
+    consolidationPolicy?: pulumi.Input<string>;
+    /**
+     * The amount of time a Node can live on the cluster before being removed.
+     */
+    expireAfter?: pulumi.Input<string>;
+}
+/**
+ * disruptionConfigArgsProvideDefaults sets the appropriate defaults for DisruptionConfigArgs
+ */
+export function disruptionConfigArgsProvideDefaults(val: DisruptionConfigArgs): DisruptionConfigArgs {
+    return {
+        ...val,
+        consolidateAfter: (val.consolidateAfter) ?? "30s",
+        consolidationPolicy: (val.consolidationPolicy) ?? "WhenUnderutilized",
+        expireAfter: (val.expireAfter) ?? "720h",
+    };
+}
+
+/**
  * Configuration for the ingress controller.
  */
 export interface IngressConfigArgs {

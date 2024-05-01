@@ -14,6 +14,246 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfig struct {
+	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+	ConsolidateAfter *string `pulumi:"consolidateAfter"`
+	// Describes which types of Nodes Karpenter should consider for consolidation.
+	ConsolidationPolicy *string `pulumi:"consolidationPolicy"`
+	// The amount of time a Node can live on the cluster before being removed.
+	ExpireAfter *string `pulumi:"expireAfter"`
+}
+
+// Defaults sets the appropriate defaults for DisruptionConfig
+func (val *DisruptionConfig) Defaults() *DisruptionConfig {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		consolidateAfter_ := "30s"
+		tmp.ConsolidateAfter = &consolidateAfter_
+	}
+	if tmp.ConsolidationPolicy == nil {
+		consolidationPolicy_ := "WhenUnderutilized"
+		tmp.ConsolidationPolicy = &consolidationPolicy_
+	}
+	if tmp.ExpireAfter == nil {
+		expireAfter_ := "720h"
+		tmp.ExpireAfter = &expireAfter_
+	}
+	return &tmp
+}
+
+// DisruptionConfigInput is an input type that accepts DisruptionConfigArgs and DisruptionConfigOutput values.
+// You can construct a concrete instance of `DisruptionConfigInput` via:
+//
+//	DisruptionConfigArgs{...}
+type DisruptionConfigInput interface {
+	pulumi.Input
+
+	ToDisruptionConfigOutput() DisruptionConfigOutput
+	ToDisruptionConfigOutputWithContext(context.Context) DisruptionConfigOutput
+}
+
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfigArgs struct {
+	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+	ConsolidateAfter pulumi.StringPtrInput `pulumi:"consolidateAfter"`
+	// Describes which types of Nodes Karpenter should consider for consolidation.
+	ConsolidationPolicy pulumi.StringPtrInput `pulumi:"consolidationPolicy"`
+	// The amount of time a Node can live on the cluster before being removed.
+	ExpireAfter pulumi.StringPtrInput `pulumi:"expireAfter"`
+}
+
+// Defaults sets the appropriate defaults for DisruptionConfigArgs
+func (val *DisruptionConfigArgs) Defaults() *DisruptionConfigArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		tmp.ConsolidateAfter = pulumi.StringPtr("30s")
+	}
+	if tmp.ConsolidationPolicy == nil {
+		tmp.ConsolidationPolicy = pulumi.StringPtr("WhenUnderutilized")
+	}
+	if tmp.ExpireAfter == nil {
+		tmp.ExpireAfter = pulumi.StringPtr("720h")
+	}
+	return &tmp
+}
+func (DisruptionConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DisruptionConfig)(nil)).Elem()
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigOutput() DisruptionConfigOutput {
+	return i.ToDisruptionConfigOutputWithContext(context.Background())
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigOutputWithContext(ctx context.Context) DisruptionConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigOutput)
+}
+
+func (i DisruptionConfigArgs) ToOutput(ctx context.Context) pulumix.Output[DisruptionConfig] {
+	return pulumix.Output[DisruptionConfig]{
+		OutputState: i.ToDisruptionConfigOutputWithContext(ctx).OutputState,
+	}
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput {
+	return i.ToDisruptionConfigPtrOutputWithContext(context.Background())
+}
+
+func (i DisruptionConfigArgs) ToDisruptionConfigPtrOutputWithContext(ctx context.Context) DisruptionConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigOutput).ToDisruptionConfigPtrOutputWithContext(ctx)
+}
+
+// DisruptionConfigPtrInput is an input type that accepts DisruptionConfigArgs, DisruptionConfigPtr and DisruptionConfigPtrOutput values.
+// You can construct a concrete instance of `DisruptionConfigPtrInput` via:
+//
+//	        DisruptionConfigArgs{...}
+//
+//	or:
+//
+//	        nil
+type DisruptionConfigPtrInput interface {
+	pulumi.Input
+
+	ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput
+	ToDisruptionConfigPtrOutputWithContext(context.Context) DisruptionConfigPtrOutput
+}
+
+type disruptionConfigPtrType DisruptionConfigArgs
+
+func DisruptionConfigPtr(v *DisruptionConfigArgs) DisruptionConfigPtrInput {
+	return (*disruptionConfigPtrType)(v)
+}
+
+func (*disruptionConfigPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**DisruptionConfig)(nil)).Elem()
+}
+
+func (i *disruptionConfigPtrType) ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput {
+	return i.ToDisruptionConfigPtrOutputWithContext(context.Background())
+}
+
+func (i *disruptionConfigPtrType) ToDisruptionConfigPtrOutputWithContext(ctx context.Context) DisruptionConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigPtrOutput)
+}
+
+func (i *disruptionConfigPtrType) ToOutput(ctx context.Context) pulumix.Output[*DisruptionConfig] {
+	return pulumix.Output[*DisruptionConfig]{
+		OutputState: i.ToDisruptionConfigPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Configuration for Autoscaled nodes disruption.
+type DisruptionConfigOutput struct{ *pulumi.OutputState }
+
+func (DisruptionConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DisruptionConfig)(nil)).Elem()
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigOutput() DisruptionConfigOutput {
+	return o
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigOutputWithContext(ctx context.Context) DisruptionConfigOutput {
+	return o
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput {
+	return o.ToDisruptionConfigPtrOutputWithContext(context.Background())
+}
+
+func (o DisruptionConfigOutput) ToDisruptionConfigPtrOutputWithContext(ctx context.Context) DisruptionConfigPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DisruptionConfig) *DisruptionConfig {
+		return &v
+	}).(DisruptionConfigPtrOutput)
+}
+
+func (o DisruptionConfigOutput) ToOutput(ctx context.Context) pulumix.Output[DisruptionConfig] {
+	return pulumix.Output[DisruptionConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+func (o DisruptionConfigOutput) ConsolidateAfter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DisruptionConfig) *string { return v.ConsolidateAfter }).(pulumi.StringPtrOutput)
+}
+
+// Describes which types of Nodes Karpenter should consider for consolidation.
+func (o DisruptionConfigOutput) ConsolidationPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DisruptionConfig) *string { return v.ConsolidationPolicy }).(pulumi.StringPtrOutput)
+}
+
+// The amount of time a Node can live on the cluster before being removed.
+func (o DisruptionConfigOutput) ExpireAfter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DisruptionConfig) *string { return v.ExpireAfter }).(pulumi.StringPtrOutput)
+}
+
+type DisruptionConfigPtrOutput struct{ *pulumi.OutputState }
+
+func (DisruptionConfigPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DisruptionConfig)(nil)).Elem()
+}
+
+func (o DisruptionConfigPtrOutput) ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput {
+	return o
+}
+
+func (o DisruptionConfigPtrOutput) ToDisruptionConfigPtrOutputWithContext(ctx context.Context) DisruptionConfigPtrOutput {
+	return o
+}
+
+func (o DisruptionConfigPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DisruptionConfig] {
+	return pulumix.Output[*DisruptionConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o DisruptionConfigPtrOutput) Elem() DisruptionConfigOutput {
+	return o.ApplyT(func(v *DisruptionConfig) DisruptionConfig {
+		if v != nil {
+			return *v
+		}
+		var ret DisruptionConfig
+		return ret
+	}).(DisruptionConfigOutput)
+}
+
+// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+func (o DisruptionConfigPtrOutput) ConsolidateAfter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *DisruptionConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ConsolidateAfter
+	}).(pulumi.StringPtrOutput)
+}
+
+// Describes which types of Nodes Karpenter should consider for consolidation.
+func (o DisruptionConfigPtrOutput) ConsolidationPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *DisruptionConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ConsolidationPolicy
+	}).(pulumi.StringPtrOutput)
+}
+
+// The amount of time a Node can live on the cluster before being removed.
+func (o DisruptionConfigPtrOutput) ExpireAfter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *DisruptionConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ExpireAfter
+	}).(pulumi.StringPtrOutput)
+}
+
 // Configuration for the ingress controller.
 type IngressConfig struct {
 	// Additional configuration for the ingress controller.
@@ -471,10 +711,14 @@ type Taint struct {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*DisruptionConfigInput)(nil)).Elem(), DisruptionConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DisruptionConfigPtrInput)(nil)).Elem(), DisruptionConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigPtrInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})
+	pulumi.RegisterOutputType(DisruptionConfigOutput{})
+	pulumi.RegisterOutputType(DisruptionConfigPtrOutput{})
 	pulumi.RegisterOutputType(IngressConfigOutput{})
 	pulumi.RegisterOutputType(IngressConfigPtrOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})

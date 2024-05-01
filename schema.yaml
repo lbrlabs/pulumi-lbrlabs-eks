@@ -15,6 +15,47 @@ keywords:
   - category/cloud
 repository: "https://github.com/lbrlabs/pulumi-lbrlabs-eks"
 types:
+  # lbrlabs-eks:index:BudgetConfig:
+  #   description: Configuration for Autoscaled Node budgets.
+  #   type: object
+  #   properties:
+  #     nodes:
+  #       type: string
+  #       description: The maximum number of nodes that can be scaled down at any time.
+  #     schedule:
+  #       type: string
+  #       description: A cron schedule for when disruption can happen.
+  #     duration:
+  #       type: string
+  #       description: The duration during which disruptuon can happen.
+  lbrlabs-eks:index:DisruptionConfig:
+    description: Configuration for Autoscaled nodes disruption.
+    type: object
+    properties:
+      consolidationPolicy:
+        type: string
+        enum:
+        - Name: "Empty"
+          Description: "Consolidate Nodes when they are empty."
+          Value: "WhenEmpty"
+        - Name: "Underutilized"
+          Description: "Consolidate Nodes when they are underutilized."
+          Value: "WhenUnderutilized"
+        default: "WhenUnderutilized"
+        description: Describes which types of Nodes Karpenter should consider for consolidation.
+      consolidateAfter:
+        type: string
+        default: "30s"
+        description: The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+      expireAfter:
+        type: string
+        default: "720h"
+        description: The amount of time a Node can live on the cluster before being removed.
+      # budgets:
+      #   type: array
+      #   items:
+      #     "$ref": "#/types/lbrlabs-eks:index:BudgetConfig"
+      #   description: "Budgets control the speed Karpenter can scale down nodes."
   lbrlabs-eks:index:IngressConfig:
     description: Configuration for the ingress controller.
     type: object
@@ -386,6 +427,13 @@ resources:
         items:
           "$ref": "/kubernetes/v4.7.1/schema.json#/types/kubernetes:core%2Fv1:Taint"
         description: "Optional node taints."
+      labels:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed."
+      disruption:
+        "$ref": "#/types/lbrlabs-eks:index:DisruptionConfig"
     requiredInputs:
       - nodeRole
       - diskSize
