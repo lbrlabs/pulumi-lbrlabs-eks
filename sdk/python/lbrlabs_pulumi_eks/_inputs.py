@@ -10,25 +10,84 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
 
 __all__ = [
+    'BudgetConfigArgs',
     'DisruptionConfigArgs',
     'IngressConfigArgs',
     'RequirementArgs',
 ]
 
 @pulumi.input_type
+class BudgetConfigArgs:
+    def __init__(__self__, *,
+                 duration: Optional[pulumi.Input[str]] = None,
+                 nodes: Optional[pulumi.Input[str]] = None,
+                 schedule: Optional[pulumi.Input[str]] = None):
+        """
+        Configuration for Autoscaled Node budgets.
+        :param pulumi.Input[str] duration: The duration during which disruptuon can happen.
+        :param pulumi.Input[str] nodes: The maximum number of nodes that can be scaled down at any time.
+        :param pulumi.Input[str] schedule: A cron schedule for when disruption can happen.
+        """
+        if duration is not None:
+            pulumi.set(__self__, "duration", duration)
+        if nodes is not None:
+            pulumi.set(__self__, "nodes", nodes)
+        if schedule is not None:
+            pulumi.set(__self__, "schedule", schedule)
+
+    @property
+    @pulumi.getter
+    def duration(self) -> Optional[pulumi.Input[str]]:
+        """
+        The duration during which disruptuon can happen.
+        """
+        return pulumi.get(self, "duration")
+
+    @duration.setter
+    def duration(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "duration", value)
+
+    @property
+    @pulumi.getter
+    def nodes(self) -> Optional[pulumi.Input[str]]:
+        """
+        The maximum number of nodes that can be scaled down at any time.
+        """
+        return pulumi.get(self, "nodes")
+
+    @nodes.setter
+    def nodes(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "nodes", value)
+
+    @property
+    @pulumi.getter
+    def schedule(self) -> Optional[pulumi.Input[str]]:
+        """
+        A cron schedule for when disruption can happen.
+        """
+        return pulumi.get(self, "schedule")
+
+    @schedule.setter
+    def schedule(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "schedule", value)
+
+
+@pulumi.input_type
 class DisruptionConfigArgs:
     def __init__(__self__, *,
+                 budgets: Optional[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgs']]]] = None,
                  consolidate_after: Optional[pulumi.Input[str]] = None,
                  consolidation_policy: Optional[pulumi.Input[str]] = None,
                  expire_after: Optional[pulumi.Input[str]] = None):
         """
         Configuration for Autoscaled nodes disruption.
+        :param pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgs']]] budgets: Budgets control the speed Karpenter can scale down nodes.
         :param pulumi.Input[str] consolidate_after: The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
         :param pulumi.Input[str] consolidation_policy: Describes which types of Nodes Karpenter should consider for consolidation.
         :param pulumi.Input[str] expire_after: The amount of time a Node can live on the cluster before being removed.
         """
-        if consolidate_after is None:
-            consolidate_after = '30s'
+        if budgets is not None:
+            pulumi.set(__self__, "budgets", budgets)
         if consolidate_after is not None:
             pulumi.set(__self__, "consolidate_after", consolidate_after)
         if consolidation_policy is None:
@@ -39,6 +98,18 @@ class DisruptionConfigArgs:
             expire_after = '720h'
         if expire_after is not None:
             pulumi.set(__self__, "expire_after", expire_after)
+
+    @property
+    @pulumi.getter
+    def budgets(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgs']]]]:
+        """
+        Budgets control the speed Karpenter can scale down nodes.
+        """
+        return pulumi.get(self, "budgets")
+
+    @budgets.setter
+    def budgets(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgs']]]]):
+        pulumi.set(self, "budgets", value)
 
     @property
     @pulumi.getter(name="consolidateAfter")
