@@ -14,8 +14,152 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+// Configuration for Autoscaled Node budgets.
+type BudgetConfig struct {
+	// The duration during which disruptuon can happen.
+	Duration *string `pulumi:"duration"`
+	// The maximum number of nodes that can be scaled down at any time.
+	Nodes *string `pulumi:"nodes"`
+	// A cron schedule for when disruption can happen.
+	Schedule *string `pulumi:"schedule"`
+}
+
+// BudgetConfigInput is an input type that accepts BudgetConfigArgs and BudgetConfigOutput values.
+// You can construct a concrete instance of `BudgetConfigInput` via:
+//
+//	BudgetConfigArgs{...}
+type BudgetConfigInput interface {
+	pulumi.Input
+
+	ToBudgetConfigOutput() BudgetConfigOutput
+	ToBudgetConfigOutputWithContext(context.Context) BudgetConfigOutput
+}
+
+// Configuration for Autoscaled Node budgets.
+type BudgetConfigArgs struct {
+	// The duration during which disruptuon can happen.
+	Duration pulumi.StringPtrInput `pulumi:"duration"`
+	// The maximum number of nodes that can be scaled down at any time.
+	Nodes pulumi.StringPtrInput `pulumi:"nodes"`
+	// A cron schedule for when disruption can happen.
+	Schedule pulumi.StringPtrInput `pulumi:"schedule"`
+}
+
+func (BudgetConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*BudgetConfig)(nil)).Elem()
+}
+
+func (i BudgetConfigArgs) ToBudgetConfigOutput() BudgetConfigOutput {
+	return i.ToBudgetConfigOutputWithContext(context.Background())
+}
+
+func (i BudgetConfigArgs) ToBudgetConfigOutputWithContext(ctx context.Context) BudgetConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BudgetConfigOutput)
+}
+
+func (i BudgetConfigArgs) ToOutput(ctx context.Context) pulumix.Output[BudgetConfig] {
+	return pulumix.Output[BudgetConfig]{
+		OutputState: i.ToBudgetConfigOutputWithContext(ctx).OutputState,
+	}
+}
+
+// BudgetConfigArrayInput is an input type that accepts BudgetConfigArray and BudgetConfigArrayOutput values.
+// You can construct a concrete instance of `BudgetConfigArrayInput` via:
+//
+//	BudgetConfigArray{ BudgetConfigArgs{...} }
+type BudgetConfigArrayInput interface {
+	pulumi.Input
+
+	ToBudgetConfigArrayOutput() BudgetConfigArrayOutput
+	ToBudgetConfigArrayOutputWithContext(context.Context) BudgetConfigArrayOutput
+}
+
+type BudgetConfigArray []BudgetConfigInput
+
+func (BudgetConfigArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]BudgetConfig)(nil)).Elem()
+}
+
+func (i BudgetConfigArray) ToBudgetConfigArrayOutput() BudgetConfigArrayOutput {
+	return i.ToBudgetConfigArrayOutputWithContext(context.Background())
+}
+
+func (i BudgetConfigArray) ToBudgetConfigArrayOutputWithContext(ctx context.Context) BudgetConfigArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BudgetConfigArrayOutput)
+}
+
+func (i BudgetConfigArray) ToOutput(ctx context.Context) pulumix.Output[[]BudgetConfig] {
+	return pulumix.Output[[]BudgetConfig]{
+		OutputState: i.ToBudgetConfigArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Configuration for Autoscaled Node budgets.
+type BudgetConfigOutput struct{ *pulumi.OutputState }
+
+func (BudgetConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*BudgetConfig)(nil)).Elem()
+}
+
+func (o BudgetConfigOutput) ToBudgetConfigOutput() BudgetConfigOutput {
+	return o
+}
+
+func (o BudgetConfigOutput) ToBudgetConfigOutputWithContext(ctx context.Context) BudgetConfigOutput {
+	return o
+}
+
+func (o BudgetConfigOutput) ToOutput(ctx context.Context) pulumix.Output[BudgetConfig] {
+	return pulumix.Output[BudgetConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+// The duration during which disruptuon can happen.
+func (o BudgetConfigOutput) Duration() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v BudgetConfig) *string { return v.Duration }).(pulumi.StringPtrOutput)
+}
+
+// The maximum number of nodes that can be scaled down at any time.
+func (o BudgetConfigOutput) Nodes() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v BudgetConfig) *string { return v.Nodes }).(pulumi.StringPtrOutput)
+}
+
+// A cron schedule for when disruption can happen.
+func (o BudgetConfigOutput) Schedule() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v BudgetConfig) *string { return v.Schedule }).(pulumi.StringPtrOutput)
+}
+
+type BudgetConfigArrayOutput struct{ *pulumi.OutputState }
+
+func (BudgetConfigArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]BudgetConfig)(nil)).Elem()
+}
+
+func (o BudgetConfigArrayOutput) ToBudgetConfigArrayOutput() BudgetConfigArrayOutput {
+	return o
+}
+
+func (o BudgetConfigArrayOutput) ToBudgetConfigArrayOutputWithContext(ctx context.Context) BudgetConfigArrayOutput {
+	return o
+}
+
+func (o BudgetConfigArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]BudgetConfig] {
+	return pulumix.Output[[]BudgetConfig]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o BudgetConfigArrayOutput) Index(i pulumi.IntInput) BudgetConfigOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) BudgetConfig {
+		return vs[0].([]BudgetConfig)[vs[1].(int)]
+	}).(BudgetConfigOutput)
+}
+
 // Configuration for Autoscaled nodes disruption.
 type DisruptionConfig struct {
+	// Budgets control the speed Karpenter can scale down nodes.
+	Budgets []BudgetConfig `pulumi:"budgets"`
 	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
 	ConsolidateAfter *string `pulumi:"consolidateAfter"`
 	// Describes which types of Nodes Karpenter should consider for consolidation.
@@ -30,17 +174,9 @@ func (val *DisruptionConfig) Defaults() *DisruptionConfig {
 		return nil
 	}
 	tmp := *val
-	if tmp.ConsolidateAfter == nil {
-		consolidateAfter_ := "30s"
-		tmp.ConsolidateAfter = &consolidateAfter_
-	}
 	if tmp.ConsolidationPolicy == nil {
-		consolidationPolicy_ := "WhenUnderutilized"
+		consolidationPolicy_ := "WhenEmpty"
 		tmp.ConsolidationPolicy = &consolidationPolicy_
-	}
-	if tmp.ExpireAfter == nil {
-		expireAfter_ := "720h"
-		tmp.ExpireAfter = &expireAfter_
 	}
 	return &tmp
 }
@@ -58,6 +194,8 @@ type DisruptionConfigInput interface {
 
 // Configuration for Autoscaled nodes disruption.
 type DisruptionConfigArgs struct {
+	// Budgets control the speed Karpenter can scale down nodes.
+	Budgets BudgetConfigArrayInput `pulumi:"budgets"`
 	// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
 	ConsolidateAfter pulumi.StringPtrInput `pulumi:"consolidateAfter"`
 	// Describes which types of Nodes Karpenter should consider for consolidation.
@@ -72,14 +210,8 @@ func (val *DisruptionConfigArgs) Defaults() *DisruptionConfigArgs {
 		return nil
 	}
 	tmp := *val
-	if tmp.ConsolidateAfter == nil {
-		tmp.ConsolidateAfter = pulumi.StringPtr("30s")
-	}
 	if tmp.ConsolidationPolicy == nil {
-		tmp.ConsolidationPolicy = pulumi.StringPtr("WhenUnderutilized")
-	}
-	if tmp.ExpireAfter == nil {
-		tmp.ExpireAfter = pulumi.StringPtr("720h")
+		tmp.ConsolidationPolicy = pulumi.StringPtr("WhenEmpty")
 	}
 	return &tmp
 }
@@ -179,6 +311,11 @@ func (o DisruptionConfigOutput) ToOutput(ctx context.Context) pulumix.Output[Dis
 	}
 }
 
+// Budgets control the speed Karpenter can scale down nodes.
+func (o DisruptionConfigOutput) Budgets() BudgetConfigArrayOutput {
+	return o.ApplyT(func(v DisruptionConfig) []BudgetConfig { return v.Budgets }).(BudgetConfigArrayOutput)
+}
+
 // The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
 func (o DisruptionConfigOutput) ConsolidateAfter() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v DisruptionConfig) *string { return v.ConsolidateAfter }).(pulumi.StringPtrOutput)
@@ -222,6 +359,16 @@ func (o DisruptionConfigPtrOutput) Elem() DisruptionConfigOutput {
 		var ret DisruptionConfig
 		return ret
 	}).(DisruptionConfigOutput)
+}
+
+// Budgets control the speed Karpenter can scale down nodes.
+func (o DisruptionConfigPtrOutput) Budgets() BudgetConfigArrayOutput {
+	return o.ApplyT(func(v *DisruptionConfig) []BudgetConfig {
+		if v == nil {
+			return nil
+		}
+		return v.Budgets
+	}).(BudgetConfigArrayOutput)
 }
 
 // The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
@@ -711,12 +858,16 @@ type Taint struct {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*BudgetConfigInput)(nil)).Elem(), BudgetConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*BudgetConfigArrayInput)(nil)).Elem(), BudgetConfigArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DisruptionConfigInput)(nil)).Elem(), DisruptionConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DisruptionConfigPtrInput)(nil)).Elem(), DisruptionConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigPtrInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})
+	pulumi.RegisterOutputType(BudgetConfigOutput{})
+	pulumi.RegisterOutputType(BudgetConfigArrayOutput{})
 	pulumi.RegisterOutputType(DisruptionConfigOutput{})
 	pulumi.RegisterOutputType(DisruptionConfigPtrOutput{})
 	pulumi.RegisterOutputType(IngressConfigOutput{})

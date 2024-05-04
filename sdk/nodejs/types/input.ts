@@ -8,9 +8,31 @@ import * as outputs from "../types/output";
 import * as utilities from "../utilities";
 
 /**
+ * Configuration for Autoscaled Node budgets.
+ */
+export interface BudgetConfigArgs {
+    /**
+     * The duration during which disruptuon can happen.
+     */
+    duration?: pulumi.Input<string>;
+    /**
+     * The maximum number of nodes that can be scaled down at any time.
+     */
+    nodes?: pulumi.Input<string>;
+    /**
+     * A cron schedule for when disruption can happen.
+     */
+    schedule?: pulumi.Input<string>;
+}
+
+/**
  * Configuration for Autoscaled nodes disruption.
  */
 export interface DisruptionConfigArgs {
+    /**
+     * Budgets control the speed Karpenter can scale down nodes.
+     */
+    budgets?: pulumi.Input<pulumi.Input<inputs.BudgetConfigArgs>[]>;
     /**
      * The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
      */
@@ -30,9 +52,7 @@ export interface DisruptionConfigArgs {
 export function disruptionConfigArgsProvideDefaults(val: DisruptionConfigArgs): DisruptionConfigArgs {
     return {
         ...val,
-        consolidateAfter: (val.consolidateAfter) ?? "30s",
-        consolidationPolicy: (val.consolidationPolicy) ?? "WhenUnderutilized",
-        expireAfter: (val.expireAfter) ?? "720h",
+        consolidationPolicy: (val.consolidationPolicy) ?? "WhenEmpty",
     };
 }
 

@@ -17,7 +17,7 @@ type DisruptionConfig struct {
 	ConsolidationPolicy pulumi.StringInput `pulumi:"consolidationPolicy"`
 	ConsolidateAfter    pulumi.StringInput `pulumi:"consolidateAfter"`
 	ExpireAfter         pulumi.StringInput `pulumi:"expireAfter"`
-	//Budgets             []BudgetConfig     `pulumi:"budgets"`
+	Budgets             []BudgetConfig     `pulumi:"budgets"`
 }
 
 type AutoscaledNodeGroupArgs struct {
@@ -143,14 +143,14 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating autoscaled node class: %w", err)
 	}
 
-	// var budgetsInput []interface{}
-	// for _, budget := range disruption.Budgets {
-	// 	budgetsInput = append(budgetsInput, map[string]interface{}{
-	// 		"nodes":    budget.Nodes,
-	// 		"schedule": budget.Schedule,
-	// 		"duration": budget.Duration,
-	// 	})
-	// }
+	var budgetsInput []interface{}
+	for _, budget := range disruption.Budgets {
+		budgetsInput = append(budgetsInput, map[string]interface{}{
+			"nodes":    budget.Nodes,
+			"schedule": budget.Schedule,
+			"duration": budget.Duration,
+		})
+	}
 
 	_, err = apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-nodepool", name), &apiextensions.CustomResourceArgs{
 		ApiVersion: pulumi.String("karpenter.sh/v1beta1"),
@@ -164,7 +164,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 					"consolidationPolicy": disruption.ConsolidationPolicy,
 					"consolidateAfter":    disruption.ConsolidateAfter,
 					"expireAfter":         disruption.ExpireAfter,
-					//"budgets":             budgetsInput,
+					"budgets":             budgetsInput,
 				},
 				"template": map[string]interface{}{
 					"metadata": map[string]interface{}{

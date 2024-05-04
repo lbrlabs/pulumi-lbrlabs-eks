@@ -1543,11 +1543,33 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error creating karpenter node instance profile: %w", err)
 		}
 
+		nodeClasses, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodeclasses-crd", name), &yaml.ConfigFileArgs{
+			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml",
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating node claim crd: %w", err)
+		}
+
+		nodeClaims, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodeclaim-crd", name), &yaml.ConfigFileArgs{
+			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.sh_nodeclaims.yaml",
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating node classes crd: %w", err)
+		}
+
+		nodePools, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodepool-crd", name), &yaml.ConfigFileArgs{
+			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.sh_nodepools.yaml",
+		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
+		if err != nil {
+			return nil, fmt.Errorf("error creating node pool crd: %w", err)
+		}
+
 		_, err = helm.NewRelease(
 			ctx, fmt.Sprintf("%s-karpenter", name), &helm.ReleaseArgs{
 				Chart:     pulumi.String("oci://public.ecr.aws/karpenter/karpenter"),
-				Version:   pulumi.String("v0.33.1"),
+				Version:   pulumi.String("0.36.1"),
 				Namespace: pulumi.String("kube-system"),
+				SkipCrds:  pulumi.Bool(true),
 				Values: pulumi.Map{
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
@@ -1566,7 +1588,7 @@ func NewCluster(ctx *pulumi.Context,
 						"interruptionQueue": queue.Name,
 					},
 				},
-			}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{karpenterServiceAccountAnnotations}),
+			}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{karpenterServiceAccountAnnotations, nodeClaims, nodePools, nodeClasses}),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error installing karpenter helm release: %w", err)

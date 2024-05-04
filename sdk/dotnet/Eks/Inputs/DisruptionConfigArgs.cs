@@ -16,6 +16,18 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
     /// </summary>
     public sealed class DisruptionConfigArgs : global::Pulumi.ResourceArgs
     {
+        [Input("budgets")]
+        private InputList<Inputs.BudgetConfigArgs>? _budgets;
+
+        /// <summary>
+        /// Budgets control the speed Karpenter can scale down nodes.
+        /// </summary>
+        public InputList<Inputs.BudgetConfigArgs> Budgets
+        {
+            get => _budgets ?? (_budgets = new InputList<Inputs.BudgetConfigArgs>());
+            set => _budgets = value;
+        }
+
         /// <summary>
         /// The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
         /// </summary>
@@ -36,9 +48,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
 
         public DisruptionConfigArgs()
         {
-            ConsolidateAfter = "30s";
-            ConsolidationPolicy = "WhenUnderutilized";
-            ExpireAfter = "720h";
+            ConsolidationPolicy = "WhenEmpty";
         }
         public static new DisruptionConfigArgs Empty => new DisruptionConfigArgs();
     }
