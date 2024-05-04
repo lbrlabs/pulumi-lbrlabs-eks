@@ -105,12 +105,8 @@ func (val *DisruptionConfig) Defaults() *DisruptionConfig {
 	}
 	tmp := *val
 	if tmp.ConsolidationPolicy == nil {
-		consolidationPolicy_ := "WhenUnderutilized"
+		consolidationPolicy_ := "WhenEmpty"
 		tmp.ConsolidationPolicy = &consolidationPolicy_
-	}
-	if tmp.ExpireAfter == nil {
-		expireAfter_ := "720h"
-		tmp.ExpireAfter = &expireAfter_
 	}
 	return &tmp
 }
@@ -134,10 +130,7 @@ func (val *DisruptionConfigArgs) Defaults() *DisruptionConfigArgs {
 	}
 	tmp := *val
 	if tmp.ConsolidationPolicy == nil {
-		tmp.ConsolidationPolicy = pulumix.Ptr("WhenUnderutilized")
-	}
-	if tmp.ExpireAfter == nil {
-		tmp.ExpireAfter = pulumix.Ptr("720h")
+		tmp.ConsolidationPolicy = pulumix.Ptr("WhenEmpty")
 	}
 	return &tmp
 }

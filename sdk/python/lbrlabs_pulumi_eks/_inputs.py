@@ -91,11 +91,9 @@ class DisruptionConfigArgs:
         if consolidate_after is not None:
             pulumi.set(__self__, "consolidate_after", consolidate_after)
         if consolidation_policy is None:
-            consolidation_policy = 'WhenUnderutilized'
+            consolidation_policy = 'WhenEmpty'
         if consolidation_policy is not None:
             pulumi.set(__self__, "consolidation_policy", consolidation_policy)
-        if expire_after is None:
-            expire_after = '720h'
         if expire_after is not None:
             pulumi.set(__self__, "expire_after", expire_after)
 
