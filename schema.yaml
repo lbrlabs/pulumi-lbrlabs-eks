@@ -448,8 +448,6 @@ language:
     namespaces:
       lbrlabs-eks: "Eks"
   go:
-    generateResourceContainerTypes: true
-    generics: "side-by-side"
     importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks
   nodejs:
     dependencies:

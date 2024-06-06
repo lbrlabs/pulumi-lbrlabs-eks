@@ -11,7 +11,6 @@ import (
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type IamServiceAccountRole struct {
@@ -98,74 +97,6 @@ func (i *IamServiceAccountRole) ToIamServiceAccountRoleOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleOutput)
 }
 
-func (i *IamServiceAccountRole) ToOutput(ctx context.Context) pulumix.Output[*IamServiceAccountRole] {
-	return pulumix.Output[*IamServiceAccountRole]{
-		OutputState: i.ToIamServiceAccountRoleOutputWithContext(ctx).OutputState,
-	}
-}
-
-// IamServiceAccountRoleArrayInput is an input type that accepts IamServiceAccountRoleArray and IamServiceAccountRoleArrayOutput values.
-// You can construct a concrete instance of `IamServiceAccountRoleArrayInput` via:
-//
-//	IamServiceAccountRoleArray{ IamServiceAccountRoleArgs{...} }
-type IamServiceAccountRoleArrayInput interface {
-	pulumi.Input
-
-	ToIamServiceAccountRoleArrayOutput() IamServiceAccountRoleArrayOutput
-	ToIamServiceAccountRoleArrayOutputWithContext(context.Context) IamServiceAccountRoleArrayOutput
-}
-
-type IamServiceAccountRoleArray []IamServiceAccountRoleInput
-
-func (IamServiceAccountRoleArray) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*IamServiceAccountRole)(nil)).Elem()
-}
-
-func (i IamServiceAccountRoleArray) ToIamServiceAccountRoleArrayOutput() IamServiceAccountRoleArrayOutput {
-	return i.ToIamServiceAccountRoleArrayOutputWithContext(context.Background())
-}
-
-func (i IamServiceAccountRoleArray) ToIamServiceAccountRoleArrayOutputWithContext(ctx context.Context) IamServiceAccountRoleArrayOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleArrayOutput)
-}
-
-func (i IamServiceAccountRoleArray) ToOutput(ctx context.Context) pulumix.Output[[]*IamServiceAccountRole] {
-	return pulumix.Output[[]*IamServiceAccountRole]{
-		OutputState: i.ToIamServiceAccountRoleArrayOutputWithContext(ctx).OutputState,
-	}
-}
-
-// IamServiceAccountRoleMapInput is an input type that accepts IamServiceAccountRoleMap and IamServiceAccountRoleMapOutput values.
-// You can construct a concrete instance of `IamServiceAccountRoleMapInput` via:
-//
-//	IamServiceAccountRoleMap{ "key": IamServiceAccountRoleArgs{...} }
-type IamServiceAccountRoleMapInput interface {
-	pulumi.Input
-
-	ToIamServiceAccountRoleMapOutput() IamServiceAccountRoleMapOutput
-	ToIamServiceAccountRoleMapOutputWithContext(context.Context) IamServiceAccountRoleMapOutput
-}
-
-type IamServiceAccountRoleMap map[string]IamServiceAccountRoleInput
-
-func (IamServiceAccountRoleMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*IamServiceAccountRole)(nil)).Elem()
-}
-
-func (i IamServiceAccountRoleMap) ToIamServiceAccountRoleMapOutput() IamServiceAccountRoleMapOutput {
-	return i.ToIamServiceAccountRoleMapOutputWithContext(context.Background())
-}
-
-func (i IamServiceAccountRoleMap) ToIamServiceAccountRoleMapOutputWithContext(ctx context.Context) IamServiceAccountRoleMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(IamServiceAccountRoleMapOutput)
-}
-
-func (i IamServiceAccountRoleMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamServiceAccountRole] {
-	return pulumix.Output[map[string]*IamServiceAccountRole]{
-		OutputState: i.ToIamServiceAccountRoleMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type IamServiceAccountRoleOutput struct{ *pulumi.OutputState }
 
 func (IamServiceAccountRoleOutput) ElementType() reflect.Type {
@@ -180,73 +111,11 @@ func (o IamServiceAccountRoleOutput) ToIamServiceAccountRoleOutputWithContext(ct
 	return o
 }
 
-func (o IamServiceAccountRoleOutput) ToOutput(ctx context.Context) pulumix.Output[*IamServiceAccountRole] {
-	return pulumix.Output[*IamServiceAccountRole]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o IamServiceAccountRoleOutput) Role() iam.RoleOutput {
 	return o.ApplyT(func(v *IamServiceAccountRole) iam.RoleOutput { return v.Role }).(iam.RoleOutput)
 }
 
-type IamServiceAccountRoleArrayOutput struct{ *pulumi.OutputState }
-
-func (IamServiceAccountRoleArrayOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*IamServiceAccountRole)(nil)).Elem()
-}
-
-func (o IamServiceAccountRoleArrayOutput) ToIamServiceAccountRoleArrayOutput() IamServiceAccountRoleArrayOutput {
-	return o
-}
-
-func (o IamServiceAccountRoleArrayOutput) ToIamServiceAccountRoleArrayOutputWithContext(ctx context.Context) IamServiceAccountRoleArrayOutput {
-	return o
-}
-
-func (o IamServiceAccountRoleArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*IamServiceAccountRole] {
-	return pulumix.Output[[]*IamServiceAccountRole]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o IamServiceAccountRoleArrayOutput) Index(i pulumi.IntInput) IamServiceAccountRoleOutput {
-	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *IamServiceAccountRole {
-		return vs[0].([]*IamServiceAccountRole)[vs[1].(int)]
-	}).(IamServiceAccountRoleOutput)
-}
-
-type IamServiceAccountRoleMapOutput struct{ *pulumi.OutputState }
-
-func (IamServiceAccountRoleMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*IamServiceAccountRole)(nil)).Elem()
-}
-
-func (o IamServiceAccountRoleMapOutput) ToIamServiceAccountRoleMapOutput() IamServiceAccountRoleMapOutput {
-	return o
-}
-
-func (o IamServiceAccountRoleMapOutput) ToIamServiceAccountRoleMapOutputWithContext(ctx context.Context) IamServiceAccountRoleMapOutput {
-	return o
-}
-
-func (o IamServiceAccountRoleMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamServiceAccountRole] {
-	return pulumix.Output[map[string]*IamServiceAccountRole]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o IamServiceAccountRoleMapOutput) MapIndex(k pulumi.StringInput) IamServiceAccountRoleOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *IamServiceAccountRole {
-		return vs[0].(map[string]*IamServiceAccountRole)[vs[1].(string)]
-	}).(IamServiceAccountRoleOutput)
-}
-
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*IamServiceAccountRoleInput)(nil)).Elem(), &IamServiceAccountRole{})
-	pulumi.RegisterInputType(reflect.TypeOf((*IamServiceAccountRoleArrayInput)(nil)).Elem(), IamServiceAccountRoleArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*IamServiceAccountRoleMapInput)(nil)).Elem(), IamServiceAccountRoleMap{})
 	pulumi.RegisterOutputType(IamServiceAccountRoleOutput{})
-	pulumi.RegisterOutputType(IamServiceAccountRoleArrayOutput{})
-	pulumi.RegisterOutputType(IamServiceAccountRoleMapOutput{})
 }

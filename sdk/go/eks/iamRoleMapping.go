@@ -10,7 +10,6 @@ import (
 	"errors"
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type IamRoleMapping struct {
@@ -84,74 +83,6 @@ func (i *IamRoleMapping) ToIamRoleMappingOutputWithContext(ctx context.Context) 
 	return pulumi.ToOutputWithContext(ctx, i).(IamRoleMappingOutput)
 }
 
-func (i *IamRoleMapping) ToOutput(ctx context.Context) pulumix.Output[*IamRoleMapping] {
-	return pulumix.Output[*IamRoleMapping]{
-		OutputState: i.ToIamRoleMappingOutputWithContext(ctx).OutputState,
-	}
-}
-
-// IamRoleMappingArrayInput is an input type that accepts IamRoleMappingArray and IamRoleMappingArrayOutput values.
-// You can construct a concrete instance of `IamRoleMappingArrayInput` via:
-//
-//	IamRoleMappingArray{ IamRoleMappingArgs{...} }
-type IamRoleMappingArrayInput interface {
-	pulumi.Input
-
-	ToIamRoleMappingArrayOutput() IamRoleMappingArrayOutput
-	ToIamRoleMappingArrayOutputWithContext(context.Context) IamRoleMappingArrayOutput
-}
-
-type IamRoleMappingArray []IamRoleMappingInput
-
-func (IamRoleMappingArray) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*IamRoleMapping)(nil)).Elem()
-}
-
-func (i IamRoleMappingArray) ToIamRoleMappingArrayOutput() IamRoleMappingArrayOutput {
-	return i.ToIamRoleMappingArrayOutputWithContext(context.Background())
-}
-
-func (i IamRoleMappingArray) ToIamRoleMappingArrayOutputWithContext(ctx context.Context) IamRoleMappingArrayOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(IamRoleMappingArrayOutput)
-}
-
-func (i IamRoleMappingArray) ToOutput(ctx context.Context) pulumix.Output[[]*IamRoleMapping] {
-	return pulumix.Output[[]*IamRoleMapping]{
-		OutputState: i.ToIamRoleMappingArrayOutputWithContext(ctx).OutputState,
-	}
-}
-
-// IamRoleMappingMapInput is an input type that accepts IamRoleMappingMap and IamRoleMappingMapOutput values.
-// You can construct a concrete instance of `IamRoleMappingMapInput` via:
-//
-//	IamRoleMappingMap{ "key": IamRoleMappingArgs{...} }
-type IamRoleMappingMapInput interface {
-	pulumi.Input
-
-	ToIamRoleMappingMapOutput() IamRoleMappingMapOutput
-	ToIamRoleMappingMapOutputWithContext(context.Context) IamRoleMappingMapOutput
-}
-
-type IamRoleMappingMap map[string]IamRoleMappingInput
-
-func (IamRoleMappingMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*IamRoleMapping)(nil)).Elem()
-}
-
-func (i IamRoleMappingMap) ToIamRoleMappingMapOutput() IamRoleMappingMapOutput {
-	return i.ToIamRoleMappingMapOutputWithContext(context.Background())
-}
-
-func (i IamRoleMappingMap) ToIamRoleMappingMapOutputWithContext(ctx context.Context) IamRoleMappingMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(IamRoleMappingMapOutput)
-}
-
-func (i IamRoleMappingMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamRoleMapping] {
-	return pulumix.Output[map[string]*IamRoleMapping]{
-		OutputState: i.ToIamRoleMappingMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type IamRoleMappingOutput struct{ *pulumi.OutputState }
 
 func (IamRoleMappingOutput) ElementType() reflect.Type {
@@ -166,69 +97,7 @@ func (o IamRoleMappingOutput) ToIamRoleMappingOutputWithContext(ctx context.Cont
 	return o
 }
 
-func (o IamRoleMappingOutput) ToOutput(ctx context.Context) pulumix.Output[*IamRoleMapping] {
-	return pulumix.Output[*IamRoleMapping]{
-		OutputState: o.OutputState,
-	}
-}
-
-type IamRoleMappingArrayOutput struct{ *pulumi.OutputState }
-
-func (IamRoleMappingArrayOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*IamRoleMapping)(nil)).Elem()
-}
-
-func (o IamRoleMappingArrayOutput) ToIamRoleMappingArrayOutput() IamRoleMappingArrayOutput {
-	return o
-}
-
-func (o IamRoleMappingArrayOutput) ToIamRoleMappingArrayOutputWithContext(ctx context.Context) IamRoleMappingArrayOutput {
-	return o
-}
-
-func (o IamRoleMappingArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*IamRoleMapping] {
-	return pulumix.Output[[]*IamRoleMapping]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o IamRoleMappingArrayOutput) Index(i pulumi.IntInput) IamRoleMappingOutput {
-	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *IamRoleMapping {
-		return vs[0].([]*IamRoleMapping)[vs[1].(int)]
-	}).(IamRoleMappingOutput)
-}
-
-type IamRoleMappingMapOutput struct{ *pulumi.OutputState }
-
-func (IamRoleMappingMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*IamRoleMapping)(nil)).Elem()
-}
-
-func (o IamRoleMappingMapOutput) ToIamRoleMappingMapOutput() IamRoleMappingMapOutput {
-	return o
-}
-
-func (o IamRoleMappingMapOutput) ToIamRoleMappingMapOutputWithContext(ctx context.Context) IamRoleMappingMapOutput {
-	return o
-}
-
-func (o IamRoleMappingMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*IamRoleMapping] {
-	return pulumix.Output[map[string]*IamRoleMapping]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o IamRoleMappingMapOutput) MapIndex(k pulumi.StringInput) IamRoleMappingOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *IamRoleMapping {
-		return vs[0].(map[string]*IamRoleMapping)[vs[1].(string)]
-	}).(IamRoleMappingOutput)
-}
-
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*IamRoleMappingInput)(nil)).Elem(), &IamRoleMapping{})
-	pulumi.RegisterInputType(reflect.TypeOf((*IamRoleMappingArrayInput)(nil)).Elem(), IamRoleMappingArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*IamRoleMappingMapInput)(nil)).Elem(), IamRoleMappingMap{})
 	pulumi.RegisterOutputType(IamRoleMappingOutput{})
-	pulumi.RegisterOutputType(IamRoleMappingArrayOutput{})
-	pulumi.RegisterOutputType(IamRoleMappingMapOutput{})
 }
