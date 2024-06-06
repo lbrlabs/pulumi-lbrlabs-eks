@@ -31,6 +31,8 @@ func main() {
 			return fmt.Errorf("error creating VPC")
 		}
 
+		letsEncryptEmail := "mail@lbrlabs.com"
+
 		cluster, err := lbrlabs.NewCluster(ctx, "cluster", &lbrlabs.ClusterArgs{
 			ClusterSubnetIds:    vpc.PublicSubnetIds,
 			SystemNodeSubnetIds: vpc.PrivateSubnetIds,
@@ -38,7 +40,7 @@ func main() {
 				pulumi.String("t3.large"),
 			},
 			SystemNodeDesiredCount: pulumi.Float64Ptr(4),
-			LetsEncryptEmail:       pulumi.String("mail@lbrlabs.com"),
+			LetsEncryptEmail:       &letsEncryptEmail,
 		})
 		if err != nil {
 			return fmt.Errorf("error creating cluster")

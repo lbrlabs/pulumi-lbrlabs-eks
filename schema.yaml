@@ -423,7 +423,7 @@ resources:
       taints:
         type: array
         items:
-          "$ref": "/kubernetes/v4.7.1/schema.json#/types/kubernetes:core%2Fv1:Taint"
+          "$ref": "/kubernetes/v4.13.1/schema.json#/types/kubernetes:core%2Fv1:Taint"
         description: "Optional node taints."
       labels:
         type: object
