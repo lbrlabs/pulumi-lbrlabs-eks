@@ -231,16 +231,16 @@ resources:
         "type": string
         "description": The kubeconfig for this cluster.
       controlPlane:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2Fcluster:Cluster"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2Fcluster:Cluster"
         "description": The Cluster control plane
       oidcProvider:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2FopenIdConnectProvider:OpenIdConnectProvider"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2FopenIdConnectProvider:OpenIdConnectProvider"
         "description": The OIDC provider for this cluster.
       systemNodes:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
         "description": The system node group.
       karpenterNodeRole:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
         "description": The role created for karpenter nodes.
       # clusterIssuer:
       #   "$ref": "/kubernetes/v3.29.1/schema.json#/resources/kubernetes:apiextensions.k8s.io:CustomResource"
@@ -284,11 +284,11 @@ resources:
           type: string
         description: Key-value map of tags to apply to the nodegroup.
       scalingConfig:
-        "$ref": "/aws/v6.14.0/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
+        "$ref": "/aws/v6.38.1/schema.json#/types/aws:eks%2FNodeGroupScalingConfig:NodeGroupScalingConfig"
       taints:
         type: "array"
         items:
-          "$ref": "/aws/v6.14.0/schema.json#/types/aws:eks%2FNodeGroupTaint:NodeGroupTaint"
+          "$ref": "/aws/v6.38.1/schema.json#/types/aws:eks%2FNodeGroupTaint:NodeGroupTaint"
       labels:
         type: object
         additionalProperties:
@@ -299,9 +299,9 @@ resources:
       - subnetIds
     properties:
       nodeGroup:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
       nodeRole:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - nodeGroup
       - nodeRole
@@ -332,7 +332,7 @@ resources:
       - serviceAccountName
     properties:
       role:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
     required:
       - role
   lbrlabs-eks:index:IamRoleMapping:
@@ -374,16 +374,16 @@ resources:
       selectors:
         type: array
         items:
-          "$ref": "/aws/v6.14.0/schema.json#/types/aws:eks%2FFargateProfileSelector:FargateProfileSelector"
+          "$ref": "/aws/v6.38.1/schema.json#/types/aws:eks%2FFargateProfileSelector:FargateProfileSelector"
     requiredInputs:
       - clusterName
       - subnetIds
       - selectors
     properties:
       role:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:iam%2Frole:Role"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
       profile:
-        "$ref": "/aws/v6.14.0/schema.json#/resources/aws:eks%2FfargateProfile:FargateProfile"
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2FfargateProfile:FargateProfile"
     required:
       - role
       - profile
@@ -442,7 +442,7 @@ language:
   csharp:
     packageReferences:
       Pulumi: 3.*
-      Pulumi.Aws: 6.*
+      Pulumi.Aws: "[6.38.1,7.0)"
       Pulumi.Kubernetes: 4.*
     rootNamespace: Lbrlabs.PulumiPackage
     namespaces:
@@ -451,7 +451,7 @@ language:
     importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks
   nodejs:
     dependencies:
-      "@pulumi/aws": "^6.0.0"
+      "@pulumi/aws": "^6.38.1"
       "@pulumi/kubernetes": "^4.0.0"
     devDependencies:
       typescript: "^3.7.0"
@@ -460,5 +460,5 @@ language:
     packageName: "lbrlabs_pulumi_eks"
     requires:
       pulumi: ">=3.0.0,<4.0.0"
-      pulumi-aws: ">=6.0.0,<7.0.0"
+      pulumi-aws: ">=6.38.1,<7.0.0"
       pulumi-kubernetes: ">=4.0.0,<5.0.0"
