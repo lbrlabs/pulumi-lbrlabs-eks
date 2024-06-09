@@ -228,6 +228,9 @@ func NewCluster(ctx *pulumi.Context,
 	controlPlane, err := eks.NewCluster(ctx, name, &eks.ClusterArgs{
 		RoleArn: role.Arn,
 		Version: args.ClusterVersion,
+		AccessConfig: eks.ClusterAccessConfigArgs{
+			AuthenticationMode: pulumi.String("API_AND_CONFIG_MAP"),
+		},
 		VpcConfig: &eks.ClusterVpcConfigArgs{
 			SubnetIds:             args.ClusterSubnetIds,
 			EndpointPublicAccess:  args.ClusterEndpointPublicAccess,
