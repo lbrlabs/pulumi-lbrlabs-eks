@@ -20,7 +20,7 @@ import (
 	storagev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/storage/v1"
 	yaml "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/yaml"
 
-	tls "github.com/pulumi/pulumi-tls/sdk/v4/go/tls"
+	tls "github.com/pulumi/pulumi-tls/sdk/v5/go/tls"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

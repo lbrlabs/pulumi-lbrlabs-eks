@@ -12,7 +12,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type AttachedFargateProfile struct {
@@ -91,74 +90,6 @@ func (i *AttachedFargateProfile) ToAttachedFargateProfileOutputWithContext(ctx c
 	return pulumi.ToOutputWithContext(ctx, i).(AttachedFargateProfileOutput)
 }
 
-func (i *AttachedFargateProfile) ToOutput(ctx context.Context) pulumix.Output[*AttachedFargateProfile] {
-	return pulumix.Output[*AttachedFargateProfile]{
-		OutputState: i.ToAttachedFargateProfileOutputWithContext(ctx).OutputState,
-	}
-}
-
-// AttachedFargateProfileArrayInput is an input type that accepts AttachedFargateProfileArray and AttachedFargateProfileArrayOutput values.
-// You can construct a concrete instance of `AttachedFargateProfileArrayInput` via:
-//
-//	AttachedFargateProfileArray{ AttachedFargateProfileArgs{...} }
-type AttachedFargateProfileArrayInput interface {
-	pulumi.Input
-
-	ToAttachedFargateProfileArrayOutput() AttachedFargateProfileArrayOutput
-	ToAttachedFargateProfileArrayOutputWithContext(context.Context) AttachedFargateProfileArrayOutput
-}
-
-type AttachedFargateProfileArray []AttachedFargateProfileInput
-
-func (AttachedFargateProfileArray) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*AttachedFargateProfile)(nil)).Elem()
-}
-
-func (i AttachedFargateProfileArray) ToAttachedFargateProfileArrayOutput() AttachedFargateProfileArrayOutput {
-	return i.ToAttachedFargateProfileArrayOutputWithContext(context.Background())
-}
-
-func (i AttachedFargateProfileArray) ToAttachedFargateProfileArrayOutputWithContext(ctx context.Context) AttachedFargateProfileArrayOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(AttachedFargateProfileArrayOutput)
-}
-
-func (i AttachedFargateProfileArray) ToOutput(ctx context.Context) pulumix.Output[[]*AttachedFargateProfile] {
-	return pulumix.Output[[]*AttachedFargateProfile]{
-		OutputState: i.ToAttachedFargateProfileArrayOutputWithContext(ctx).OutputState,
-	}
-}
-
-// AttachedFargateProfileMapInput is an input type that accepts AttachedFargateProfileMap and AttachedFargateProfileMapOutput values.
-// You can construct a concrete instance of `AttachedFargateProfileMapInput` via:
-//
-//	AttachedFargateProfileMap{ "key": AttachedFargateProfileArgs{...} }
-type AttachedFargateProfileMapInput interface {
-	pulumi.Input
-
-	ToAttachedFargateProfileMapOutput() AttachedFargateProfileMapOutput
-	ToAttachedFargateProfileMapOutputWithContext(context.Context) AttachedFargateProfileMapOutput
-}
-
-type AttachedFargateProfileMap map[string]AttachedFargateProfileInput
-
-func (AttachedFargateProfileMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*AttachedFargateProfile)(nil)).Elem()
-}
-
-func (i AttachedFargateProfileMap) ToAttachedFargateProfileMapOutput() AttachedFargateProfileMapOutput {
-	return i.ToAttachedFargateProfileMapOutputWithContext(context.Background())
-}
-
-func (i AttachedFargateProfileMap) ToAttachedFargateProfileMapOutputWithContext(ctx context.Context) AttachedFargateProfileMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(AttachedFargateProfileMapOutput)
-}
-
-func (i AttachedFargateProfileMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*AttachedFargateProfile] {
-	return pulumix.Output[map[string]*AttachedFargateProfile]{
-		OutputState: i.ToAttachedFargateProfileMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type AttachedFargateProfileOutput struct{ *pulumi.OutputState }
 
 func (AttachedFargateProfileOutput) ElementType() reflect.Type {
@@ -173,12 +104,6 @@ func (o AttachedFargateProfileOutput) ToAttachedFargateProfileOutputWithContext(
 	return o
 }
 
-func (o AttachedFargateProfileOutput) ToOutput(ctx context.Context) pulumix.Output[*AttachedFargateProfile] {
-	return pulumix.Output[*AttachedFargateProfile]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o AttachedFargateProfileOutput) Profile() eks.FargateProfileOutput {
 	return o.ApplyT(func(v *AttachedFargateProfile) eks.FargateProfileOutput { return v.Profile }).(eks.FargateProfileOutput)
 }
@@ -187,63 +112,7 @@ func (o AttachedFargateProfileOutput) Role() iam.RoleOutput {
 	return o.ApplyT(func(v *AttachedFargateProfile) iam.RoleOutput { return v.Role }).(iam.RoleOutput)
 }
 
-type AttachedFargateProfileArrayOutput struct{ *pulumi.OutputState }
-
-func (AttachedFargateProfileArrayOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*AttachedFargateProfile)(nil)).Elem()
-}
-
-func (o AttachedFargateProfileArrayOutput) ToAttachedFargateProfileArrayOutput() AttachedFargateProfileArrayOutput {
-	return o
-}
-
-func (o AttachedFargateProfileArrayOutput) ToAttachedFargateProfileArrayOutputWithContext(ctx context.Context) AttachedFargateProfileArrayOutput {
-	return o
-}
-
-func (o AttachedFargateProfileArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*AttachedFargateProfile] {
-	return pulumix.Output[[]*AttachedFargateProfile]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o AttachedFargateProfileArrayOutput) Index(i pulumi.IntInput) AttachedFargateProfileOutput {
-	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *AttachedFargateProfile {
-		return vs[0].([]*AttachedFargateProfile)[vs[1].(int)]
-	}).(AttachedFargateProfileOutput)
-}
-
-type AttachedFargateProfileMapOutput struct{ *pulumi.OutputState }
-
-func (AttachedFargateProfileMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*AttachedFargateProfile)(nil)).Elem()
-}
-
-func (o AttachedFargateProfileMapOutput) ToAttachedFargateProfileMapOutput() AttachedFargateProfileMapOutput {
-	return o
-}
-
-func (o AttachedFargateProfileMapOutput) ToAttachedFargateProfileMapOutputWithContext(ctx context.Context) AttachedFargateProfileMapOutput {
-	return o
-}
-
-func (o AttachedFargateProfileMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*AttachedFargateProfile] {
-	return pulumix.Output[map[string]*AttachedFargateProfile]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o AttachedFargateProfileMapOutput) MapIndex(k pulumi.StringInput) AttachedFargateProfileOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *AttachedFargateProfile {
-		return vs[0].(map[string]*AttachedFargateProfile)[vs[1].(string)]
-	}).(AttachedFargateProfileOutput)
-}
-
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AttachedFargateProfileInput)(nil)).Elem(), &AttachedFargateProfile{})
-	pulumi.RegisterInputType(reflect.TypeOf((*AttachedFargateProfileArrayInput)(nil)).Elem(), AttachedFargateProfileArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*AttachedFargateProfileMapInput)(nil)).Elem(), AttachedFargateProfileMap{})
 	pulumi.RegisterOutputType(AttachedFargateProfileOutput{})
-	pulumi.RegisterOutputType(AttachedFargateProfileArrayOutput{})
-	pulumi.RegisterOutputType(AttachedFargateProfileMapOutput{})
 }

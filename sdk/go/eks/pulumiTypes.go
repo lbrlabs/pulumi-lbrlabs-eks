@@ -9,7 +9,6 @@ import (
 
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 var _ = internal.GetEnvOrDefault
@@ -57,12 +56,6 @@ func (i BudgetConfigArgs) ToBudgetConfigOutputWithContext(ctx context.Context) B
 	return pulumi.ToOutputWithContext(ctx, i).(BudgetConfigOutput)
 }
 
-func (i BudgetConfigArgs) ToOutput(ctx context.Context) pulumix.Output[BudgetConfig] {
-	return pulumix.Output[BudgetConfig]{
-		OutputState: i.ToBudgetConfigOutputWithContext(ctx).OutputState,
-	}
-}
-
 // BudgetConfigArrayInput is an input type that accepts BudgetConfigArray and BudgetConfigArrayOutput values.
 // You can construct a concrete instance of `BudgetConfigArrayInput` via:
 //
@@ -88,12 +81,6 @@ func (i BudgetConfigArray) ToBudgetConfigArrayOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, i).(BudgetConfigArrayOutput)
 }
 
-func (i BudgetConfigArray) ToOutput(ctx context.Context) pulumix.Output[[]BudgetConfig] {
-	return pulumix.Output[[]BudgetConfig]{
-		OutputState: i.ToBudgetConfigArrayOutputWithContext(ctx).OutputState,
-	}
-}
-
 // Configuration for Autoscaled Node budgets.
 type BudgetConfigOutput struct{ *pulumi.OutputState }
 
@@ -107,12 +94,6 @@ func (o BudgetConfigOutput) ToBudgetConfigOutput() BudgetConfigOutput {
 
 func (o BudgetConfigOutput) ToBudgetConfigOutputWithContext(ctx context.Context) BudgetConfigOutput {
 	return o
-}
-
-func (o BudgetConfigOutput) ToOutput(ctx context.Context) pulumix.Output[BudgetConfig] {
-	return pulumix.Output[BudgetConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 // The duration during which disruptuon can happen.
@@ -142,12 +123,6 @@ func (o BudgetConfigArrayOutput) ToBudgetConfigArrayOutput() BudgetConfigArrayOu
 
 func (o BudgetConfigArrayOutput) ToBudgetConfigArrayOutputWithContext(ctx context.Context) BudgetConfigArrayOutput {
 	return o
-}
-
-func (o BudgetConfigArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]BudgetConfig] {
-	return pulumix.Output[[]BudgetConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o BudgetConfigArrayOutput) Index(i pulumi.IntInput) BudgetConfigOutput {
@@ -227,12 +202,6 @@ func (i DisruptionConfigArgs) ToDisruptionConfigOutputWithContext(ctx context.Co
 	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigOutput)
 }
 
-func (i DisruptionConfigArgs) ToOutput(ctx context.Context) pulumix.Output[DisruptionConfig] {
-	return pulumix.Output[DisruptionConfig]{
-		OutputState: i.ToDisruptionConfigOutputWithContext(ctx).OutputState,
-	}
-}
-
 func (i DisruptionConfigArgs) ToDisruptionConfigPtrOutput() DisruptionConfigPtrOutput {
 	return i.ToDisruptionConfigPtrOutputWithContext(context.Background())
 }
@@ -274,12 +243,6 @@ func (i *disruptionConfigPtrType) ToDisruptionConfigPtrOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(DisruptionConfigPtrOutput)
 }
 
-func (i *disruptionConfigPtrType) ToOutput(ctx context.Context) pulumix.Output[*DisruptionConfig] {
-	return pulumix.Output[*DisruptionConfig]{
-		OutputState: i.ToDisruptionConfigPtrOutputWithContext(ctx).OutputState,
-	}
-}
-
 // Configuration for Autoscaled nodes disruption.
 type DisruptionConfigOutput struct{ *pulumi.OutputState }
 
@@ -303,12 +266,6 @@ func (o DisruptionConfigOutput) ToDisruptionConfigPtrOutputWithContext(ctx conte
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v DisruptionConfig) *DisruptionConfig {
 		return &v
 	}).(DisruptionConfigPtrOutput)
-}
-
-func (o DisruptionConfigOutput) ToOutput(ctx context.Context) pulumix.Output[DisruptionConfig] {
-	return pulumix.Output[DisruptionConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Budgets control the speed Karpenter can scale down nodes.
@@ -343,12 +300,6 @@ func (o DisruptionConfigPtrOutput) ToDisruptionConfigPtrOutput() DisruptionConfi
 
 func (o DisruptionConfigPtrOutput) ToDisruptionConfigPtrOutputWithContext(ctx context.Context) DisruptionConfigPtrOutput {
 	return o
-}
-
-func (o DisruptionConfigPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DisruptionConfig] {
-	return pulumix.Output[*DisruptionConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o DisruptionConfigPtrOutput) Elem() DisruptionConfigOutput {
@@ -501,12 +452,6 @@ func (i IngressConfigArgs) ToIngressConfigOutputWithContext(ctx context.Context)
 	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigOutput)
 }
 
-func (i IngressConfigArgs) ToOutput(ctx context.Context) pulumix.Output[IngressConfig] {
-	return pulumix.Output[IngressConfig]{
-		OutputState: i.ToIngressConfigOutputWithContext(ctx).OutputState,
-	}
-}
-
 func (i IngressConfigArgs) ToIngressConfigPtrOutput() IngressConfigPtrOutput {
 	return i.ToIngressConfigPtrOutputWithContext(context.Background())
 }
@@ -548,12 +493,6 @@ func (i *ingressConfigPtrType) ToIngressConfigPtrOutputWithContext(ctx context.C
 	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigPtrOutput)
 }
 
-func (i *ingressConfigPtrType) ToOutput(ctx context.Context) pulumix.Output[*IngressConfig] {
-	return pulumix.Output[*IngressConfig]{
-		OutputState: i.ToIngressConfigPtrOutputWithContext(ctx).OutputState,
-	}
-}
-
 // Configuration for the ingress controller.
 type IngressConfigOutput struct{ *pulumi.OutputState }
 
@@ -577,12 +516,6 @@ func (o IngressConfigOutput) ToIngressConfigPtrOutputWithContext(ctx context.Con
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v IngressConfig) *IngressConfig {
 		return &v
 	}).(IngressConfigPtrOutput)
-}
-
-func (o IngressConfigOutput) ToOutput(ctx context.Context) pulumix.Output[IngressConfig] {
-	return pulumix.Output[IngressConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Additional configuration for the ingress controller.
@@ -627,12 +560,6 @@ func (o IngressConfigPtrOutput) ToIngressConfigPtrOutput() IngressConfigPtrOutpu
 
 func (o IngressConfigPtrOutput) ToIngressConfigPtrOutputWithContext(ctx context.Context) IngressConfigPtrOutput {
 	return o
-}
-
-func (o IngressConfigPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*IngressConfig] {
-	return pulumix.Output[*IngressConfig]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o IngressConfigPtrOutput) Elem() IngressConfigOutput {
@@ -748,12 +675,6 @@ func (i RequirementArgs) ToRequirementOutputWithContext(ctx context.Context) Req
 	return pulumi.ToOutputWithContext(ctx, i).(RequirementOutput)
 }
 
-func (i RequirementArgs) ToOutput(ctx context.Context) pulumix.Output[Requirement] {
-	return pulumix.Output[Requirement]{
-		OutputState: i.ToRequirementOutputWithContext(ctx).OutputState,
-	}
-}
-
 // RequirementArrayInput is an input type that accepts RequirementArray and RequirementArrayOutput values.
 // You can construct a concrete instance of `RequirementArrayInput` via:
 //
@@ -779,12 +700,6 @@ func (i RequirementArray) ToRequirementArrayOutputWithContext(ctx context.Contex
 	return pulumi.ToOutputWithContext(ctx, i).(RequirementArrayOutput)
 }
 
-func (i RequirementArray) ToOutput(ctx context.Context) pulumix.Output[[]Requirement] {
-	return pulumix.Output[[]Requirement]{
-		OutputState: i.ToRequirementArrayOutputWithContext(ctx).OutputState,
-	}
-}
-
 // Represents a single requirement with key, operator, and values.
 type RequirementOutput struct{ *pulumi.OutputState }
 
@@ -798,12 +713,6 @@ func (o RequirementOutput) ToRequirementOutput() RequirementOutput {
 
 func (o RequirementOutput) ToRequirementOutputWithContext(ctx context.Context) RequirementOutput {
 	return o
-}
-
-func (o RequirementOutput) ToOutput(ctx context.Context) pulumix.Output[Requirement] {
-	return pulumix.Output[Requirement]{
-		OutputState: o.OutputState,
-	}
 }
 
 // The key of the requirement.
@@ -833,12 +742,6 @@ func (o RequirementArrayOutput) ToRequirementArrayOutput() RequirementArrayOutpu
 
 func (o RequirementArrayOutput) ToRequirementArrayOutputWithContext(ctx context.Context) RequirementArrayOutput {
 	return o
-}
-
-func (o RequirementArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]Requirement] {
-	return pulumix.Output[[]Requirement]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o RequirementArrayOutput) Index(i pulumi.IntInput) RequirementOutput {
