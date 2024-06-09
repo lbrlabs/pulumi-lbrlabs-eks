@@ -186,7 +186,7 @@ jobs:
         # if set to "true" but frees about 6 GB
         tool-cache: false
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v5
+      uses: goreleaser/goreleaser-action@v6
       with:
         args: -f .goreleaser.prerelease.yml --clean --skip=validate -p 2 --timeout 360m0s
         version: latest
