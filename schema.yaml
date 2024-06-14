@@ -124,6 +124,10 @@ resources:
       clusterVersion:
         type: string
         description: The version of the EKS cluster to create.
+      karpenterVersion:
+        type: string
+        description: The version of karpenter to deploy.
+        default: "0.36.2"
       clusterEndpointPrivateAccess:
         type: boolean
         description: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
