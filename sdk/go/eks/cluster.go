@@ -81,6 +81,9 @@ func NewCluster(ctx *pulumi.Context,
 	if args.IngressConfig != nil {
 		args.IngressConfig = args.IngressConfig.ToIngressConfigPtrOutput().ApplyT(func(v *IngressConfig) *IngressConfig { return v.Defaults() }).(IngressConfigPtrOutput)
 	}
+	if args.KarpenterVersion == nil {
+		args.KarpenterVersion = pulumi.StringPtr("0.36.2")
+	}
 	if args.LbType == nil {
 		args.LbType = pulumi.StringPtr("nlb")
 	}
@@ -126,6 +129,8 @@ type clusterArgs struct {
 	ExternalDNSVersion *string `pulumi:"externalDNSVersion"`
 	// Configuration for the ingress controller.
 	IngressConfig *IngressConfig `pulumi:"ingressConfig"`
+	// The version of karpenter to deploy.
+	KarpenterVersion *string `pulumi:"karpenterVersion"`
 	// The type of loadbalancer to provision.
 	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
@@ -178,6 +183,8 @@ type ClusterArgs struct {
 	ExternalDNSVersion pulumi.StringPtrInput
 	// Configuration for the ingress controller.
 	IngressConfig IngressConfigPtrInput
+	// The version of karpenter to deploy.
+	KarpenterVersion pulumi.StringPtrInput
 	// The type of loadbalancer to provision.
 	LbType pulumi.StringPtrInput
 	// The email address to use to issue certificates from Lets Encrypt.

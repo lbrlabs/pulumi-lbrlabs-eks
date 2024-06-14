@@ -82,6 +82,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enabledClusterLogTypes"] = args ? args.enabledClusterLogTypes : undefined;
             resourceInputs["externalDNSVersion"] = args ? args.externalDNSVersion : undefined;
             resourceInputs["ingressConfig"] = args ? (args.ingressConfig ? pulumi.output(args.ingressConfig).apply(inputs.ingressConfigArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["karpenterVersion"] = (args ? args.karpenterVersion : undefined) ?? "0.36.2";
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["nginxIngressVersion"] = args ? args.nginxIngressVersion : undefined;
@@ -176,6 +177,10 @@ export interface ClusterArgs {
      * Configuration for the ingress controller.
      */
     ingressConfig?: pulumi.Input<inputs.IngressConfigArgs>;
+    /**
+     * The version of karpenter to deploy.
+     */
+    karpenterVersion?: pulumi.Input<string>;
     /**
      * The type of loadbalancer to provision.
      */

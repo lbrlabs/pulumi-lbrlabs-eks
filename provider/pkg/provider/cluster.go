@@ -51,6 +51,7 @@ type ClusterArgs struct {
 	EnableExternalDNS            bool                     `pulumi:"enableExternalDns"`
 	EnableCertManager            bool                     `pulumi:"enableCertManager"`
 	EnableKarpenter              bool                     `pulumi:"enableKarpenter"`
+	KarpenterVersion             string                   `pulumi:"karpenterVersion"`
 	LetsEncryptEmail             string                   `pulumi:"letsEncryptEmail"`
 	IngressConfig                *IngressConfig           `pulumi:"ingressConfig"`
 	EnableInternalIngress        bool                     `pulumi:"enableInternalIngress"`
@@ -1547,30 +1548,29 @@ func NewCluster(ctx *pulumi.Context,
 		}
 
 		nodeClasses, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodeclasses-crd", name), &yaml.ConfigFileArgs{
-			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml",
+			File: fmt.Sprintf("https://raw.githubusercontent.com/aws/karpenter-provider-aws/v%s/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml", args.KarpenterVersion),
 		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
 		if err != nil {
 			return nil, fmt.Errorf("error creating node claim crd: %w", err)
 		}
 
 		nodeClaims, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodeclaim-crd", name), &yaml.ConfigFileArgs{
-			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.sh_nodeclaims.yaml",
+			File: fmt.Sprintf("https://raw.githubusercontent.com/aws/karpenter-provider-aws/v%s/pkg/apis/crds/karpenter.sh_nodeclaims.yaml", args.KarpenterVersion),
 		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
 		if err != nil {
 			return nil, fmt.Errorf("error creating node classes crd: %w", err)
 		}
 
 		nodePools, err := yaml.NewConfigFile(ctx, fmt.Sprintf("%s-karpenter-nodepool-crd", name), &yaml.ConfigFileArgs{
-			File: "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v0.36.1/pkg/apis/crds/karpenter.sh_nodepools.yaml",
+			File: fmt.Sprintf("https://raw.githubusercontent.com/aws/karpenter-provider-aws/v%s/pkg/apis/crds/karpenter.sh_nodepools.yaml", args.KarpenterVersion),
 		}, pulumi.DeletedWith(controlPlane), pulumi.Parent(provider), pulumi.Provider(serverSideProvider))
 		if err != nil {
 			return nil, fmt.Errorf("error creating node pool crd: %w", err)
 		}
-
 		_, err = helm.NewRelease(
 			ctx, fmt.Sprintf("%s-karpenter", name), &helm.ReleaseArgs{
 				Chart:     pulumi.String("oci://public.ecr.aws/karpenter/karpenter"),
-				Version:   pulumi.String("0.36.1"),
+				Version:   pulumi.String(args.KarpenterVersion),
 				Namespace: pulumi.String("kube-system"),
 				SkipCrds:  pulumi.Bool(true),
 				Values: pulumi.Map{

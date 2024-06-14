@@ -185,6 +185,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<Inputs.IngressConfigArgs>? IngressConfig { get; set; }
 
         /// <summary>
+        /// The version of karpenter to deploy.
+        /// </summary>
+        [Input("karpenterVersion")]
+        public Input<string>? KarpenterVersion { get; set; }
+
+        /// <summary>
         /// The type of loadbalancer to provision.
         /// </summary>
         [Input("lbType")]
@@ -259,6 +265,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableInternalIngress = true;
             EnableKarpenter = true;
             EnableOtel = false;
+            KarpenterVersion = "0.36.2";
             LbType = "nlb";
         }
         public static new ClusterArgs Empty => new ClusterArgs();
