@@ -19,7 +19,7 @@ class AttachedNodeGroupArgs:
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  ami_type: Optional[pulumi.Input[str]] = None,
                  capacity_type: Optional[pulumi.Input[str]] = None,
-                 disk_size: Optional[pulumi.Input[float]] = None,
+                 disk_size: Optional[pulumi.Input[int]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  release_version: Optional[pulumi.Input[str]] = None,
@@ -31,7 +31,7 @@ class AttachedNodeGroupArgs:
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[str] ami_type: The AMI Type for the nodegroup.
         :param pulumi.Input[str] capacity_type: The capacity type of the nodegroup.
-        :param pulumi.Input[float] disk_size: The size of the disk to attach to the nodes.
+        :param pulumi.Input[int] disk_size: The size of the disk to attach to the nodes.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[str] release_version: The release version for the nodegroup.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
@@ -108,14 +108,14 @@ class AttachedNodeGroupArgs:
 
     @property
     @pulumi.getter(name="diskSize")
-    def disk_size(self) -> Optional[pulumi.Input[float]]:
+    def disk_size(self) -> Optional[pulumi.Input[int]]:
         """
         The size of the disk to attach to the nodes.
         """
         return pulumi.get(self, "disk_size")
 
     @disk_size.setter
-    def disk_size(self, value: Optional[pulumi.Input[float]]):
+    def disk_size(self, value: Optional[pulumi.Input[int]]):
         pulumi.set(self, "disk_size", value)
 
     @property
@@ -190,7 +190,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  ami_type: Optional[pulumi.Input[str]] = None,
                  capacity_type: Optional[pulumi.Input[str]] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 disk_size: Optional[pulumi.Input[float]] = None,
+                 disk_size: Optional[pulumi.Input[int]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  release_version: Optional[pulumi.Input[str]] = None,
@@ -206,7 +206,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[str] ami_type: The AMI Type for the nodegroup.
         :param pulumi.Input[str] capacity_type: The capacity type of the nodegroup.
         :param pulumi.Input[str] cluster_name: The cluster name to attach the nodegroup tp.
-        :param pulumi.Input[float] disk_size: The size of the disk to attach to the nodes.
+        :param pulumi.Input[int] disk_size: The size of the disk to attach to the nodes.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[str] release_version: The release version for the nodegroup.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of tags to apply to the nodegroup.
@@ -237,7 +237,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  ami_type: Optional[pulumi.Input[str]] = None,
                  capacity_type: Optional[pulumi.Input[str]] = None,
                  cluster_name: Optional[pulumi.Input[str]] = None,
-                 disk_size: Optional[pulumi.Input[float]] = None,
+                 disk_size: Optional[pulumi.Input[int]] = None,
                  instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  release_version: Optional[pulumi.Input[str]] = None,

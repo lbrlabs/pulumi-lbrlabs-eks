@@ -32,7 +32,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         /// The number of replicas of the ingress controller.
         /// </summary>
         [Input("controllerReplicas")]
-        public Input<double>? ControllerReplicas { get; set; }
+        public Input<int>? ControllerReplicas { get; set; }
 
         /// <summary>
         /// Enable metrics for the ingress controller.

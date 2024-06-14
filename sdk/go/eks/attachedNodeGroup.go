@@ -38,7 +38,7 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 		args.CapacityType = pulumi.StringPtr("ON_DEMAND")
 	}
 	if args.DiskSize == nil {
-		args.DiskSize = pulumi.Float64Ptr(20.0)
+		args.DiskSize = pulumi.IntPtr(20)
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AttachedNodeGroup
@@ -57,7 +57,7 @@ type attachedNodeGroupArgs struct {
 	// The cluster name to attach the nodegroup tp.
 	ClusterName string `pulumi:"clusterName"`
 	// The size of the disk to attach to the nodes.
-	DiskSize      *float64 `pulumi:"diskSize"`
+	DiskSize      *int     `pulumi:"diskSize"`
 	InstanceTypes []string `pulumi:"instanceTypes"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels map[string]string `pulumi:"labels"`
@@ -79,7 +79,7 @@ type AttachedNodeGroupArgs struct {
 	// The cluster name to attach the nodegroup tp.
 	ClusterName pulumi.StringInput
 	// The size of the disk to attach to the nodes.
-	DiskSize      pulumi.Float64PtrInput
+	DiskSize      pulumi.IntPtrInput
 	InstanceTypes pulumi.StringArrayInput
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels pulumi.StringMapInput

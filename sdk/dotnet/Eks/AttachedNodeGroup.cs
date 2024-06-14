@@ -70,7 +70,7 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// The size of the disk to attach to the nodes.
         /// </summary>
         [Input("diskSize")]
-        public Input<double>? DiskSize { get; set; }
+        public Input<int>? DiskSize { get; set; }
 
         [Input("instanceTypes")]
         private InputList<string>? _instanceTypes;

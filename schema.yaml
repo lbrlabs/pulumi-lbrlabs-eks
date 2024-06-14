@@ -70,13 +70,11 @@ types:
         type: string
         description: The namespace to deploy the service monitor to.
       controllerReplicas:
-        type: number
+        type: integer
         default: 1
         description: The number of replicas of the ingress controller.
       nlbTargetType:
         type: string
-        additionalProperties:
-          type: string
         description: NLB target type for NLB loadbalancers.
         default: "ip"
       additionalConfig:
@@ -269,7 +267,7 @@ resources:
         items:
           type: string
       diskSize:
-        type: number
+        type: integer
         description: The size of the disk to attach to the nodes.
         default: 20
       capacityType:

@@ -150,7 +150,7 @@ class DisruptionConfigArgs:
 class IngressConfigArgs:
     def __init__(__self__, *,
                  additional_config: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 controller_replicas: Optional[pulumi.Input[float]] = None,
+                 controller_replicas: Optional[pulumi.Input[int]] = None,
                  enable_metrics: Optional[pulumi.Input[bool]] = None,
                  enable_service_monitor: Optional[pulumi.Input[bool]] = None,
                  nlb_target_type: Optional[pulumi.Input[str]] = None,
@@ -158,7 +158,7 @@ class IngressConfigArgs:
         """
         Configuration for the ingress controller.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] additional_config: Additional configuration for the ingress controller.
-        :param pulumi.Input[float] controller_replicas: The number of replicas of the ingress controller.
+        :param pulumi.Input[int] controller_replicas: The number of replicas of the ingress controller.
         :param pulumi.Input[bool] enable_metrics: Enable metrics for the ingress controller.
         :param pulumi.Input[bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stackl.
         :param pulumi.Input[str] nlb_target_type: NLB target type for NLB loadbalancers.
@@ -199,14 +199,14 @@ class IngressConfigArgs:
 
     @property
     @pulumi.getter(name="controllerReplicas")
-    def controller_replicas(self) -> Optional[pulumi.Input[float]]:
+    def controller_replicas(self) -> Optional[pulumi.Input[int]]:
         """
         The number of replicas of the ingress controller.
         """
         return pulumi.get(self, "controller_replicas")
 
     @controller_replicas.setter
-    def controller_replicas(self, value: Optional[pulumi.Input[float]]):
+    def controller_replicas(self, value: Optional[pulumi.Input[int]]):
         pulumi.set(self, "controller_replicas", value)
 
     @property

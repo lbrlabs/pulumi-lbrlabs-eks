@@ -357,7 +357,7 @@ type IngressConfig struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
 	// The number of replicas of the ingress controller.
-	ControllerReplicas *float64 `pulumi:"controllerReplicas"`
+	ControllerReplicas *int `pulumi:"controllerReplicas"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics *bool `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
@@ -375,7 +375,7 @@ func (val *IngressConfig) Defaults() *IngressConfig {
 	}
 	tmp := *val
 	if tmp.ControllerReplicas == nil {
-		controllerReplicas_ := 1.0
+		controllerReplicas_ := 1
 		tmp.ControllerReplicas = &controllerReplicas_
 	}
 	if tmp.EnableMetrics == nil {
@@ -409,7 +409,7 @@ type IngressConfigArgs struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig pulumi.StringMapInput `pulumi:"additionalConfig"`
 	// The number of replicas of the ingress controller.
-	ControllerReplicas pulumi.Float64PtrInput `pulumi:"controllerReplicas"`
+	ControllerReplicas pulumi.IntPtrInput `pulumi:"controllerReplicas"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
@@ -427,7 +427,7 @@ func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
 	}
 	tmp := *val
 	if tmp.ControllerReplicas == nil {
-		tmp.ControllerReplicas = pulumi.Float64Ptr(1.0)
+		tmp.ControllerReplicas = pulumi.IntPtr(1)
 	}
 	if tmp.EnableMetrics == nil {
 		tmp.EnableMetrics = pulumi.BoolPtr(false)
@@ -524,8 +524,8 @@ func (o IngressConfigOutput) AdditionalConfig() pulumi.StringMapOutput {
 }
 
 // The number of replicas of the ingress controller.
-func (o IngressConfigOutput) ControllerReplicas() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v IngressConfig) *float64 { return v.ControllerReplicas }).(pulumi.Float64PtrOutput)
+func (o IngressConfigOutput) ControllerReplicas() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *int { return v.ControllerReplicas }).(pulumi.IntPtrOutput)
 }
 
 // Enable metrics for the ingress controller.
@@ -583,13 +583,13 @@ func (o IngressConfigPtrOutput) AdditionalConfig() pulumi.StringMapOutput {
 }
 
 // The number of replicas of the ingress controller.
-func (o IngressConfigPtrOutput) ControllerReplicas() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *IngressConfig) *float64 {
+func (o IngressConfigPtrOutput) ControllerReplicas() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *int {
 		if v == nil {
 			return nil
 		}
 		return v.ControllerReplicas
-	}).(pulumi.Float64PtrOutput)
+	}).(pulumi.IntPtrOutput)
 }
 
 // Enable metrics for the ingress controller.
