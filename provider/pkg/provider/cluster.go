@@ -107,12 +107,22 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, err
 	}
 
-	// callerIdentity, err := aws.GetCallerIdentity(ctx, nil, pulumi.Parent(component))
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error getting caller identity: %w", err)
-	// }
+	callerIdentity, err := aws.GetCallerIdentity(ctx, nil, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error getting caller identity: %w", err)
+	}
 
-	//accountId := callerIdentity.AccountId
+	err = ctx.Log.Debug(fmt.Sprintf("Current user: %s", callerIdentity.Arn), &pulumi.LogArgs{Resource: component})
+	if err != nil {
+		return nil, err
+	}
+
+	sessionIam, err := iam.GetSessionContext(ctx, &iam.GetSessionContextArgs{
+		Arn: callerIdentity.Arn,
+	}, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error getting session context: %w", err)
+	}
 
 	current, err := aws.GetPartition(ctx, nil, pulumi.Parent(component))
 	if err != nil {
@@ -252,6 +262,28 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)
 	}
 
+	accessEntry, err := eks.NewAccessEntry(ctx, fmt.Sprintf("%s-admin-access", name), &eks.AccessEntryArgs{
+		ClusterName:  controlPlane.Name,
+		Type:         pulumi.String("STANDARD"),
+		PrincipalArn: pulumi.String(sessionIam.IssuerArn),
+	}, pulumi.Parent(controlPlane))
+
+	if err != nil {
+		return nil, fmt.Errorf("error creating access entry: %w", err)
+	}
+
+	accessPolicy, err := eks.NewAccessPolicyAssociation(ctx, fmt.Sprintf("%s-admin-policy", name), &eks.AccessPolicyAssociationArgs{
+		AccessScope: eks.AccessPolicyAssociationAccessScopeArgs{
+			Type: pulumi.String("cluster"),
+		},
+		ClusterName:  controlPlane.Name,
+		PolicyArn:    pulumi.String("arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"),
+		PrincipalArn: accessEntry.PrincipalArn,
+	}, pulumi.Parent(accessEntry))
+	if err != nil {
+		return nil, fmt.Errorf("error creating access policy association: %w", err)
+	}
+
 	kc, err := kubeconfig.Generate(name, controlPlane.Endpoint, controlPlane.CertificateAuthorities.Index(pulumi.Int(0)).Data().Elem(), controlPlane.Name)
 	if err != nil {
 		return nil, fmt.Errorf("error generating kubeconfig: %w", err)
@@ -260,7 +292,7 @@ func NewCluster(ctx *pulumi.Context,
 	provider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-provider", name), &kubernetes.ProviderArgs{
 		Kubeconfig:               kc,
 		SuppressHelmHookWarnings: pulumi.Bool(true),
-	}, pulumi.Parent(controlPlane))
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{controlPlane, accessPolicy}))
 	if err != nil {
 		return nil, fmt.Errorf("error creating kubernetes provider: %w", err)
 	}
@@ -350,7 +382,7 @@ func NewCluster(ctx *pulumi.Context,
 			DesiredSize: systemNodeDesiredCount,
 		},
 		Tags: &tags,
-	}, pulumi.Parent(controlPlane), pulumi.ProviderMap(map[string]pulumi.ProviderResource{
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{controlPlane, accessPolicy}), pulumi.ProviderMap(map[string]pulumi.ProviderResource{
 		"kubernetes": provider,
 	}))
 	if err != nil {
@@ -460,7 +492,7 @@ func NewCluster(ctx *pulumi.Context,
 	serverSideProvider, err := kubernetes.NewProvider(ctx, fmt.Sprintf("%s-k8s-ssa-provider", name), &kubernetes.ProviderArgs{
 		Kubeconfig:            kc,
 		EnableServerSideApply: pulumi.Bool(true),
-	}, pulumi.Parent(controlPlane))
+	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{controlPlane, accessPolicy}))
 	if err != nil {
 		return nil, fmt.Errorf("error creating server side apply kubernetes provider: %w", err)
 	}
