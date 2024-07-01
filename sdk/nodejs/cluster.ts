@@ -65,6 +65,7 @@ export class Cluster extends pulumi.ComponentResource {
             if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
+            resourceInputs["adminAccessPrincipal"] = args ? args.adminAccessPrincipal : undefined;
             resourceInputs["certManagerVersion"] = args ? args.certManagerVersion : undefined;
             resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
             resourceInputs["clusterEndpointPrivateAccess"] = (args ? args.clusterEndpointPrivateAccess : undefined) ?? false;
@@ -115,6 +116,10 @@ export class Cluster extends pulumi.ComponentResource {
  * The set of arguments for constructing a Cluster resource.
  */
 export interface ClusterArgs {
+    /**
+     * The ARN of the AWS principal that should get admin access.
+     */
+    adminAccessPrincipal?: pulumi.Input<string>;
     /**
      * The version of the cert-manager helm chart to deploy.
      */

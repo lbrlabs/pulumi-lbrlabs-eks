@@ -18,6 +18,7 @@ class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 admin_access_principal: Optional[pulumi.Input[str]] = None,
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
@@ -45,6 +46,7 @@ class ClusterArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Cluster resource.
+        :param pulumi.Input[str] admin_access_principal: The ARN of the AWS principal that should get admin access.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
         :param pulumi.Input[bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
@@ -71,6 +73,8 @@ class ClusterArgs:
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
+        if admin_access_principal is not None:
+            pulumi.set(__self__, "admin_access_principal", admin_access_principal)
         if cert_manager_version is not None:
             pulumi.set(__self__, "cert_manager_version", cert_manager_version)
         if certificate_arn is not None:
@@ -161,6 +165,18 @@ class ClusterArgs:
     @system_node_subnet_ids.setter
     def system_node_subnet_ids(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
         pulumi.set(self, "system_node_subnet_ids", value)
+
+    @property
+    @pulumi.getter(name="adminAccessPrincipal")
+    def admin_access_principal(self) -> Optional[pulumi.Input[str]]:
+        """
+        The ARN of the AWS principal that should get admin access.
+        """
+        return pulumi.get(self, "admin_access_principal")
+
+    @admin_access_principal.setter
+    def admin_access_principal(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "admin_access_principal", value)
 
     @property
     @pulumi.getter(name="certManagerVersion")
@@ -462,6 +478,7 @@ class Cluster(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 admin_access_principal: Optional[pulumi.Input[str]] = None,
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
@@ -494,6 +511,7 @@ class Cluster(pulumi.ComponentResource):
         Create a Cluster resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[str] admin_access_principal: The ARN of the AWS principal that should get admin access.
         :param pulumi.Input[str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[str] certificate_arn: The ARN of the certificate to use for the ingress controller.
         :param pulumi.Input[bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
@@ -541,6 +559,7 @@ class Cluster(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 admin_access_principal: Optional[pulumi.Input[str]] = None,
                  cert_manager_version: Optional[pulumi.Input[str]] = None,
                  certificate_arn: Optional[pulumi.Input[str]] = None,
                  cluster_endpoint_private_access: Optional[pulumi.Input[bool]] = None,
@@ -579,6 +598,7 @@ class Cluster(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = ClusterArgs.__new__(ClusterArgs)
 
+            __props__.__dict__["admin_access_principal"] = admin_access_principal
             __props__.__dict__["cert_manager_version"] = cert_manager_version
             __props__.__dict__["certificate_arn"] = certificate_arn
             if cluster_endpoint_private_access is None:

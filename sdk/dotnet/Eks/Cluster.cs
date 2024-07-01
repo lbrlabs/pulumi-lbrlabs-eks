@@ -79,6 +79,12 @@ namespace Lbrlabs.PulumiPackage.Eks
     public sealed class ClusterArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
+        /// The ARN of the AWS principal that should get admin access.
+        /// </summary>
+        [Input("adminAccessPrincipal")]
+        public Input<string>? AdminAccessPrincipal { get; set; }
+
+        /// <summary>
         /// The version of the cert-manager helm chart to deploy.
         /// </summary>
         [Input("certManagerVersion")]
