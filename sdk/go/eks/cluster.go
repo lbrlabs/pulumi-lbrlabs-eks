@@ -97,6 +97,8 @@ func NewCluster(ctx *pulumi.Context,
 }
 
 type clusterArgs struct {
+	// The ARN of the AWS principal that should get admin access.
+	AdminAccessPrincipal *string `pulumi:"adminAccessPrincipal"`
 	// The version of the cert-manager helm chart to deploy.
 	CertManagerVersion *string `pulumi:"certManagerVersion"`
 	// The ARN of the certificate to use for the ingress controller.
@@ -151,6 +153,8 @@ type clusterArgs struct {
 
 // The set of arguments for constructing a Cluster resource.
 type ClusterArgs struct {
+	// The ARN of the AWS principal that should get admin access.
+	AdminAccessPrincipal pulumi.StringPtrInput
 	// The version of the cert-manager helm chart to deploy.
 	CertManagerVersion pulumi.StringPtrInput
 	// The ARN of the certificate to use for the ingress controller.

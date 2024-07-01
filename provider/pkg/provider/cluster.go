@@ -64,6 +64,7 @@ type ClusterArgs struct {
 	ExternalDNSVersion           pulumi.StringInput       `pulumi:"externalDNSVersion"`
 	CertManagerVersion           pulumi.StringInput       `pulumi:"certManagerVersion"`
 	EnabledClusterLogTypes       *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
+	AdminAccessPrincipal         pulumi.StringInput       `pulumi:"adminAccessPrincipal"`
 }
 
 // The Cluster component resource.
@@ -115,13 +116,6 @@ func NewCluster(ctx *pulumi.Context,
 	err = ctx.Log.Debug(fmt.Sprintf("Current user: %s", callerIdentity.Arn), &pulumi.LogArgs{Resource: component})
 	if err != nil {
 		return nil, err
-	}
-
-	sessionIam, err := iam.GetSessionContext(ctx, &iam.GetSessionContextArgs{
-		Arn: callerIdentity.Arn,
-	}, pulumi.Parent(component))
-	if err != nil {
-		return nil, fmt.Errorf("error getting session context: %w", err)
 	}
 
 	current, err := aws.GetPartition(ctx, nil, pulumi.Parent(component))
@@ -265,7 +259,7 @@ func NewCluster(ctx *pulumi.Context,
 	accessEntry, err := eks.NewAccessEntry(ctx, fmt.Sprintf("%s-admin-access", name), &eks.AccessEntryArgs{
 		ClusterName:  controlPlane.Name,
 		Type:         pulumi.String("STANDARD"),
-		PrincipalArn: pulumi.String(sessionIam.IssuerArn),
+		PrincipalArn: args.AdminAccessPrincipal,
 	}, pulumi.Parent(controlPlane))
 
 	if err != nil {

@@ -217,6 +217,9 @@ resources:
       certificateArn:
         type: string
         description: The ARN of the certificate to use for the ingress controller.
+      adminAccessPrincipal:
+        type: string
+        description: The ARN of the AWS principal that should get admin access.
       tags:
         type: object
         additionalProperties:
