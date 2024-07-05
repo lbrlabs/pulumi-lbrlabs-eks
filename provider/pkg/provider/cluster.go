@@ -1608,6 +1608,18 @@ func NewCluster(ctx *pulumi.Context,
 							"effect":   pulumi.String("NoSchedule"),
 						},
 					},
+					"controller": pulumi.Map{
+						"resources": pulumi.Map{
+							"requests": pulumi.Map{
+								"cpu":    pulumi.String("1"),
+								"memory": pulumi.String("1Gi"),
+							},
+							"limits": pulumi.Map{
+								"cpu":    pulumi.String("1"),
+								"memory": pulumi.String("1Gi"),
+							},
+						},
+					},
 					"serviceAccount": pulumi.Map{
 						"create": pulumi.Bool(false),
 						"name":   serviceAccount.Metadata.Name(),
