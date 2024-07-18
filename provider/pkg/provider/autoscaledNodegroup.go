@@ -23,6 +23,7 @@ type DisruptionConfig struct {
 type AutoscaledNodeGroupArgs struct {
 	Annotations      *pulumi.StringMapInput  `pulumi:"annotations"`
 	AMIFamily        *pulumi.StringInput     `pulumi:"amiFamily"`
+	AmiID            *pulumi.StringInput     `pulumi:"amiId"`
 	DiskSize         pulumi.StringInput      `pulumi:"diskSize"`
 	Taints           pulumi.ArrayInput       `pulumi:"taints"`
 	NodeRole         pulumi.StringInput      `pulumi:"nodeRole"`
@@ -114,6 +115,31 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		return securityGroupSelectorTerms, nil
 	}).(pulumi.ArrayOutput)
 
+	spec := map[string]interface{}{
+		"amiFamily":                  amiFamily,
+		"role":                       args.NodeRole,
+		"subnetSelectorTerms":        subnetSelectorTermsProcessed,
+		"securityGroupSelectorTerms": securityGroupSelectorTermsProcessed,
+		"blockDeviceMappings": []map[string]interface{}{
+			{
+				"deviceName": "/dev/xvda",
+				"ebs": map[string]interface{}{
+					"encrypted":  pulumi.Bool(true),
+					"volumeSize": args.DiskSize,
+					"volumeType": pulumi.String("gp3"),
+				},
+			},
+		},
+	}
+
+	if args.AmiID != nil {
+		spec["amiSelectorTerms"] = []map[string]interface{}{
+			{
+				"id": *args.AmiID,
+			},
+		}
+	}
+
 	nodeClass, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-nodeclass", name), &apiextensions.CustomResourceArgs{
 		ApiVersion: pulumi.String("karpenter.k8s.aws/v1beta1"),
 		Kind:       pulumi.String("EC2NodeClass"),
@@ -121,22 +147,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 			Annotations: annotations,
 		},
 		OtherFields: map[string]interface{}{
-			"spec": map[string]interface{}{
-				"amiFamily":                  amiFamily,
-				"role":                       args.NodeRole,
-				"subnetSelectorTerms":        subnetSelectorTermsProcessed,
-				"securityGroupSelectorTerms": securityGroupSelectorTermsProcessed,
-				"blockDeviceMappings": []map[string]interface{}{
-					{
-						"deviceName": "/dev/xvda",
-						"ebs": map[string]interface{}{
-							"encrypted":  pulumi.Bool(true),
-							"volumeSize": args.DiskSize,
-							"volumeType": pulumi.String("gp3"),
-						},
-					},
-				},
-			},
+			"spec": spec,
 		},
 	}, pulumi.Parent(component))
 	if err != nil {

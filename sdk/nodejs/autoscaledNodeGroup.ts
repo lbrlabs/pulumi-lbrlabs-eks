@@ -51,6 +51,7 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'subnetIds'");
             }
             resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
+            resourceInputs["amiId"] = args ? args.amiId : undefined;
             resourceInputs["annotations"] = args ? args.annotations : undefined;
             resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
             resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
@@ -75,6 +76,10 @@ export interface AutoscaledNodeGroupArgs {
      * AMI family for the node group.
      */
     amiFamily?: pulumi.Input<string>;
+    /**
+     * AMI ID for the node group.
+     */
+    amiId?: pulumi.Input<string>;
     /**
      * Annotations to apply to the node group.
      */

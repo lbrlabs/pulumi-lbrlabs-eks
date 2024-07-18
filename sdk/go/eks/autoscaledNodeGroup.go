@@ -54,6 +54,8 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 type autoscaledNodeGroupArgs struct {
 	// AMI family for the node group.
 	AmiFamily *string `pulumi:"amiFamily"`
+	// AMI ID for the node group.
+	AmiId *string `pulumi:"amiId"`
 	// Annotations to apply to the node group.
 	Annotations map[string]string `pulumi:"annotations"`
 	// Disk size for the node group.
@@ -77,6 +79,8 @@ type autoscaledNodeGroupArgs struct {
 type AutoscaledNodeGroupArgs struct {
 	// AMI family for the node group.
 	AmiFamily pulumi.StringPtrInput
+	// AMI ID for the node group.
+	AmiId pulumi.StringPtrInput
 	// Annotations to apply to the node group.
 	Annotations pulumi.StringMapInput
 	// Disk size for the node group.

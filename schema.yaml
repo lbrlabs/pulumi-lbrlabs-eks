@@ -403,6 +403,9 @@ resources:
       amiFamily:
         type: string
         description: "AMI family for the node group."
+      amiId:
+        type: string
+        description: "AMI ID for the node group."
       nodeRole:
         type: string
         description: "Node role for the node group."

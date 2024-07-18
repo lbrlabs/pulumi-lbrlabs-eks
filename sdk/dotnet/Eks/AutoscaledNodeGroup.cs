@@ -47,6 +47,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         [Input("amiFamily")]
         public Input<string>? AmiFamily { get; set; }
 
+        /// <summary>
+        /// AMI ID for the node group.
+        /// </summary>
+        [Input("amiId")]
+        public Input<string>? AmiId { get; set; }
+
         [Input("annotations")]
         private InputMap<string>? _annotations;
 
