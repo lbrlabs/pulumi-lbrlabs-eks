@@ -60,6 +60,7 @@ type ClusterArgs struct {
 	CertificateArn               *pulumi.StringInput      `pulumi:"certificateArn"`
 	Tags                         *pulumi.StringMapInput   `pulumi:"tags"`
 	NginxIngressVersion          pulumi.StringInput       `pulumi:"nginxIngressVersion"`
+	NginxIngressRegistry         pulumi.StringInput       `pulumi:"nginxIngressRegistry"`
 	EksIamAuthControllerVersion  pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
 	ExternalDNSVersion           pulumi.StringInput       `pulumi:"externalDNSVersion"`
 	CertManagerVersion           pulumi.StringInput       `pulumi:"certManagerVersion"`
@@ -653,6 +654,9 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"image": pulumi.Map{
+						"registry": args.NginxIngressRegistry,
+					},
 					"metrics": pulumi.Map{
 						"enabled": realisedIngressConfig.EnableMetrics,
 						"serviceMonitor": pulumi.Map{
@@ -664,6 +668,9 @@ func NewCluster(ctx *pulumi.Context,
 					"replicaCount": realisedIngressConfig.ControllerReplicas,
 					"admissionWebhooks": pulumi.Map{
 						"patch": pulumi.Map{
+							"image": pulumi.Map{
+								"registry": args.NginxIngressRegistry,
+							},
 							"tolerations": pulumi.MapArray{
 								pulumi.Map{
 									"key":      pulumi.String("node.lbrlabs.com/system"),
@@ -693,6 +700,9 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 				"defaultBackend": pulumi.Map{
+					"image": pulumi.Map{
+						"registry": args.NginxIngressRegistry,
+					},
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
 							"key":      pulumi.String("node.lbrlabs.com/system"),

@@ -209,6 +209,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public string? LetsEncryptEmail { get; set; }
 
         /// <summary>
+        /// The container registry to pull images from.
+        /// </summary>
+        [Input("nginxIngressRegistry")]
+        public Input<string>? NginxIngressRegistry { get; set; }
+
+        /// <summary>
         /// The version of the nginx ingress controller helm chart to deploy.
         /// </summary>
         [Input("nginxIngressVersion")]
@@ -273,6 +279,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableOtel = false;
             KarpenterVersion = "0.36.2";
             LbType = "nlb";
+            NginxIngressRegistry = "registry.k8s.io";
         }
         public static new ClusterArgs Empty => new ClusterArgs();
     }
