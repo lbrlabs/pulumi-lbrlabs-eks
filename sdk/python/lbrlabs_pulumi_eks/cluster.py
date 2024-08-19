@@ -38,6 +38,7 @@ class ClusterArgs:
                  karpenter_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_registry: Optional[pulumi.Input[str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -65,6 +66,7 @@ class ClusterArgs:
         :param pulumi.Input[str] karpenter_version: The version of karpenter to deploy.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input[str] nginx_ingress_registry: The container registry to pull images from.
         :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
@@ -135,6 +137,10 @@ class ClusterArgs:
             pulumi.set(__self__, "lb_type", lb_type)
         if lets_encrypt_email is not None:
             pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
+        if nginx_ingress_registry is None:
+            nginx_ingress_registry = 'registry.k8s.io'
+        if nginx_ingress_registry is not None:
+            pulumi.set(__self__, "nginx_ingress_registry", nginx_ingress_registry)
         if nginx_ingress_version is not None:
             pulumi.set(__self__, "nginx_ingress_version", nginx_ingress_version)
         if system_node_desired_count is not None:
@@ -404,6 +410,18 @@ class ClusterArgs:
         pulumi.set(self, "lets_encrypt_email", value)
 
     @property
+    @pulumi.getter(name="nginxIngressRegistry")
+    def nginx_ingress_registry(self) -> Optional[pulumi.Input[str]]:
+        """
+        The container registry to pull images from.
+        """
+        return pulumi.get(self, "nginx_ingress_registry")
+
+    @nginx_ingress_registry.setter
+    def nginx_ingress_registry(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "nginx_ingress_registry", value)
+
+    @property
     @pulumi.getter(name="nginxIngressVersion")
     def nginx_ingress_version(self) -> Optional[pulumi.Input[str]]:
         """
@@ -499,6 +517,7 @@ class Cluster(pulumi.ComponentResource):
                  karpenter_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_registry: Optional[pulumi.Input[str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -530,6 +549,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[str] karpenter_version: The version of karpenter to deploy.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input[str] nginx_ingress_registry: The container registry to pull images from.
         :param pulumi.Input[str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
         :param pulumi.Input[float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
@@ -580,6 +600,7 @@ class Cluster(pulumi.ComponentResource):
                  karpenter_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
+                 nginx_ingress_registry: Optional[pulumi.Input[str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -643,6 +664,9 @@ class Cluster(pulumi.ComponentResource):
                 lb_type = 'nlb'
             __props__.__dict__["lb_type"] = lb_type
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
+            if nginx_ingress_registry is None:
+                nginx_ingress_registry = 'registry.k8s.io'
+            __props__.__dict__["nginx_ingress_registry"] = nginx_ingress_registry
             __props__.__dict__["nginx_ingress_version"] = nginx_ingress_version
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types
