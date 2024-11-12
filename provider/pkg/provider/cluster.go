@@ -1303,7 +1303,7 @@ func NewCluster(ctx *pulumi.Context,
 				return nil, fmt.Errorf("error marshalling event pattern json: %w", err)
 			}
 
-			eventRule, err := cloudwatch.NewEventRule(ctx, fmt.Sprintf("%s-%s-rule", name, key), &cloudwatch.EventRuleArgs{
+			eventRule, err := cloudwatch.NewEventRule(ctx, fmt.Sprintf("%s-rule", key), &cloudwatch.EventRuleArgs{
 				Description:  pulumi.String(event.Description),
 				EventPattern: pulumi.String(string(eventPatternJSON)),
 				Tags:         tags,
