@@ -20,7 +20,7 @@ types:
     type: object
     properties:
       nodes:
-        type: string
+        type: number
         description: The maximum number of nodes that can be scaled down at any time.
       schedule:
         type: string

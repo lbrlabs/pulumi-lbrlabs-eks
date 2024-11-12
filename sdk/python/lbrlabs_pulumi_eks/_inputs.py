@@ -20,12 +20,12 @@ __all__ = [
 class BudgetConfigArgs:
     def __init__(__self__, *,
                  duration: Optional[pulumi.Input[str]] = None,
-                 nodes: Optional[pulumi.Input[str]] = None,
+                 nodes: Optional[pulumi.Input[float]] = None,
                  schedule: Optional[pulumi.Input[str]] = None):
         """
         Configuration for Autoscaled Node budgets.
         :param pulumi.Input[str] duration: The duration during which disruptuon can happen.
-        :param pulumi.Input[str] nodes: The maximum number of nodes that can be scaled down at any time.
+        :param pulumi.Input[float] nodes: The maximum number of nodes that can be scaled down at any time.
         :param pulumi.Input[str] schedule: A cron schedule for when disruption can happen.
         """
         if duration is not None:
@@ -49,14 +49,14 @@ class BudgetConfigArgs:
 
     @property
     @pulumi.getter
-    def nodes(self) -> Optional[pulumi.Input[str]]:
+    def nodes(self) -> Optional[pulumi.Input[float]]:
         """
         The maximum number of nodes that can be scaled down at any time.
         """
         return pulumi.get(self, "nodes")
 
     @nodes.setter
-    def nodes(self, value: Optional[pulumi.Input[str]]):
+    def nodes(self, value: Optional[pulumi.Input[float]]):
         pulumi.set(self, "nodes", value)
 
     @property

@@ -18,7 +18,7 @@ export interface BudgetConfigArgs {
     /**
      * The maximum number of nodes that can be scaled down at any time.
      */
-    nodes?: pulumi.Input<string>;
+    nodes?: pulumi.Input<number>;
     /**
      * A cron schedule for when disruption can happen.
      */

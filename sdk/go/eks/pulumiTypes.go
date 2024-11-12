@@ -18,7 +18,7 @@ type BudgetConfig struct {
 	// The duration during which disruptuon can happen.
 	Duration *string `pulumi:"duration"`
 	// The maximum number of nodes that can be scaled down at any time.
-	Nodes *string `pulumi:"nodes"`
+	Nodes *float64 `pulumi:"nodes"`
 	// A cron schedule for when disruption can happen.
 	Schedule *string `pulumi:"schedule"`
 }
@@ -39,7 +39,7 @@ type BudgetConfigArgs struct {
 	// The duration during which disruptuon can happen.
 	Duration pulumi.StringPtrInput `pulumi:"duration"`
 	// The maximum number of nodes that can be scaled down at any time.
-	Nodes pulumi.StringPtrInput `pulumi:"nodes"`
+	Nodes pulumi.Float64PtrInput `pulumi:"nodes"`
 	// A cron schedule for when disruption can happen.
 	Schedule pulumi.StringPtrInput `pulumi:"schedule"`
 }
@@ -102,8 +102,8 @@ func (o BudgetConfigOutput) Duration() pulumi.StringPtrOutput {
 }
 
 // The maximum number of nodes that can be scaled down at any time.
-func (o BudgetConfigOutput) Nodes() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v BudgetConfig) *string { return v.Nodes }).(pulumi.StringPtrOutput)
+func (o BudgetConfigOutput) Nodes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v BudgetConfig) *float64 { return v.Nodes }).(pulumi.Float64PtrOutput)
 }
 
 // A cron schedule for when disruption can happen.

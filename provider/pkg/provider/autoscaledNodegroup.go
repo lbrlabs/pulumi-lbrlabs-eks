@@ -8,7 +8,7 @@ import (
 )
 
 type BudgetConfig struct {
-	Nodes    pulumi.StringInput `pulumi:"nodes"`
+	Nodes    pulumi.IntInput    `pulumi:"nodes"`
 	Schedule pulumi.StringInput `pulumi:"schedule"`
 	Duration pulumi.StringInput `pulumi:"duration"`
 }

@@ -26,7 +26,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         /// The maximum number of nodes that can be scaled down at any time.
         /// </summary>
         [Input("nodes")]
-        public Input<string>? Nodes { get; set; }
+        public Input<double>? Nodes { get; set; }
 
         /// <summary>
         /// A cron schedule for when disruption can happen.
