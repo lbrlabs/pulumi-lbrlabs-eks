@@ -39,6 +39,7 @@ setup(name='lbrlabs_pulumi_eks',
           'pulumi>=3.0.0,<4.0.0',
           'pulumi-aws>=6.38.1,<7.0.0',
           'pulumi-kubernetes>=4.0.0,<5.0.0',
-          'semver>=2.8.1'
+          'semver>=2.8.1',
+          'typing-extensions>=4.11,<5; python_version < "3.11"'
       ],
       zip_safe=False)

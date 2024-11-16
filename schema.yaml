@@ -457,19 +457,32 @@ language:
       Pulumi.Aws: "[6.38.1,7.0)"
       Pulumi.Kubernetes: 4.*
     rootNamespace: Lbrlabs.PulumiPackage
+    respectSchemaVersion: true
+    liftSingleValueMethodReturns: true
     namespaces:
       lbrlabs-eks: "Eks"
   go:
     importBasePath: github.com/lbrlabs/pulumi-lbrlabs-eks/sdk/go/eks
+    liftSingleValueMethodReturns: true
+    respectSchemaVersion: true
+    generateResourceContainerTypes: true
   nodejs:
+    respectSchemaVersion: true
     dependencies:
       "@pulumi/aws": "^6.38.1"
       "@pulumi/kubernetes": "^4.0.0"
+      "mime": "^2.0.0"
+      "minimatch": "^5.1.2"
     devDependencies:
-      typescript: "^3.7.0"
+      "@types/mime": "^2.0.0"
+      "@types/node": "^18"
+      "typescript": "^4.6.2"
     packageName: "@lbrlabs/pulumi-eks"
   python:
+    liftSingleValueMethodReturns: true
     packageName: "lbrlabs_pulumi_eks"
+    respectSchemaVersion: true
+    usesIOClasses: true
     requires:
       pulumi: ">=3.0.0,<4.0.0"
       pulumi-aws: ">=6.38.1,<7.0.0"

@@ -4,17 +4,48 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from . import _utilities
 
 __all__ = [
     'BudgetConfigArgs',
+    'BudgetConfigArgsDict',
     'DisruptionConfigArgs',
+    'DisruptionConfigArgsDict',
     'IngressConfigArgs',
+    'IngressConfigArgsDict',
     'RequirementArgs',
+    'RequirementArgsDict',
 ]
+
+MYPY = False
+
+if not MYPY:
+    class BudgetConfigArgsDict(TypedDict):
+        """
+        Configuration for Autoscaled Node budgets.
+        """
+        duration: NotRequired[pulumi.Input[str]]
+        """
+        The duration during which disruptuon can happen.
+        """
+        nodes: NotRequired[pulumi.Input[str]]
+        """
+        The maximum number of nodes that can be scaled down at any time.
+        """
+        schedule: NotRequired[pulumi.Input[str]]
+        """
+        A cron schedule for when disruption can happen.
+        """
+elif False:
+    BudgetConfigArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class BudgetConfigArgs:
@@ -71,6 +102,30 @@ class BudgetConfigArgs:
     def schedule(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "schedule", value)
 
+
+if not MYPY:
+    class DisruptionConfigArgsDict(TypedDict):
+        """
+        Configuration for Autoscaled nodes disruption.
+        """
+        budgets: NotRequired[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgsDict']]]]
+        """
+        Budgets control the speed Karpenter can scale down nodes.
+        """
+        consolidate_after: NotRequired[pulumi.Input[str]]
+        """
+        The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+        """
+        consolidation_policy: NotRequired[pulumi.Input[str]]
+        """
+        Describes which types of Nodes Karpenter should consider for consolidation.
+        """
+        expire_after: NotRequired[pulumi.Input[str]]
+        """
+        The amount of time a Node can live on the cluster before being removed.
+        """
+elif False:
+    DisruptionConfigArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class DisruptionConfigArgs:
@@ -145,6 +200,38 @@ class DisruptionConfigArgs:
     def expire_after(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "expire_after", value)
 
+
+if not MYPY:
+    class IngressConfigArgsDict(TypedDict):
+        """
+        Configuration for the ingress controller.
+        """
+        additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
+        """
+        Additional configuration for the ingress controller.
+        """
+        controller_replicas: NotRequired[pulumi.Input[int]]
+        """
+        The number of replicas of the ingress controller.
+        """
+        enable_metrics: NotRequired[pulumi.Input[bool]]
+        """
+        Enable metrics for the ingress controller.
+        """
+        enable_service_monitor: NotRequired[pulumi.Input[bool]]
+        """
+        Enable the service monitor for kube-prometheus-stackl.
+        """
+        nlb_target_type: NotRequired[pulumi.Input[str]]
+        """
+        NLB target type for NLB loadbalancers.
+        """
+        service_monitor_namespace: NotRequired[pulumi.Input[str]]
+        """
+        The namespace to deploy the service monitor to.
+        """
+elif False:
+    IngressConfigArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class IngressConfigArgs:
@@ -257,6 +344,26 @@ class IngressConfigArgs:
     def service_monitor_namespace(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "service_monitor_namespace", value)
 
+
+if not MYPY:
+    class RequirementArgsDict(TypedDict):
+        """
+        Represents a single requirement with key, operator, and values.
+        """
+        key: NotRequired[pulumi.Input[str]]
+        """
+        The key of the requirement.
+        """
+        operator: NotRequired[pulumi.Input[str]]
+        """
+        The operator for the requirement (e.g., In, Gt).
+        """
+        values: NotRequired[pulumi.Input[Sequence[pulumi.Input[str]]]]
+        """
+        The list of values for the requirement.
+        """
+elif False:
+    RequirementArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class RequirementArgs:

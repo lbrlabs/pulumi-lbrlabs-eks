@@ -237,6 +237,56 @@ func (i *Cluster) ToClusterOutputWithContext(ctx context.Context) ClusterOutput 
 	return pulumi.ToOutputWithContext(ctx, i).(ClusterOutput)
 }
 
+// ClusterArrayInput is an input type that accepts ClusterArray and ClusterArrayOutput values.
+// You can construct a concrete instance of `ClusterArrayInput` via:
+//
+//	ClusterArray{ ClusterArgs{...} }
+type ClusterArrayInput interface {
+	pulumi.Input
+
+	ToClusterArrayOutput() ClusterArrayOutput
+	ToClusterArrayOutputWithContext(context.Context) ClusterArrayOutput
+}
+
+type ClusterArray []ClusterInput
+
+func (ClusterArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*Cluster)(nil)).Elem()
+}
+
+func (i ClusterArray) ToClusterArrayOutput() ClusterArrayOutput {
+	return i.ToClusterArrayOutputWithContext(context.Background())
+}
+
+func (i ClusterArray) ToClusterArrayOutputWithContext(ctx context.Context) ClusterArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ClusterArrayOutput)
+}
+
+// ClusterMapInput is an input type that accepts ClusterMap and ClusterMapOutput values.
+// You can construct a concrete instance of `ClusterMapInput` via:
+//
+//	ClusterMap{ "key": ClusterArgs{...} }
+type ClusterMapInput interface {
+	pulumi.Input
+
+	ToClusterMapOutput() ClusterMapOutput
+	ToClusterMapOutputWithContext(context.Context) ClusterMapOutput
+}
+
+type ClusterMap map[string]ClusterInput
+
+func (ClusterMap) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*Cluster)(nil)).Elem()
+}
+
+func (i ClusterMap) ToClusterMapOutput() ClusterMapOutput {
+	return i.ToClusterMapOutputWithContext(context.Background())
+}
+
+func (i ClusterMap) ToClusterMapOutputWithContext(ctx context.Context) ClusterMapOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ClusterMapOutput)
+}
+
 type ClusterOutput struct{ *pulumi.OutputState }
 
 func (ClusterOutput) ElementType() reflect.Type {
@@ -281,7 +331,51 @@ func (o ClusterOutput) SystemNodes() eks.NodeGroupOutput {
 	return o.ApplyT(func(v *Cluster) eks.NodeGroupOutput { return v.SystemNodes }).(eks.NodeGroupOutput)
 }
 
+type ClusterArrayOutput struct{ *pulumi.OutputState }
+
+func (ClusterArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*Cluster)(nil)).Elem()
+}
+
+func (o ClusterArrayOutput) ToClusterArrayOutput() ClusterArrayOutput {
+	return o
+}
+
+func (o ClusterArrayOutput) ToClusterArrayOutputWithContext(ctx context.Context) ClusterArrayOutput {
+	return o
+}
+
+func (o ClusterArrayOutput) Index(i pulumi.IntInput) ClusterOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *Cluster {
+		return vs[0].([]*Cluster)[vs[1].(int)]
+	}).(ClusterOutput)
+}
+
+type ClusterMapOutput struct{ *pulumi.OutputState }
+
+func (ClusterMapOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*Cluster)(nil)).Elem()
+}
+
+func (o ClusterMapOutput) ToClusterMapOutput() ClusterMapOutput {
+	return o
+}
+
+func (o ClusterMapOutput) ToClusterMapOutputWithContext(ctx context.Context) ClusterMapOutput {
+	return o
+}
+
+func (o ClusterMapOutput) MapIndex(k pulumi.StringInput) ClusterOutput {
+	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *Cluster {
+		return vs[0].(map[string]*Cluster)[vs[1].(string)]
+	}).(ClusterOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*ClusterInput)(nil)).Elem(), &Cluster{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ClusterArrayInput)(nil)).Elem(), ClusterArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ClusterMapInput)(nil)).Elem(), ClusterMap{})
 	pulumi.RegisterOutputType(ClusterOutput{})
+	pulumi.RegisterOutputType(ClusterArrayOutput{})
+	pulumi.RegisterOutputType(ClusterMapOutput{})
 }

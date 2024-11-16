@@ -4,9 +4,14 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from . import _utilities
 from ._inputs import *
 import pulumi_aws
@@ -513,7 +518,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
-                 ingress_config: Optional[pulumi.Input[pulumi.InputType['IngressConfigArgs']]] = None,
+                 ingress_config: Optional[pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
                  karpenter_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
@@ -545,7 +550,7 @@ class Cluster(pulumi.ComponentResource):
         :param bool enable_karpenter: Whether to enable karpenter.
         :param bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[str] external_dns_version: The version of the external-dns helm chart to deploy.
-        :param pulumi.Input[pulumi.InputType['IngressConfigArgs']] ingress_config: Configuration for the ingress controller.
+        :param pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']] ingress_config: Configuration for the ingress controller.
         :param pulumi.Input[str] karpenter_version: The version of karpenter to deploy.
         :param pulumi.Input[str] lb_type: The type of loadbalancer to provision.
         :param str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
@@ -596,7 +601,7 @@ class Cluster(pulumi.ComponentResource):
                  enable_otel: Optional[bool] = None,
                  enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  external_dns_version: Optional[pulumi.Input[str]] = None,
-                 ingress_config: Optional[pulumi.Input[pulumi.InputType['IngressConfigArgs']]] = None,
+                 ingress_config: Optional[pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
                  karpenter_version: Optional[pulumi.Input[str]] = None,
                  lb_type: Optional[pulumi.Input[str]] = None,
                  lets_encrypt_email: Optional[str] = None,
