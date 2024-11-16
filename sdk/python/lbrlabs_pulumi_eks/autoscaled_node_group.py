@@ -4,9 +4,14 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from . import _utilities
 from ._inputs import *
 import pulumi_kubernetes
@@ -199,10 +204,10 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
-                 disruption: Optional[pulumi.Input[pulumi.InputType['DisruptionConfigArgs']]] = None,
+                 disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
-                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
+                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
@@ -217,7 +222,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[str] disk_size: Disk size for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[str] node_role: Node role for the node group.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]] requirements: List of requirements for the node group.
+        :param pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet selector terms for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]] taints: Optional node taints.
@@ -249,10 +254,10 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
-                 disruption: Optional[pulumi.Input[pulumi.InputType['DisruptionConfigArgs']]] = None,
+                 disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
-                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['RequirementArgs']]]]] = None,
+                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,

@@ -115,6 +115,56 @@ func (i *AttachedNodeGroup) ToAttachedNodeGroupOutputWithContext(ctx context.Con
 	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupOutput)
 }
 
+// AttachedNodeGroupArrayInput is an input type that accepts AttachedNodeGroupArray and AttachedNodeGroupArrayOutput values.
+// You can construct a concrete instance of `AttachedNodeGroupArrayInput` via:
+//
+//	AttachedNodeGroupArray{ AttachedNodeGroupArgs{...} }
+type AttachedNodeGroupArrayInput interface {
+	pulumi.Input
+
+	ToAttachedNodeGroupArrayOutput() AttachedNodeGroupArrayOutput
+	ToAttachedNodeGroupArrayOutputWithContext(context.Context) AttachedNodeGroupArrayOutput
+}
+
+type AttachedNodeGroupArray []AttachedNodeGroupInput
+
+func (AttachedNodeGroupArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*AttachedNodeGroup)(nil)).Elem()
+}
+
+func (i AttachedNodeGroupArray) ToAttachedNodeGroupArrayOutput() AttachedNodeGroupArrayOutput {
+	return i.ToAttachedNodeGroupArrayOutputWithContext(context.Background())
+}
+
+func (i AttachedNodeGroupArray) ToAttachedNodeGroupArrayOutputWithContext(ctx context.Context) AttachedNodeGroupArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupArrayOutput)
+}
+
+// AttachedNodeGroupMapInput is an input type that accepts AttachedNodeGroupMap and AttachedNodeGroupMapOutput values.
+// You can construct a concrete instance of `AttachedNodeGroupMapInput` via:
+//
+//	AttachedNodeGroupMap{ "key": AttachedNodeGroupArgs{...} }
+type AttachedNodeGroupMapInput interface {
+	pulumi.Input
+
+	ToAttachedNodeGroupMapOutput() AttachedNodeGroupMapOutput
+	ToAttachedNodeGroupMapOutputWithContext(context.Context) AttachedNodeGroupMapOutput
+}
+
+type AttachedNodeGroupMap map[string]AttachedNodeGroupInput
+
+func (AttachedNodeGroupMap) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*AttachedNodeGroup)(nil)).Elem()
+}
+
+func (i AttachedNodeGroupMap) ToAttachedNodeGroupMapOutput() AttachedNodeGroupMapOutput {
+	return i.ToAttachedNodeGroupMapOutputWithContext(context.Background())
+}
+
+func (i AttachedNodeGroupMap) ToAttachedNodeGroupMapOutputWithContext(ctx context.Context) AttachedNodeGroupMapOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(AttachedNodeGroupMapOutput)
+}
+
 type AttachedNodeGroupOutput struct{ *pulumi.OutputState }
 
 func (AttachedNodeGroupOutput) ElementType() reflect.Type {
@@ -137,7 +187,51 @@ func (o AttachedNodeGroupOutput) NodeRole() iam.RoleOutput {
 	return o.ApplyT(func(v *AttachedNodeGroup) iam.RoleOutput { return v.NodeRole }).(iam.RoleOutput)
 }
 
+type AttachedNodeGroupArrayOutput struct{ *pulumi.OutputState }
+
+func (AttachedNodeGroupArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*AttachedNodeGroup)(nil)).Elem()
+}
+
+func (o AttachedNodeGroupArrayOutput) ToAttachedNodeGroupArrayOutput() AttachedNodeGroupArrayOutput {
+	return o
+}
+
+func (o AttachedNodeGroupArrayOutput) ToAttachedNodeGroupArrayOutputWithContext(ctx context.Context) AttachedNodeGroupArrayOutput {
+	return o
+}
+
+func (o AttachedNodeGroupArrayOutput) Index(i pulumi.IntInput) AttachedNodeGroupOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *AttachedNodeGroup {
+		return vs[0].([]*AttachedNodeGroup)[vs[1].(int)]
+	}).(AttachedNodeGroupOutput)
+}
+
+type AttachedNodeGroupMapOutput struct{ *pulumi.OutputState }
+
+func (AttachedNodeGroupMapOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*AttachedNodeGroup)(nil)).Elem()
+}
+
+func (o AttachedNodeGroupMapOutput) ToAttachedNodeGroupMapOutput() AttachedNodeGroupMapOutput {
+	return o
+}
+
+func (o AttachedNodeGroupMapOutput) ToAttachedNodeGroupMapOutputWithContext(ctx context.Context) AttachedNodeGroupMapOutput {
+	return o
+}
+
+func (o AttachedNodeGroupMapOutput) MapIndex(k pulumi.StringInput) AttachedNodeGroupOutput {
+	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *AttachedNodeGroup {
+		return vs[0].(map[string]*AttachedNodeGroup)[vs[1].(string)]
+	}).(AttachedNodeGroupOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AttachedNodeGroupInput)(nil)).Elem(), &AttachedNodeGroup{})
+	pulumi.RegisterInputType(reflect.TypeOf((*AttachedNodeGroupArrayInput)(nil)).Elem(), AttachedNodeGroupArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*AttachedNodeGroupMapInput)(nil)).Elem(), AttachedNodeGroupMap{})
 	pulumi.RegisterOutputType(AttachedNodeGroupOutput{})
+	pulumi.RegisterOutputType(AttachedNodeGroupArrayOutput{})
+	pulumi.RegisterOutputType(AttachedNodeGroupMapOutput{})
 }

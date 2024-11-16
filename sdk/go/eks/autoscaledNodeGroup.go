@@ -123,6 +123,56 @@ func (i *AutoscaledNodeGroup) ToAutoscaledNodeGroupOutputWithContext(ctx context
 	return pulumi.ToOutputWithContext(ctx, i).(AutoscaledNodeGroupOutput)
 }
 
+// AutoscaledNodeGroupArrayInput is an input type that accepts AutoscaledNodeGroupArray and AutoscaledNodeGroupArrayOutput values.
+// You can construct a concrete instance of `AutoscaledNodeGroupArrayInput` via:
+//
+//	AutoscaledNodeGroupArray{ AutoscaledNodeGroupArgs{...} }
+type AutoscaledNodeGroupArrayInput interface {
+	pulumi.Input
+
+	ToAutoscaledNodeGroupArrayOutput() AutoscaledNodeGroupArrayOutput
+	ToAutoscaledNodeGroupArrayOutputWithContext(context.Context) AutoscaledNodeGroupArrayOutput
+}
+
+type AutoscaledNodeGroupArray []AutoscaledNodeGroupInput
+
+func (AutoscaledNodeGroupArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*AutoscaledNodeGroup)(nil)).Elem()
+}
+
+func (i AutoscaledNodeGroupArray) ToAutoscaledNodeGroupArrayOutput() AutoscaledNodeGroupArrayOutput {
+	return i.ToAutoscaledNodeGroupArrayOutputWithContext(context.Background())
+}
+
+func (i AutoscaledNodeGroupArray) ToAutoscaledNodeGroupArrayOutputWithContext(ctx context.Context) AutoscaledNodeGroupArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(AutoscaledNodeGroupArrayOutput)
+}
+
+// AutoscaledNodeGroupMapInput is an input type that accepts AutoscaledNodeGroupMap and AutoscaledNodeGroupMapOutput values.
+// You can construct a concrete instance of `AutoscaledNodeGroupMapInput` via:
+//
+//	AutoscaledNodeGroupMap{ "key": AutoscaledNodeGroupArgs{...} }
+type AutoscaledNodeGroupMapInput interface {
+	pulumi.Input
+
+	ToAutoscaledNodeGroupMapOutput() AutoscaledNodeGroupMapOutput
+	ToAutoscaledNodeGroupMapOutputWithContext(context.Context) AutoscaledNodeGroupMapOutput
+}
+
+type AutoscaledNodeGroupMap map[string]AutoscaledNodeGroupInput
+
+func (AutoscaledNodeGroupMap) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*AutoscaledNodeGroup)(nil)).Elem()
+}
+
+func (i AutoscaledNodeGroupMap) ToAutoscaledNodeGroupMapOutput() AutoscaledNodeGroupMapOutput {
+	return i.ToAutoscaledNodeGroupMapOutputWithContext(context.Background())
+}
+
+func (i AutoscaledNodeGroupMap) ToAutoscaledNodeGroupMapOutputWithContext(ctx context.Context) AutoscaledNodeGroupMapOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(AutoscaledNodeGroupMapOutput)
+}
+
 type AutoscaledNodeGroupOutput struct{ *pulumi.OutputState }
 
 func (AutoscaledNodeGroupOutput) ElementType() reflect.Type {
@@ -137,7 +187,51 @@ func (o AutoscaledNodeGroupOutput) ToAutoscaledNodeGroupOutputWithContext(ctx co
 	return o
 }
 
+type AutoscaledNodeGroupArrayOutput struct{ *pulumi.OutputState }
+
+func (AutoscaledNodeGroupArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*AutoscaledNodeGroup)(nil)).Elem()
+}
+
+func (o AutoscaledNodeGroupArrayOutput) ToAutoscaledNodeGroupArrayOutput() AutoscaledNodeGroupArrayOutput {
+	return o
+}
+
+func (o AutoscaledNodeGroupArrayOutput) ToAutoscaledNodeGroupArrayOutputWithContext(ctx context.Context) AutoscaledNodeGroupArrayOutput {
+	return o
+}
+
+func (o AutoscaledNodeGroupArrayOutput) Index(i pulumi.IntInput) AutoscaledNodeGroupOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *AutoscaledNodeGroup {
+		return vs[0].([]*AutoscaledNodeGroup)[vs[1].(int)]
+	}).(AutoscaledNodeGroupOutput)
+}
+
+type AutoscaledNodeGroupMapOutput struct{ *pulumi.OutputState }
+
+func (AutoscaledNodeGroupMapOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*AutoscaledNodeGroup)(nil)).Elem()
+}
+
+func (o AutoscaledNodeGroupMapOutput) ToAutoscaledNodeGroupMapOutput() AutoscaledNodeGroupMapOutput {
+	return o
+}
+
+func (o AutoscaledNodeGroupMapOutput) ToAutoscaledNodeGroupMapOutputWithContext(ctx context.Context) AutoscaledNodeGroupMapOutput {
+	return o
+}
+
+func (o AutoscaledNodeGroupMapOutput) MapIndex(k pulumi.StringInput) AutoscaledNodeGroupOutput {
+	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *AutoscaledNodeGroup {
+		return vs[0].(map[string]*AutoscaledNodeGroup)[vs[1].(string)]
+	}).(AutoscaledNodeGroupOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AutoscaledNodeGroupInput)(nil)).Elem(), &AutoscaledNodeGroup{})
+	pulumi.RegisterInputType(reflect.TypeOf((*AutoscaledNodeGroupArrayInput)(nil)).Elem(), AutoscaledNodeGroupArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*AutoscaledNodeGroupMapInput)(nil)).Elem(), AutoscaledNodeGroupMap{})
 	pulumi.RegisterOutputType(AutoscaledNodeGroupOutput{})
+	pulumi.RegisterOutputType(AutoscaledNodeGroupArrayOutput{})
+	pulumi.RegisterOutputType(AutoscaledNodeGroupMapOutput{})
 }

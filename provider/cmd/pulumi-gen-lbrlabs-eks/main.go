@@ -44,9 +44,9 @@ func emitSDK(language, outdir, schemaPath string) error {
 	case "dotnet":
 		generator = func() (map[string][]byte, error) { return dotnetgen.GeneratePackage(tool, pkg, extraFiles, nil) }
 	case "go":
-		generator = func() (map[string][]byte, error) { return gogen.GeneratePackage(tool, pkg) }
+		generator = func() (map[string][]byte, error) { return gogen.GeneratePackage(tool, pkg, nil) }
 	case "nodejs":
-		generator = func() (map[string][]byte, error) { return nodejsgen.GeneratePackage(tool, pkg, extraFiles, nil) }
+		generator = func() (map[string][]byte, error) { return nodejsgen.GeneratePackage(tool, pkg, extraFiles, nil, false) }
 	case "python":
 		generator = func() (map[string][]byte, error) { return pygen.GeneratePackage(tool, pkg, extraFiles) }
 	default:
