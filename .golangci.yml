@@ -17,6 +17,7 @@ linters:
     - varcheck
   enable-all: false
 run:
+  skip-dirs-use-default: true
   skip-files:
     - schema.go
     - pulumiManifest.go
