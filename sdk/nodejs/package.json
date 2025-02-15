@@ -16,7 +16,7 @@
     "dependencies": {
         "@pulumi/aws": "^6.38.1",
         "@pulumi/kubernetes": "^4.0.0",
-        "@pulumi/pulumi": "^3.136.0",
+        "@pulumi/pulumi": "^3.142.0",
         "mime": "^2.0.0",
         "minimatch": "^5.1.2"
     },

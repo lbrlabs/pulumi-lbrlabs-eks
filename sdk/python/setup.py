@@ -18,7 +18,7 @@ def readme():
 
 
 setup(name='lbrlabs_pulumi_eks',
-      python_requires='>=3.8',
+      python_requires='>=3.9',
       version=VERSION,
       description="A batteries included EKS cluster following best practices.",
       long_description=readme(),
