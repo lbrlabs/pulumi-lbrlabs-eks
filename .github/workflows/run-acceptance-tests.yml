@@ -70,6 +70,10 @@ jobs:
       run: make install_plugins
     - name: Update path
       run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+    - name: Install OpenSSL 1.1
+      run: |
+        wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
+        sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
     - name: Build SDK
       run: make build_${{ matrix.language }}
     - name: Check worktree clean
