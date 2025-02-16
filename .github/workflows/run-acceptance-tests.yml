@@ -97,7 +97,7 @@ jobs:
         nodeversion:
         - 20.x
         pythonversion:
-        - "3.7"
+        - "3.10"
   comment-notification:
     if: github.event_name == 'repository_dispatch'
     name: comment-notification
@@ -183,7 +183,7 @@ jobs:
         nodeversion:
         - 20.x
         pythonversion:
-        - "3.7"
+        - "3.10"
   test:
     if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name
       == github.repository
@@ -269,7 +269,7 @@ jobs:
         nodeversion:
         - 20.x
         pythonversion:
-        - "3.7"
+        - "3.10"
 name: run-acceptance-tests
 "on":
   pull_request:
