@@ -152,7 +152,7 @@ jobs:
       fail-fast: true
       matrix:
         dotnetversion:
-        - 6.0.xx
+        - 6.0.x
         goversion:
         - 1.22.x
         nodeversion:
@@ -195,7 +195,7 @@ jobs:
       fail-fast: true
       matrix:
         dotnetversion:
-        - 6.0.xx
+        - 6.0.x
         goversion:
         - 1.22.x
         nodeversion:
@@ -270,7 +270,7 @@ jobs:
       fail-fast: true
       matrix:
         dotnetversion:
-        - 6.0.xx
+        - 6.0.x
         goversion:
         - 1.22.x
         nodeversion:
@@ -347,7 +347,7 @@ jobs:
       fail-fast: true
       matrix:
         dotnetversion:
-        - 6.0.xx
+        - 6.0.x
         goversion:
         - 1.22.x
         language:
