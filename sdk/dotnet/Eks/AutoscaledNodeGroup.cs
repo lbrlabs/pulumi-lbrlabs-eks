@@ -66,6 +66,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         }
 
         /// <summary>
+        /// Karpenter API version.
+        /// </summary>
+        [Input("apiVersion")]
+        public Input<string>? ApiVersion { get; set; }
+
+        /// <summary>
         /// Disk size for the node group.
         /// </summary>
         [Input("diskSize", required: true)]
@@ -142,6 +148,7 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public AutoscaledNodeGroupArgs()
         {
+            ApiVersion = "v1";
             DiskSize = "20Gi";
         }
         public static new AutoscaledNodeGroupArgs Empty => new AutoscaledNodeGroupArgs();

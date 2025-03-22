@@ -22,6 +22,7 @@ type DisruptionConfig struct {
 
 type AutoscaledNodeGroupArgs struct {
 	Annotations      *pulumi.StringMapInput  `pulumi:"annotations"`
+	ApiVersion       pulumi.StringInput      `pulumi:"apiVersion"`
 	AMIFamily        *pulumi.StringInput     `pulumi:"amiFamily"`
 	AmiID            *pulumi.StringInput     `pulumi:"amiId"`
 	DiskSize         pulumi.StringInput      `pulumi:"diskSize"`
@@ -141,7 +142,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	}
 
 	nodeClass, err := apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-nodeclass", name), &apiextensions.CustomResourceArgs{
-		ApiVersion: pulumi.String("karpenter.k8s.aws/v1beta1"),
+		ApiVersion: pulumi.Sprintf("karpenter.sh/%s", args.ApiVersion),
 		Kind:       pulumi.String("EC2NodeClass"),
 		Metadata: metav1.ObjectMetaArgs{
 			Annotations: annotations,
@@ -164,7 +165,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	}
 
 	_, err = apiextensions.NewCustomResource(ctx, fmt.Sprintf("%s-nodepool", name), &apiextensions.CustomResourceArgs{
-		ApiVersion: pulumi.String("karpenter.sh/v1beta1"),
+		ApiVersion: pulumi.Sprintf("karpenter.sh/%s", args.ApiVersion),
 		Kind:       pulumi.String("NodePool"),
 		Metadata: metav1.ObjectMetaArgs{
 			Annotations: annotations,

@@ -29,6 +29,7 @@ class AutoscaledNodeGroupArgs:
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 api_version: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input['DisruptionConfigArgs']] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
@@ -42,6 +43,7 @@ class AutoscaledNodeGroupArgs:
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[str] ami_id: AMI ID for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
+        :param pulumi.Input[str] api_version: Karpenter API version.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]] taints: Optional node taints.
         """
@@ -58,6 +60,10 @@ class AutoscaledNodeGroupArgs:
             pulumi.set(__self__, "ami_id", ami_id)
         if annotations is not None:
             pulumi.set(__self__, "annotations", annotations)
+        if api_version is None:
+            api_version = 'v1'
+        if api_version is not None:
+            pulumi.set(__self__, "api_version", api_version)
         if disruption is not None:
             pulumi.set(__self__, "disruption", disruption)
         if labels is not None:
@@ -162,6 +168,18 @@ class AutoscaledNodeGroupArgs:
         pulumi.set(self, "annotations", value)
 
     @property
+    @pulumi.getter(name="apiVersion")
+    def api_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        Karpenter API version.
+        """
+        return pulumi.get(self, "api_version")
+
+    @api_version.setter
+    def api_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "api_version", value)
+
+    @property
     @pulumi.getter
     def disruption(self) -> Optional[pulumi.Input['DisruptionConfigArgs']]:
         return pulumi.get(self, "disruption")
@@ -203,6 +221,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 api_version: Optional[pulumi.Input[str]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
@@ -219,6 +238,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[str] ami_id: AMI ID for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
+        :param pulumi.Input[str] api_version: Karpenter API version.
         :param pulumi.Input[str] disk_size: Disk size for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[str] node_role: Node role for the node group.
@@ -253,6 +273,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 api_version: Optional[pulumi.Input[str]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
@@ -275,6 +296,9 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
             __props__.__dict__["ami_family"] = ami_family
             __props__.__dict__["ami_id"] = ami_id
             __props__.__dict__["annotations"] = annotations
+            if api_version is None:
+                api_version = 'v1'
+            __props__.__dict__["api_version"] = api_version
             if disk_size is None:
                 disk_size = '20Gi'
             if disk_size is None and not opts.urn:

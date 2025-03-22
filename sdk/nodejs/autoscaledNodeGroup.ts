@@ -53,6 +53,7 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
             resourceInputs["amiId"] = args ? args.amiId : undefined;
             resourceInputs["annotations"] = args ? args.annotations : undefined;
+            resourceInputs["apiVersion"] = (args ? args.apiVersion : undefined) ?? "v1";
             resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
             resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
             resourceInputs["labels"] = args ? args.labels : undefined;
@@ -84,6 +85,10 @@ export interface AutoscaledNodeGroupArgs {
      * Annotations to apply to the node group.
      */
     annotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Karpenter API version.
+     */
+    apiVersion?: pulumi.Input<string>;
     /**
      * Disk size for the node group.
      */
