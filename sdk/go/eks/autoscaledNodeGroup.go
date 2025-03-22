@@ -36,6 +36,9 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	if args.SubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SubnetIds'")
 	}
+	if args.ApiVersion == nil {
+		args.ApiVersion = pulumi.StringPtr("v1")
+	}
 	if args.DiskSize == nil {
 		args.DiskSize = pulumi.String("20Gi")
 	}
@@ -58,6 +61,8 @@ type autoscaledNodeGroupArgs struct {
 	AmiId *string `pulumi:"amiId"`
 	// Annotations to apply to the node group.
 	Annotations map[string]string `pulumi:"annotations"`
+	// Karpenter API version.
+	ApiVersion *string `pulumi:"apiVersion"`
 	// Disk size for the node group.
 	DiskSize   string            `pulumi:"diskSize"`
 	Disruption *DisruptionConfig `pulumi:"disruption"`
@@ -83,6 +88,8 @@ type AutoscaledNodeGroupArgs struct {
 	AmiId pulumi.StringPtrInput
 	// Annotations to apply to the node group.
 	Annotations pulumi.StringMapInput
+	// Karpenter API version.
+	ApiVersion pulumi.StringPtrInput
 	// Disk size for the node group.
 	DiskSize   pulumi.StringInput
 	Disruption DisruptionConfigPtrInput

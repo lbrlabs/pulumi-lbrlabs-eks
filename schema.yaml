@@ -413,6 +413,10 @@ resources:
       nodeRole:
         type: string
         description: "Node role for the node group."
+      apiVersion:
+        type: string
+        description: "Karpenter API version."
+        default: "v1"
       diskSize:
         type: string
         description: "Disk size for the node group."
