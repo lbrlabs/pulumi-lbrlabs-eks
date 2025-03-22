@@ -1589,6 +1589,9 @@ func NewCluster(ctx *pulumi.Context,
 			Namespace: pulumi.String("kube-system"),
 			SkipCrds:  pulumi.Bool(false),
 		}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{karpenterServiceAccountAnnotations}))
+		if err != nil {
+			return nil, fmt.Errorf("error installing karpenter crds: %w", err)
+		}
 
 		
 		_, err = helm.NewRelease(
