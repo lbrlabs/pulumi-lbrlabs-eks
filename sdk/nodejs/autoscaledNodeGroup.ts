@@ -53,10 +53,11 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
             resourceInputs["amiId"] = args ? args.amiId : undefined;
             resourceInputs["annotations"] = args ? args.annotations : undefined;
-            resourceInputs["apiVersion"] = (args ? args.apiVersion : undefined) ?? "v1";
             resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
             resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
             resourceInputs["labels"] = args ? args.labels : undefined;
+            resourceInputs["nodeClassApiVersion"] = (args ? args.nodeClassApiVersion : undefined) ?? "karpenter.k8s.aws/v1";
+            resourceInputs["nodePoolApiVersion"] = (args ? args.nodePoolApiVersion : undefined) ?? "karpenter.sh/v1";
             resourceInputs["nodeRole"] = args ? args.nodeRole : undefined;
             resourceInputs["requirements"] = args ? args.requirements : undefined;
             resourceInputs["securityGroupIds"] = args ? args.securityGroupIds : undefined;
@@ -86,10 +87,6 @@ export interface AutoscaledNodeGroupArgs {
      */
     annotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
-     * Karpenter API version.
-     */
-    apiVersion?: pulumi.Input<string>;
-    /**
      * Disk size for the node group.
      */
     diskSize: pulumi.Input<string>;
@@ -98,6 +95,14 @@ export interface AutoscaledNodeGroupArgs {
      * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
      */
     labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Karpenter NodePool API version.
+     */
+    nodeClassApiVersion?: pulumi.Input<string>;
+    /**
+     * Karpenter NodePool API version.
+     */
+    nodePoolApiVersion?: pulumi.Input<string>;
     /**
      * Node role for the node group.
      */

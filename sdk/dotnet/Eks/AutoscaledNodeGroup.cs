@@ -66,12 +66,6 @@ namespace Lbrlabs.PulumiPackage.Eks
         }
 
         /// <summary>
-        /// Karpenter API version.
-        /// </summary>
-        [Input("apiVersion")]
-        public Input<string>? ApiVersion { get; set; }
-
-        /// <summary>
         /// Disk size for the node group.
         /// </summary>
         [Input("diskSize", required: true)]
@@ -91,6 +85,18 @@ namespace Lbrlabs.PulumiPackage.Eks
             get => _labels ?? (_labels = new InputMap<string>());
             set => _labels = value;
         }
+
+        /// <summary>
+        /// Karpenter NodePool API version.
+        /// </summary>
+        [Input("nodeClassApiVersion")]
+        public Input<string>? NodeClassApiVersion { get; set; }
+
+        /// <summary>
+        /// Karpenter NodePool API version.
+        /// </summary>
+        [Input("nodePoolApiVersion")]
+        public Input<string>? NodePoolApiVersion { get; set; }
 
         /// <summary>
         /// Node role for the node group.
@@ -148,8 +154,9 @@ namespace Lbrlabs.PulumiPackage.Eks
 
         public AutoscaledNodeGroupArgs()
         {
-            ApiVersion = "v1";
             DiskSize = "20Gi";
+            NodeClassApiVersion = "karpenter.k8s.aws/v1";
+            NodePoolApiVersion = "karpenter.sh/v1";
         }
         public static new AutoscaledNodeGroupArgs Empty => new AutoscaledNodeGroupArgs();
     }

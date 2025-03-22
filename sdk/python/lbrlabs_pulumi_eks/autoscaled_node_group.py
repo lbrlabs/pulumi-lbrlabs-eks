@@ -29,9 +29,10 @@ class AutoscaledNodeGroupArgs:
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 api_version: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input['DisruptionConfigArgs']] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 node_class_api_version: Optional[pulumi.Input[str]] = None,
+                 node_pool_api_version: Optional[pulumi.Input[str]] = None,
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
@@ -43,8 +44,9 @@ class AutoscaledNodeGroupArgs:
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[str] ami_id: AMI ID for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
-        :param pulumi.Input[str] api_version: Karpenter API version.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        :param pulumi.Input[str] node_class_api_version: Karpenter NodePool API version.
+        :param pulumi.Input[str] node_pool_api_version: Karpenter NodePool API version.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]] taints: Optional node taints.
         """
         if disk_size is None:
@@ -60,14 +62,18 @@ class AutoscaledNodeGroupArgs:
             pulumi.set(__self__, "ami_id", ami_id)
         if annotations is not None:
             pulumi.set(__self__, "annotations", annotations)
-        if api_version is None:
-            api_version = 'v1'
-        if api_version is not None:
-            pulumi.set(__self__, "api_version", api_version)
         if disruption is not None:
             pulumi.set(__self__, "disruption", disruption)
         if labels is not None:
             pulumi.set(__self__, "labels", labels)
+        if node_class_api_version is None:
+            node_class_api_version = 'karpenter.k8s.aws/v1'
+        if node_class_api_version is not None:
+            pulumi.set(__self__, "node_class_api_version", node_class_api_version)
+        if node_pool_api_version is None:
+            node_pool_api_version = 'karpenter.sh/v1'
+        if node_pool_api_version is not None:
+            pulumi.set(__self__, "node_pool_api_version", node_pool_api_version)
         if taints is not None:
             pulumi.set(__self__, "taints", taints)
 
@@ -168,18 +174,6 @@ class AutoscaledNodeGroupArgs:
         pulumi.set(self, "annotations", value)
 
     @property
-    @pulumi.getter(name="apiVersion")
-    def api_version(self) -> Optional[pulumi.Input[str]]:
-        """
-        Karpenter API version.
-        """
-        return pulumi.get(self, "api_version")
-
-    @api_version.setter
-    def api_version(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "api_version", value)
-
-    @property
     @pulumi.getter
     def disruption(self) -> Optional[pulumi.Input['DisruptionConfigArgs']]:
         return pulumi.get(self, "disruption")
@@ -199,6 +193,30 @@ class AutoscaledNodeGroupArgs:
     @labels.setter
     def labels(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "labels", value)
+
+    @property
+    @pulumi.getter(name="nodeClassApiVersion")
+    def node_class_api_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        Karpenter NodePool API version.
+        """
+        return pulumi.get(self, "node_class_api_version")
+
+    @node_class_api_version.setter
+    def node_class_api_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "node_class_api_version", value)
+
+    @property
+    @pulumi.getter(name="nodePoolApiVersion")
+    def node_pool_api_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        Karpenter NodePool API version.
+        """
+        return pulumi.get(self, "node_pool_api_version")
+
+    @node_pool_api_version.setter
+    def node_pool_api_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "node_pool_api_version", value)
 
     @property
     @pulumi.getter
@@ -221,10 +239,11 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 api_version: Optional[pulumi.Input[str]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 node_class_api_version: Optional[pulumi.Input[str]] = None,
+                 node_pool_api_version: Optional[pulumi.Input[str]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -238,9 +257,10 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[str] ami_family: AMI family for the node group.
         :param pulumi.Input[str] ami_id: AMI ID for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] annotations: Annotations to apply to the node group.
-        :param pulumi.Input[str] api_version: Karpenter API version.
         :param pulumi.Input[str] disk_size: Disk size for the node group.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
+        :param pulumi.Input[str] node_class_api_version: Karpenter NodePool API version.
+        :param pulumi.Input[str] node_pool_api_version: Karpenter NodePool API version.
         :param pulumi.Input[str] node_role: Node role for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]] requirements: List of requirements for the node group.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: List of security group selector terms for the node group.
@@ -273,10 +293,11 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  ami_family: Optional[pulumi.Input[str]] = None,
                  ami_id: Optional[pulumi.Input[str]] = None,
                  annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 api_version: Optional[pulumi.Input[str]] = None,
                  disk_size: Optional[pulumi.Input[str]] = None,
                  disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
                  labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 node_class_api_version: Optional[pulumi.Input[str]] = None,
+                 node_pool_api_version: Optional[pulumi.Input[str]] = None,
                  node_role: Optional[pulumi.Input[str]] = None,
                  requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -296,9 +317,6 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
             __props__.__dict__["ami_family"] = ami_family
             __props__.__dict__["ami_id"] = ami_id
             __props__.__dict__["annotations"] = annotations
-            if api_version is None:
-                api_version = 'v1'
-            __props__.__dict__["api_version"] = api_version
             if disk_size is None:
                 disk_size = '20Gi'
             if disk_size is None and not opts.urn:
@@ -306,6 +324,12 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
             __props__.__dict__["disk_size"] = disk_size
             __props__.__dict__["disruption"] = disruption
             __props__.__dict__["labels"] = labels
+            if node_class_api_version is None:
+                node_class_api_version = 'karpenter.k8s.aws/v1'
+            __props__.__dict__["node_class_api_version"] = node_class_api_version
+            if node_pool_api_version is None:
+                node_pool_api_version = 'karpenter.sh/v1'
+            __props__.__dict__["node_pool_api_version"] = node_pool_api_version
             if node_role is None and not opts.urn:
                 raise TypeError("Missing required property 'node_role'")
             __props__.__dict__["node_role"] = node_role

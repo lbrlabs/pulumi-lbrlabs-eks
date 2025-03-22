@@ -36,14 +36,17 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	if args.SubnetIds == nil {
 		return nil, errors.New("invalid value for required argument 'SubnetIds'")
 	}
-	if args.ApiVersion == nil {
-		args.ApiVersion = pulumi.StringPtr("v1")
-	}
 	if args.DiskSize == nil {
 		args.DiskSize = pulumi.String("20Gi")
 	}
 	if args.Disruption != nil {
 		args.Disruption = args.Disruption.ToDisruptionConfigPtrOutput().ApplyT(func(v *DisruptionConfig) *DisruptionConfig { return v.Defaults() }).(DisruptionConfigPtrOutput)
+	}
+	if args.NodeClassApiVersion == nil {
+		args.NodeClassApiVersion = pulumi.StringPtr("karpenter.k8s.aws/v1")
+	}
+	if args.NodePoolApiVersion == nil {
+		args.NodePoolApiVersion = pulumi.StringPtr("karpenter.sh/v1")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AutoscaledNodeGroup
@@ -61,13 +64,15 @@ type autoscaledNodeGroupArgs struct {
 	AmiId *string `pulumi:"amiId"`
 	// Annotations to apply to the node group.
 	Annotations map[string]string `pulumi:"annotations"`
-	// Karpenter API version.
-	ApiVersion *string `pulumi:"apiVersion"`
 	// Disk size for the node group.
 	DiskSize   string            `pulumi:"diskSize"`
 	Disruption *DisruptionConfig `pulumi:"disruption"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels map[string]string `pulumi:"labels"`
+	// Karpenter NodePool API version.
+	NodeClassApiVersion *string `pulumi:"nodeClassApiVersion"`
+	// Karpenter NodePool API version.
+	NodePoolApiVersion *string `pulumi:"nodePoolApiVersion"`
 	// Node role for the node group.
 	NodeRole string `pulumi:"nodeRole"`
 	// List of requirements for the node group.
@@ -88,13 +93,15 @@ type AutoscaledNodeGroupArgs struct {
 	AmiId pulumi.StringPtrInput
 	// Annotations to apply to the node group.
 	Annotations pulumi.StringMapInput
-	// Karpenter API version.
-	ApiVersion pulumi.StringPtrInput
 	// Disk size for the node group.
 	DiskSize   pulumi.StringInput
 	Disruption DisruptionConfigPtrInput
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
 	Labels pulumi.StringMapInput
+	// Karpenter NodePool API version.
+	NodeClassApiVersion pulumi.StringPtrInput
+	// Karpenter NodePool API version.
+	NodePoolApiVersion pulumi.StringPtrInput
 	// Node role for the node group.
 	NodeRole pulumi.StringInput
 	// List of requirements for the node group.

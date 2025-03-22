@@ -413,10 +413,14 @@ resources:
       nodeRole:
         type: string
         description: "Node role for the node group."
-      apiVersion:
+      nodePoolApiVersion:
         type: string
-        description: "Karpenter API version."
-        default: "v1"
+        description: "Karpenter NodePool API version."
+        default: "karpenter.sh/v1"
+      nodeClassApiVersion:
+        type: string
+        description: "Karpenter NodePool API version."
+        default: "karpenter.k8s.aws/v1"
       diskSize:
         type: string
         description: "Disk size for the node group."
