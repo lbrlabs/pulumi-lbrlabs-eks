@@ -56,7 +56,7 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 	var amiFamily pulumi.StringInput
 
 	if args.AMIFamily == nil {
-		amiFamily = pulumi.String("AL2")
+		amiFamily = pulumi.String("AL2023")
 	} else {
 		amiFamily = *args.AMIFamily
 	}
@@ -138,6 +138,12 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 		spec["amiSelectorTerms"] = []map[string]interface{}{
 			{
 				"id": *args.AmiID,
+			},
+		}
+	} else {
+		spec["amiSelectorTerms"] = []map[string]interface{}{
+			{
+				"alias": "al2023@latest",
 			},
 		}
 	}
