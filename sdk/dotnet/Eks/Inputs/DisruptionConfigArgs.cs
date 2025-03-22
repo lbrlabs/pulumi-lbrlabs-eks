@@ -48,6 +48,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
 
         public DisruptionConfigArgs()
         {
+            ConsolidateAfter = "10m";
             ConsolidationPolicy = "WhenEmpty";
         }
         public static new DisruptionConfigArgs Empty => new DisruptionConfigArgs();

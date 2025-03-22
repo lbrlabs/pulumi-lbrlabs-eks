@@ -149,6 +149,10 @@ func (val *DisruptionConfig) Defaults() *DisruptionConfig {
 		return nil
 	}
 	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		consolidateAfter_ := "10m"
+		tmp.ConsolidateAfter = &consolidateAfter_
+	}
 	if tmp.ConsolidationPolicy == nil {
 		consolidationPolicy_ := "WhenEmpty"
 		tmp.ConsolidationPolicy = &consolidationPolicy_
@@ -185,6 +189,9 @@ func (val *DisruptionConfigArgs) Defaults() *DisruptionConfigArgs {
 		return nil
 	}
 	tmp := *val
+	if tmp.ConsolidateAfter == nil {
+		tmp.ConsolidateAfter = pulumi.StringPtr("10m")
+	}
 	if tmp.ConsolidationPolicy == nil {
 		tmp.ConsolidationPolicy = pulumi.StringPtr("WhenEmpty")
 	}

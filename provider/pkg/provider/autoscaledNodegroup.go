@@ -192,7 +192,9 @@ func NewAutoscaledNodeGroup(ctx *pulumi.Context,
 					"spec": map[string]interface{}{
 						"requirements": args.Requirements,
 						"nodeClassRef": map[string]interface{}{
-							"name": nodeClass.Metadata.Name(),
+							"name":  nodeClass.Metadata.Name(),
+							"group": "karpenter.aws.sh",
+							"kind":  "EC2NodeClass",
 						},
 						"taints": args.Taints,
 					},

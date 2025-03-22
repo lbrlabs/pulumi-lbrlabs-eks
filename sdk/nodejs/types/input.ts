@@ -52,6 +52,7 @@ export interface DisruptionConfigArgs {
 export function disruptionConfigArgsProvideDefaults(val: DisruptionConfigArgs): DisruptionConfigArgs {
     return {
         ...val,
+        consolidateAfter: (val.consolidateAfter) ?? "10m",
         consolidationPolicy: (val.consolidationPolicy) ?? "WhenEmpty",
     };
 }
