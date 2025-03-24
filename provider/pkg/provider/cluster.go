@@ -61,6 +61,7 @@ type ClusterArgs struct {
 	Tags                         *pulumi.StringMapInput   `pulumi:"tags"`
 	NginxIngressVersion          pulumi.StringInput       `pulumi:"nginxIngressVersion"`
 	NginxIngressRegistry         pulumi.StringInput       `pulumi:"nginxIngressRegistry"`
+	NginxIngressTag              pulumi.StringInput       `pulumi:"nginxIngressTag"`
 	EksIamAuthControllerVersion  pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
 	ExternalDNSVersion           pulumi.StringInput       `pulumi:"externalDNSVersion"`
 	CertManagerVersion           pulumi.StringInput       `pulumi:"certManagerVersion"`
@@ -649,6 +650,7 @@ func NewCluster(ctx *pulumi.Context,
 			Chart:     pulumi.String("ingress-nginx"),
 			Namespace: pulumi.String("kube-system"),
 			Version:   args.NginxIngressVersion,
+
 			FetchArgs: &helm.FetchArgs{
 				Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 			},
@@ -656,6 +658,7 @@ func NewCluster(ctx *pulumi.Context,
 				"controller": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
+						"tag": 	args.NginxIngressTag,
 					},
 					"metrics": pulumi.Map{
 						"enabled": realisedIngressConfig.EnableMetrics,

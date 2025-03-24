@@ -87,6 +87,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
             resourceInputs["nginxIngressRegistry"] = (args ? args.nginxIngressRegistry : undefined) ?? "registry.k8s.io";
+            resourceInputs["nginxIngressTag"] = (args ? args.nginxIngressTag : undefined) ?? "v1.12.0";
             resourceInputs["nginxIngressVersion"] = args ? args.nginxIngressVersion : undefined;
             resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
             resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
@@ -199,6 +200,10 @@ export interface ClusterArgs {
      * The container registry to pull images from.
      */
     nginxIngressRegistry?: pulumi.Input<string>;
+    /**
+     * The tag to use for the nginx ingress controller images.
+     */
+    nginxIngressTag?: pulumi.Input<string>;
     /**
      * The version of the nginx ingress controller helm chart to deploy.
      */

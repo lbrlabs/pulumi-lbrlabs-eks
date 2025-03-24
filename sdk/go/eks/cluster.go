@@ -90,6 +90,9 @@ func NewCluster(ctx *pulumi.Context,
 	if args.NginxIngressRegistry == nil {
 		args.NginxIngressRegistry = pulumi.StringPtr("registry.k8s.io")
 	}
+	if args.NginxIngressTag == nil {
+		args.NginxIngressTag = pulumi.StringPtr("v1.12.0")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Cluster
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:Cluster", name, args, &resource, opts...)
@@ -142,6 +145,8 @@ type clusterArgs struct {
 	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
 	// The container registry to pull images from.
 	NginxIngressRegistry *string `pulumi:"nginxIngressRegistry"`
+	// The tag to use for the nginx ingress controller images.
+	NginxIngressTag *string `pulumi:"nginxIngressTag"`
 	// The version of the nginx ingress controller helm chart to deploy.
 	NginxIngressVersion *string `pulumi:"nginxIngressVersion"`
 	// The initial number of nodes in the system autoscaling group.
@@ -200,6 +205,8 @@ type ClusterArgs struct {
 	LetsEncryptEmail *string
 	// The container registry to pull images from.
 	NginxIngressRegistry pulumi.StringPtrInput
+	// The tag to use for the nginx ingress controller images.
+	NginxIngressTag pulumi.StringPtrInput
 	// The version of the nginx ingress controller helm chart to deploy.
 	NginxIngressVersion pulumi.StringPtrInput
 	// The initial number of nodes in the system autoscaling group.
