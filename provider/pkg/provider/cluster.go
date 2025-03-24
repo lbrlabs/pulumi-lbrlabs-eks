@@ -705,6 +705,7 @@ func NewCluster(ctx *pulumi.Context,
 				"defaultBackend": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
+						"tag": 	args.NginxIngressTag,
 					},
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
@@ -761,6 +762,10 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"image": pulumi.Map{
+						"registry": args.NginxIngressRegistry,
+						"tag": 	args.NginxIngressTag,
+					},
 					"replicaCount": realisedIngressConfig.ControllerReplicas,
 					"metrics": pulumi.Map{
 						"enabled": realisedIngressConfig.EnableMetrics,
@@ -801,6 +806,10 @@ func NewCluster(ctx *pulumi.Context,
 					},
 				},
 				"defaultBackend": pulumi.Map{
+					"image": pulumi.Map{
+						"registry": args.NginxIngressRegistry,
+						"tag": 	args.NginxIngressTag,
+					},
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
 							"key":      pulumi.String("node.lbrlabs.com/system"),
