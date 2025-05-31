@@ -73,13 +73,14 @@ type ClusterArgs struct {
 type Cluster struct {
 	pulumi.ResourceState
 
-	ClusterName       pulumi.StringOutput           `pulumi:"clusterName"`
-	ControlPlane      *eks.Cluster                  `pulumi:"controlPlane"`
-	SystemNodes       *NodeGroup                    `pulumi:"systemNodes"`
-	OidcProvider      *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
-	KubeConfig        pulumi.StringOutput           `pulumi:"kubeconfig"`
-	ClusterIssuer     *apiextensions.CustomResource `pulumi:"clusterIssuer"`
-	KarpenterNodeRole *iam.Role                     `pulumi:"karpenterNodeRole"`
+	ClusterName        pulumi.StringOutput           `pulumi:"clusterName"`
+	ControlPlane       *eks.Cluster                  `pulumi:"controlPlane"`
+	SystemNodes        *NodeGroup                    `pulumi:"systemNodes"`
+	OidcProvider       *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
+	KubeConfig         pulumi.StringOutput           `pulumi:"kubeconfig"`
+	ClusterIssuer      *apiextensions.CustomResource `pulumi:"clusterIssuer"`
+	KarpenterNodeRole  *iam.Role                     `pulumi:"karpenterNodeRole"`
+	KarpenterQueueName pulumi.StringPtrOutput        `pulumi:"karpenterQueueName"`
 }
 
 // event struct
@@ -658,7 +659,7 @@ func NewCluster(ctx *pulumi.Context,
 				"controller": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
-						"tag": 	args.NginxIngressTag,
+						"tag":      args.NginxIngressTag,
 					},
 					"metrics": pulumi.Map{
 						"enabled": realisedIngressConfig.EnableMetrics,
@@ -705,7 +706,7 @@ func NewCluster(ctx *pulumi.Context,
 				"defaultBackend": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
-						"tag": 	args.NginxIngressTag,
+						"tag":      args.NginxIngressTag,
 					},
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
@@ -764,7 +765,7 @@ func NewCluster(ctx *pulumi.Context,
 				"controller": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
-						"tag": 	args.NginxIngressTag,
+						"tag":      args.NginxIngressTag,
 					},
 					"replicaCount": realisedIngressConfig.ControllerReplicas,
 					"metrics": pulumi.Map{
@@ -808,7 +809,7 @@ func NewCluster(ctx *pulumi.Context,
 				"defaultBackend": pulumi.Map{
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
-						"tag": 	args.NginxIngressTag,
+						"tag":      args.NginxIngressTag,
 					},
 					"tolerations": pulumi.MapArray{
 						pulumi.Map{
@@ -1242,6 +1243,8 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error creating spot termination queue: %w", err)
 		}
 
+		component.KarpenterQueueName = queue.Name.ToStringPtrOutput()
+
 		// add a queue policy
 		// FIXME: make this strongly typed instead of using interfaces
 		queuePolicy := iam.GetPolicyDocumentOutput(ctx, iam.GetPolicyDocumentOutputArgs{
@@ -1596,8 +1599,8 @@ func NewCluster(ctx *pulumi.Context,
 		}
 
 		crds, err := helm.NewRelease(ctx, fmt.Sprintf("%s-karpenter-crds", name), &helm.ReleaseArgs{
-			Chart:    pulumi.String("oci://public.ecr.aws/karpenter/karpenter-crd"),
-			Version: pulumi.String(args.KarpenterVersion),
+			Chart:     pulumi.String("oci://public.ecr.aws/karpenter/karpenter-crd"),
+			Version:   pulumi.String(args.KarpenterVersion),
 			Namespace: pulumi.String("kube-system"),
 			SkipCrds:  pulumi.Bool(false),
 		}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{karpenterServiceAccountAnnotations}))
@@ -1605,7 +1608,6 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error installing karpenter crds: %w", err)
 		}
 
-		
 		_, err = helm.NewRelease(
 			ctx, fmt.Sprintf("%s-karpenter", name), &helm.ReleaseArgs{
 				Chart:     pulumi.String("oci://public.ecr.aws/karpenter/karpenter"),
@@ -1663,6 +1665,7 @@ func NewCluster(ctx *pulumi.Context,
 		"oidcProvider":          oidcProvider,
 		"kubeconfig":            kc,
 		"clusterSecurityGroups": controlPlane.VpcConfig.SecurityGroupIds(),
+		"karpenterQueueName":    component.KarpenterQueueName,
 	}); err != nil {
 		return nil, err
 	}

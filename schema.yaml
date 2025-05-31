@@ -244,6 +244,9 @@ resources:
       kubeconfig:
         "type": string
         "description": The kubeconfig for this cluster.
+      karpenterQueueName:                     # 👈 NEW
+        "type": string
+        "description": Name of the SQS queue that Karpenter uses for interruption events.
       controlPlane:
         "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2Fcluster:Cluster"
         "description": The Cluster control plane
