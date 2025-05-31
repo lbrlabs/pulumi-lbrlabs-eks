@@ -23,6 +23,8 @@ type Cluster struct {
 	ControlPlane eks.ClusterOutput `pulumi:"controlPlane"`
 	// The role created for karpenter nodes.
 	KarpenterNodeRole iam.RoleOutput `pulumi:"karpenterNodeRole"`
+	// Name of the SQS queue that Karpenter uses for interruption events.
+	KarpenterQueueName pulumi.StringPtrOutput `pulumi:"karpenterQueueName"`
 	// The kubeconfig for this cluster.
 	Kubeconfig pulumi.StringOutput `pulumi:"kubeconfig"`
 	// The OIDC provider for this cluster.
@@ -321,6 +323,11 @@ func (o ClusterOutput) ControlPlane() eks.ClusterOutput {
 // The role created for karpenter nodes.
 func (o ClusterOutput) KarpenterNodeRole() iam.RoleOutput {
 	return o.ApplyT(func(v *Cluster) iam.RoleOutput { return v.KarpenterNodeRole }).(iam.RoleOutput)
+}
+
+// Name of the SQS queue that Karpenter uses for interruption events.
+func (o ClusterOutput) KarpenterQueueName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Cluster) pulumi.StringPtrOutput { return v.KarpenterQueueName }).(pulumi.StringPtrOutput)
 }
 
 // The kubeconfig for this cluster.

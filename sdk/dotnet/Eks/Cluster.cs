@@ -32,6 +32,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Output<Pulumi.Aws.Iam.Role?> KarpenterNodeRole { get; private set; } = null!;
 
         /// <summary>
+        /// Name of the SQS queue that Karpenter uses for interruption events.
+        /// </summary>
+        [Output("karpenterQueueName")]
+        public Output<string?> KarpenterQueueName { get; private set; } = null!;
+
+        /// <summary>
         /// The kubeconfig for this cluster.
         /// </summary>
         [Output("kubeconfig")]

@@ -36,6 +36,10 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public /*out*/ readonly karpenterNodeRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
     /**
+     * Name of the SQS queue that Karpenter uses for interruption events.
+     */
+    public /*out*/ readonly karpenterQueueName!: pulumi.Output<string | undefined>;
+    /**
      * The kubeconfig for this cluster.
      */
     public /*out*/ readonly kubeconfig!: pulumi.Output<string>;
@@ -98,6 +102,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
+            resourceInputs["karpenterQueueName"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
@@ -105,6 +110,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
+            resourceInputs["karpenterQueueName"] = undefined /*out*/;
             resourceInputs["kubeconfig"] = undefined /*out*/;
             resourceInputs["oidcProvider"] = undefined /*out*/;
             resourceInputs["systemNodes"] = undefined /*out*/;
