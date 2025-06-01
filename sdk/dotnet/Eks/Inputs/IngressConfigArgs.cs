@@ -29,6 +29,12 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         }
 
         /// <summary>
+        /// Whether to allow snippet annotations in the ingress controller.
+        /// </summary>
+        [Input("allowSnippetAnnotations")]
+        public Input<bool>? AllowSnippetAnnotations { get; set; }
+
+        /// <summary>
         /// The number of replicas of the ingress controller.
         /// </summary>
         [Input("controllerReplicas")]
@@ -60,6 +66,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
 
         public IngressConfigArgs()
         {
+            AllowSnippetAnnotations = false;
             ControllerReplicas = 1;
             EnableMetrics = false;
             EnableServiceMonitor = false;

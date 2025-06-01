@@ -33,6 +33,7 @@ type IngressConfig struct {
 	AdditionalConfig        pulumi.MapInput    `pulumi:"additionalConfig"`
 	NlbTargetType           pulumi.StringInput `pulumi:"nlbTargetType"`
 	ExtraServiceAnnotations pulumi.MapInput    `pulumi:"extraServiceAnnotations"`
+	AllowSnippetAnnotations pulumi.BoolInput   `pulumi:"allowSnippetAnnotations"`
 }
 
 // The set of arguments for creating a Cluster component resource.
@@ -657,6 +658,7 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"allowSnippetAnnotations": args.IngressConfig.AllowSnippetAnnotations,
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
 						"tag":      args.NginxIngressTag,

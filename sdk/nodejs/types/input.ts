@@ -66,6 +66,10 @@ export interface IngressConfigArgs {
      */
     additionalConfig?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
+     * Whether to allow snippet annotations in the ingress controller.
+     */
+    allowSnippetAnnotations?: pulumi.Input<boolean>;
+    /**
      * The number of replicas of the ingress controller.
      */
     controllerReplicas?: pulumi.Input<number>;
@@ -92,6 +96,7 @@ export interface IngressConfigArgs {
 export function ingressConfigArgsProvideDefaults(val: IngressConfigArgs): IngressConfigArgs {
     return {
         ...val,
+        allowSnippetAnnotations: (val.allowSnippetAnnotations) ?? false,
         controllerReplicas: (val.controllerReplicas) ?? 1,
         enableMetrics: (val.enableMetrics) ?? false,
         enableServiceMonitor: (val.enableServiceMonitor) ?? false,

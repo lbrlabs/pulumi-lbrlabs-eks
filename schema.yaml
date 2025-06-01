@@ -74,6 +74,10 @@ types:
         type: integer
         default: 1
         description: The number of replicas of the ingress controller.
+      allowSnippetAnnotations:
+        type: boolean
+        default: false
+        description: Whether to allow snippet annotations in the ingress controller.
       nlbTargetType:
         type: string
         description: NLB target type for NLB loadbalancers.

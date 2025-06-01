@@ -212,6 +212,10 @@ if not MYPY:
         """
         Additional configuration for the ingress controller.
         """
+        allow_snippet_annotations: NotRequired[pulumi.Input[bool]]
+        """
+        Whether to allow snippet annotations in the ingress controller.
+        """
         controller_replicas: NotRequired[pulumi.Input[int]]
         """
         The number of replicas of the ingress controller.
@@ -239,6 +243,7 @@ elif False:
 class IngressConfigArgs:
     def __init__(__self__, *,
                  additional_config: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 allow_snippet_annotations: Optional[pulumi.Input[bool]] = None,
                  controller_replicas: Optional[pulumi.Input[int]] = None,
                  enable_metrics: Optional[pulumi.Input[bool]] = None,
                  enable_service_monitor: Optional[pulumi.Input[bool]] = None,
@@ -247,6 +252,7 @@ class IngressConfigArgs:
         """
         Configuration for the ingress controller.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] additional_config: Additional configuration for the ingress controller.
+        :param pulumi.Input[bool] allow_snippet_annotations: Whether to allow snippet annotations in the ingress controller.
         :param pulumi.Input[int] controller_replicas: The number of replicas of the ingress controller.
         :param pulumi.Input[bool] enable_metrics: Enable metrics for the ingress controller.
         :param pulumi.Input[bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stackl.
@@ -255,6 +261,10 @@ class IngressConfigArgs:
         """
         if additional_config is not None:
             pulumi.set(__self__, "additional_config", additional_config)
+        if allow_snippet_annotations is None:
+            allow_snippet_annotations = False
+        if allow_snippet_annotations is not None:
+            pulumi.set(__self__, "allow_snippet_annotations", allow_snippet_annotations)
         if controller_replicas is None:
             controller_replicas = 1
         if controller_replicas is not None:
@@ -285,6 +295,18 @@ class IngressConfigArgs:
     @additional_config.setter
     def additional_config(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "additional_config", value)
+
+    @property
+    @pulumi.getter(name="allowSnippetAnnotations")
+    def allow_snippet_annotations(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether to allow snippet annotations in the ingress controller.
+        """
+        return pulumi.get(self, "allow_snippet_annotations")
+
+    @allow_snippet_annotations.setter
+    def allow_snippet_annotations(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "allow_snippet_annotations", value)
 
     @property
     @pulumi.getter(name="controllerReplicas")

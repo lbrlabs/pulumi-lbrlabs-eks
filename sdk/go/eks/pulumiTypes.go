@@ -363,6 +363,8 @@ func (o DisruptionConfigPtrOutput) ExpireAfter() pulumi.StringPtrOutput {
 type IngressConfig struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
+	// Whether to allow snippet annotations in the ingress controller.
+	AllowSnippetAnnotations *bool `pulumi:"allowSnippetAnnotations"`
 	// The number of replicas of the ingress controller.
 	ControllerReplicas *int `pulumi:"controllerReplicas"`
 	// Enable metrics for the ingress controller.
@@ -381,6 +383,10 @@ func (val *IngressConfig) Defaults() *IngressConfig {
 		return nil
 	}
 	tmp := *val
+	if tmp.AllowSnippetAnnotations == nil {
+		allowSnippetAnnotations_ := false
+		tmp.AllowSnippetAnnotations = &allowSnippetAnnotations_
+	}
 	if tmp.ControllerReplicas == nil {
 		controllerReplicas_ := 1
 		tmp.ControllerReplicas = &controllerReplicas_
@@ -415,6 +421,8 @@ type IngressConfigInput interface {
 type IngressConfigArgs struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig pulumi.StringMapInput `pulumi:"additionalConfig"`
+	// Whether to allow snippet annotations in the ingress controller.
+	AllowSnippetAnnotations pulumi.BoolPtrInput `pulumi:"allowSnippetAnnotations"`
 	// The number of replicas of the ingress controller.
 	ControllerReplicas pulumi.IntPtrInput `pulumi:"controllerReplicas"`
 	// Enable metrics for the ingress controller.
@@ -433,6 +441,9 @@ func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
 		return nil
 	}
 	tmp := *val
+	if tmp.AllowSnippetAnnotations == nil {
+		tmp.AllowSnippetAnnotations = pulumi.BoolPtr(false)
+	}
 	if tmp.ControllerReplicas == nil {
 		tmp.ControllerReplicas = pulumi.IntPtr(1)
 	}
@@ -530,6 +541,11 @@ func (o IngressConfigOutput) AdditionalConfig() pulumi.StringMapOutput {
 	return o.ApplyT(func(v IngressConfig) map[string]string { return v.AdditionalConfig }).(pulumi.StringMapOutput)
 }
 
+// Whether to allow snippet annotations in the ingress controller.
+func (o IngressConfigOutput) AllowSnippetAnnotations() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *bool { return v.AllowSnippetAnnotations }).(pulumi.BoolPtrOutput)
+}
+
 // The number of replicas of the ingress controller.
 func (o IngressConfigOutput) ControllerReplicas() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *int { return v.ControllerReplicas }).(pulumi.IntPtrOutput)
@@ -587,6 +603,16 @@ func (o IngressConfigPtrOutput) AdditionalConfig() pulumi.StringMapOutput {
 		}
 		return v.AdditionalConfig
 	}).(pulumi.StringMapOutput)
+}
+
+// Whether to allow snippet annotations in the ingress controller.
+func (o IngressConfigPtrOutput) AllowSnippetAnnotations() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.AllowSnippetAnnotations
+	}).(pulumi.BoolPtrOutput)
 }
 
 // The number of replicas of the ingress controller.
