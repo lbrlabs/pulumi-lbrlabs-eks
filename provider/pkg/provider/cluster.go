@@ -765,6 +765,7 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
+					"allowSnippetAnnotations": args.IngressConfig.AllowSnippetAnnotations,
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
 						"tag":      args.NginxIngressTag,
