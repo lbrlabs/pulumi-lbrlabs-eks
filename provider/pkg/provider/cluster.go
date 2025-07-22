@@ -639,9 +639,10 @@ func NewCluster(ctx *pulumi.Context,
 
 	if args.IngressConfig == nil {
 		realisedIngressConfig = IngressConfig{
-			EnableMetrics:        pulumi.Bool(false),
-			EnableServiceMonitor: pulumi.Bool(false),
-			ControllerReplicas:   pulumi.Int(1),
+			EnableMetrics:           pulumi.Bool(false),
+			EnableServiceMonitor:    pulumi.Bool(false),
+			ControllerReplicas:      pulumi.Int(1),
+			AllowSnippetAnnotations: pulumi.Bool(false),
 		}
 	} else {
 		realisedIngressConfig = *args.IngressConfig
@@ -658,7 +659,7 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
-					"allowSnippetAnnotations": args.IngressConfig.AllowSnippetAnnotations,
+					"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
 						"tag":      args.NginxIngressTag,
@@ -765,7 +766,7 @@ func NewCluster(ctx *pulumi.Context,
 			},
 			Values: pulumi.Map{
 				"controller": pulumi.Map{
-					"allowSnippetAnnotations": args.IngressConfig.AllowSnippetAnnotations,
+					"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
 					"image": pulumi.Map{
 						"registry": args.NginxIngressRegistry,
 						"tag":      args.NginxIngressTag,
