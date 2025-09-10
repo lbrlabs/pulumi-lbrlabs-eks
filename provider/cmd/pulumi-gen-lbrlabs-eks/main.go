@@ -46,9 +46,9 @@ func emitSDK(language, outdir, schemaPath string) error {
 	case "go":
 		generator = func() (map[string][]byte, error) { return gogen.GeneratePackage(tool, pkg, nil) }
 	case "nodejs":
-		generator = func() (map[string][]byte, error) { return nodejsgen.GeneratePackage(tool, pkg, extraFiles, nil, false) }
+		generator = func() (map[string][]byte, error) { return nodejsgen.GeneratePackage(tool, pkg, extraFiles, nil, false, nil) }
 	case "python":
-		generator = func() (map[string][]byte, error) { return pygen.GeneratePackage(tool, pkg, extraFiles) }
+		generator = func() (map[string][]byte, error) { return pygen.GeneratePackage(tool, pkg, extraFiles, nil) }
 	default:
 		return errors.Errorf("Unrecognized language %q", language)
 	}
@@ -85,7 +85,7 @@ func readSchema(schemaPath string) (*schema.Package, error) {
 		return nil, errors.Wrap(err, "unmarshalling schema")
 	}
 
-	pkg, err := schema.ImportSpec(spec, nil)
+	pkg, err := schema.ImportSpec(spec, nil, schema.ValidationOptions{})
 	if err != nil {
 		return nil, errors.Wrap(err, "importing schema")
 	}

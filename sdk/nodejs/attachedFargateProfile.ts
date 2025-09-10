@@ -21,8 +21,8 @@ export class AttachedFargateProfile extends pulumi.ComponentResource {
         return obj['__pulumiType'] === AttachedFargateProfile.__pulumiType;
     }
 
-    public /*out*/ readonly profile!: pulumi.Output<pulumiAws.eks.FargateProfile>;
-    public /*out*/ readonly role!: pulumi.Output<pulumiAws.iam.Role>;
+    declare public /*out*/ readonly profile: pulumi.Output<pulumiAws.eks.FargateProfile>;
+    declare public /*out*/ readonly role: pulumi.Output<pulumiAws.iam.Role>;
 
     /**
      * Create a AttachedFargateProfile resource with the given unique name, arguments, and options.
@@ -35,19 +35,19 @@ export class AttachedFargateProfile extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.clusterName === undefined) && !opts.urn) {
+            if (args?.clusterName === undefined && !opts.urn) {
                 throw new Error("Missing required property 'clusterName'");
             }
-            if ((!args || args.selectors === undefined) && !opts.urn) {
+            if (args?.selectors === undefined && !opts.urn) {
                 throw new Error("Missing required property 'selectors'");
             }
-            if ((!args || args.subnetIds === undefined) && !opts.urn) {
+            if (args?.subnetIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'subnetIds'");
             }
-            resourceInputs["clusterName"] = args ? args.clusterName : undefined;
-            resourceInputs["selectors"] = args ? args.selectors : undefined;
-            resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["clusterName"] = args?.clusterName;
+            resourceInputs["selectors"] = args?.selectors;
+            resourceInputs["subnetIds"] = args?.subnetIds;
+            resourceInputs["tags"] = args?.tags;
             resourceInputs["profile"] = undefined /*out*/;
             resourceInputs["role"] = undefined /*out*/;
         } else {
