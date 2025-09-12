@@ -21,8 +21,8 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
         return obj['__pulumiType'] === AttachedNodeGroup.__pulumiType;
     }
 
-    public /*out*/ readonly nodeGroup!: pulumi.Output<pulumiAws.eks.NodeGroup>;
-    public /*out*/ readonly nodeRole!: pulumi.Output<pulumiAws.iam.Role>;
+    declare public /*out*/ readonly nodeGroup: pulumi.Output<pulumiAws.eks.NodeGroup>;
+    declare public /*out*/ readonly nodeRole: pulumi.Output<pulumiAws.iam.Role>;
 
     /**
      * Create a AttachedNodeGroup resource with the given unique name, arguments, and options.
@@ -35,23 +35,23 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.clusterName === undefined) && !opts.urn) {
+            if (args?.clusterName === undefined && !opts.urn) {
                 throw new Error("Missing required property 'clusterName'");
             }
-            if ((!args || args.subnetIds === undefined) && !opts.urn) {
+            if (args?.subnetIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'subnetIds'");
             }
-            resourceInputs["amiType"] = args ? args.amiType : undefined;
-            resourceInputs["capacityType"] = (args ? args.capacityType : undefined) ?? "ON_DEMAND";
-            resourceInputs["clusterName"] = args ? args.clusterName : undefined;
-            resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? 20;
-            resourceInputs["instanceTypes"] = args ? args.instanceTypes : undefined;
-            resourceInputs["labels"] = args ? args.labels : undefined;
-            resourceInputs["releaseVersion"] = args ? args.releaseVersion : undefined;
-            resourceInputs["scalingConfig"] = args ? args.scalingConfig : undefined;
-            resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["taints"] = args ? args.taints : undefined;
+            resourceInputs["amiType"] = args?.amiType;
+            resourceInputs["capacityType"] = (args?.capacityType) ?? "ON_DEMAND";
+            resourceInputs["clusterName"] = args?.clusterName;
+            resourceInputs["diskSize"] = (args?.diskSize) ?? 20;
+            resourceInputs["instanceTypes"] = args?.instanceTypes;
+            resourceInputs["labels"] = args?.labels;
+            resourceInputs["releaseVersion"] = args?.releaseVersion;
+            resourceInputs["scalingConfig"] = args?.scalingConfig;
+            resourceInputs["subnetIds"] = args?.subnetIds;
+            resourceInputs["tags"] = args?.tags;
+            resourceInputs["taints"] = args?.taints;
             resourceInputs["nodeGroup"] = undefined /*out*/;
             resourceInputs["nodeRole"] = undefined /*out*/;
         } else {

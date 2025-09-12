@@ -35,34 +35,34 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.diskSize === undefined) && !opts.urn) {
+            if (args?.diskSize === undefined && !opts.urn) {
                 throw new Error("Missing required property 'diskSize'");
             }
-            if ((!args || args.nodeRole === undefined) && !opts.urn) {
+            if (args?.nodeRole === undefined && !opts.urn) {
                 throw new Error("Missing required property 'nodeRole'");
             }
-            if ((!args || args.requirements === undefined) && !opts.urn) {
+            if (args?.requirements === undefined && !opts.urn) {
                 throw new Error("Missing required property 'requirements'");
             }
-            if ((!args || args.securityGroupIds === undefined) && !opts.urn) {
+            if (args?.securityGroupIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'securityGroupIds'");
             }
-            if ((!args || args.subnetIds === undefined) && !opts.urn) {
+            if (args?.subnetIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'subnetIds'");
             }
-            resourceInputs["amiFamily"] = args ? args.amiFamily : undefined;
-            resourceInputs["amiId"] = args ? args.amiId : undefined;
-            resourceInputs["annotations"] = args ? args.annotations : undefined;
-            resourceInputs["diskSize"] = (args ? args.diskSize : undefined) ?? "20Gi";
+            resourceInputs["amiFamily"] = args?.amiFamily;
+            resourceInputs["amiId"] = args?.amiId;
+            resourceInputs["annotations"] = args?.annotations;
+            resourceInputs["diskSize"] = (args?.diskSize) ?? "20Gi";
             resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
-            resourceInputs["labels"] = args ? args.labels : undefined;
-            resourceInputs["nodeClassApiVersion"] = (args ? args.nodeClassApiVersion : undefined) ?? "karpenter.k8s.aws/v1";
-            resourceInputs["nodePoolApiVersion"] = (args ? args.nodePoolApiVersion : undefined) ?? "karpenter.sh/v1";
-            resourceInputs["nodeRole"] = args ? args.nodeRole : undefined;
-            resourceInputs["requirements"] = args ? args.requirements : undefined;
-            resourceInputs["securityGroupIds"] = args ? args.securityGroupIds : undefined;
-            resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
-            resourceInputs["taints"] = args ? args.taints : undefined;
+            resourceInputs["labels"] = args?.labels;
+            resourceInputs["nodeClassApiVersion"] = (args?.nodeClassApiVersion) ?? "karpenter.k8s.aws/v1";
+            resourceInputs["nodePoolApiVersion"] = (args?.nodePoolApiVersion) ?? "karpenter.sh/v1";
+            resourceInputs["nodeRole"] = args?.nodeRole;
+            resourceInputs["requirements"] = args?.requirements;
+            resourceInputs["securityGroupIds"] = args?.securityGroupIds;
+            resourceInputs["subnetIds"] = args?.subnetIds;
+            resourceInputs["taints"] = args?.taints;
         } else {
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);

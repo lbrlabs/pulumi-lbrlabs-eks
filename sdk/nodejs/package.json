@@ -14,7 +14,7 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/aws": "^6.38.1",
+        "@pulumi/aws": "^7.0.0",
         "@pulumi/kubernetes": "^4.0.0",
         "@pulumi/pulumi": "^3.142.0",
         "mime": "^2.0.0",

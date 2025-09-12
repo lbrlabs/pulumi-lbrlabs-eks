@@ -21,7 +21,7 @@ export class IamServiceAccountRole extends pulumi.ComponentResource {
         return obj['__pulumiType'] === IamServiceAccountRole.__pulumiType;
     }
 
-    public /*out*/ readonly role!: pulumi.Output<pulumiAws.iam.Role>;
+    declare public /*out*/ readonly role: pulumi.Output<pulumiAws.iam.Role>;
 
     /**
      * Create a IamServiceAccountRole resource with the given unique name, arguments, and options.
@@ -34,23 +34,23 @@ export class IamServiceAccountRole extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.namespaceName === undefined) && !opts.urn) {
+            if (args?.namespaceName === undefined && !opts.urn) {
                 throw new Error("Missing required property 'namespaceName'");
             }
-            if ((!args || args.oidcProviderArn === undefined) && !opts.urn) {
+            if (args?.oidcProviderArn === undefined && !opts.urn) {
                 throw new Error("Missing required property 'oidcProviderArn'");
             }
-            if ((!args || args.oidcProviderUrl === undefined) && !opts.urn) {
+            if (args?.oidcProviderUrl === undefined && !opts.urn) {
                 throw new Error("Missing required property 'oidcProviderUrl'");
             }
-            if ((!args || args.serviceAccountName === undefined) && !opts.urn) {
+            if (args?.serviceAccountName === undefined && !opts.urn) {
                 throw new Error("Missing required property 'serviceAccountName'");
             }
-            resourceInputs["namespaceName"] = args ? args.namespaceName : undefined;
-            resourceInputs["oidcProviderArn"] = args ? args.oidcProviderArn : undefined;
-            resourceInputs["oidcProviderUrl"] = args ? args.oidcProviderUrl : undefined;
-            resourceInputs["serviceAccountName"] = args ? args.serviceAccountName : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["namespaceName"] = args?.namespaceName;
+            resourceInputs["oidcProviderArn"] = args?.oidcProviderArn;
+            resourceInputs["oidcProviderUrl"] = args?.oidcProviderUrl;
+            resourceInputs["serviceAccountName"] = args?.serviceAccountName;
+            resourceInputs["tags"] = args?.tags;
             resourceInputs["role"] = undefined /*out*/;
         } else {
             resourceInputs["role"] = undefined /*out*/;

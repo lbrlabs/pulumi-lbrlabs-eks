@@ -31,18 +31,18 @@ export class IamRoleMapping extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.groups === undefined) && !opts.urn) {
+            if (args?.groups === undefined && !opts.urn) {
                 throw new Error("Missing required property 'groups'");
             }
-            if ((!args || args.roleArn === undefined) && !opts.urn) {
+            if (args?.roleArn === undefined && !opts.urn) {
                 throw new Error("Missing required property 'roleArn'");
             }
-            if ((!args || args.username === undefined) && !opts.urn) {
+            if (args?.username === undefined && !opts.urn) {
                 throw new Error("Missing required property 'username'");
             }
-            resourceInputs["groups"] = args ? args.groups : undefined;
-            resourceInputs["roleArn"] = args ? args.roleArn : undefined;
-            resourceInputs["username"] = args ? args.username : undefined;
+            resourceInputs["groups"] = args?.groups;
+            resourceInputs["roleArn"] = args?.roleArn;
+            resourceInputs["username"] = args?.username;
         } else {
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);

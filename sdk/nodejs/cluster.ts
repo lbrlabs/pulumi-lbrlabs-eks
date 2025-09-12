@@ -26,31 +26,31 @@ export class Cluster extends pulumi.ComponentResource {
     /**
      * The cluster name
      */
-    public /*out*/ readonly clusterName!: pulumi.Output<string>;
+    declare public /*out*/ readonly clusterName: pulumi.Output<string>;
     /**
      * The Cluster control plane
      */
-    public /*out*/ readonly controlPlane!: pulumi.Output<pulumiAws.eks.Cluster>;
+    declare public /*out*/ readonly controlPlane: pulumi.Output<pulumiAws.eks.Cluster>;
     /**
      * The role created for karpenter nodes.
      */
-    public /*out*/ readonly karpenterNodeRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
+    declare public /*out*/ readonly karpenterNodeRole: pulumi.Output<pulumiAws.iam.Role | undefined>;
     /**
      * Name of the SQS queue that Karpenter uses for interruption events.
      */
-    public /*out*/ readonly karpenterQueueName!: pulumi.Output<string | undefined>;
+    declare public /*out*/ readonly karpenterQueueName: pulumi.Output<string | undefined>;
     /**
      * The kubeconfig for this cluster.
      */
-    public /*out*/ readonly kubeconfig!: pulumi.Output<string>;
+    declare public /*out*/ readonly kubeconfig: pulumi.Output<string>;
     /**
      * The OIDC provider for this cluster.
      */
-    public /*out*/ readonly oidcProvider!: pulumi.Output<pulumiAws.iam.OpenIdConnectProvider>;
+    declare public /*out*/ readonly oidcProvider: pulumi.Output<pulumiAws.iam.OpenIdConnectProvider>;
     /**
      * The system node group.
      */
-    public /*out*/ readonly systemNodes!: pulumi.Output<pulumiAws.eks.NodeGroup>;
+    declare public /*out*/ readonly systemNodes: pulumi.Output<pulumiAws.eks.NodeGroup>;
 
     /**
      * Create a Cluster resource with the given unique name, arguments, and options.
@@ -63,42 +63,42 @@ export class Cluster extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.clusterSubnetIds === undefined) && !opts.urn) {
+            if (args?.clusterSubnetIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'clusterSubnetIds'");
             }
-            if ((!args || args.systemNodeSubnetIds === undefined) && !opts.urn) {
+            if (args?.systemNodeSubnetIds === undefined && !opts.urn) {
                 throw new Error("Missing required property 'systemNodeSubnetIds'");
             }
-            resourceInputs["adminAccessPrincipal"] = args ? args.adminAccessPrincipal : undefined;
-            resourceInputs["certManagerVersion"] = args ? args.certManagerVersion : undefined;
-            resourceInputs["certificateArn"] = args ? args.certificateArn : undefined;
-            resourceInputs["clusterEndpointPrivateAccess"] = (args ? args.clusterEndpointPrivateAccess : undefined) ?? false;
-            resourceInputs["clusterEndpointPublicAccess"] = (args ? args.clusterEndpointPublicAccess : undefined) ?? true;
-            resourceInputs["clusterSubnetIds"] = args ? args.clusterSubnetIds : undefined;
-            resourceInputs["clusterVersion"] = args ? args.clusterVersion : undefined;
-            resourceInputs["eksIamAuthControllerVersion"] = args ? args.eksIamAuthControllerVersion : undefined;
-            resourceInputs["enableCertManager"] = (args ? args.enableCertManager : undefined) ?? true;
-            resourceInputs["enableCloudWatchAgent"] = (args ? args.enableCloudWatchAgent : undefined) ?? false;
-            resourceInputs["enableExternalDns"] = (args ? args.enableExternalDns : undefined) ?? true;
-            resourceInputs["enableExternalIngress"] = (args ? args.enableExternalIngress : undefined) ?? true;
-            resourceInputs["enableInternalIngress"] = (args ? args.enableInternalIngress : undefined) ?? true;
-            resourceInputs["enableKarpenter"] = (args ? args.enableKarpenter : undefined) ?? true;
-            resourceInputs["enableOtel"] = (args ? args.enableOtel : undefined) ?? false;
-            resourceInputs["enabledClusterLogTypes"] = args ? args.enabledClusterLogTypes : undefined;
-            resourceInputs["externalDNSVersion"] = args ? args.externalDNSVersion : undefined;
+            resourceInputs["adminAccessPrincipal"] = args?.adminAccessPrincipal;
+            resourceInputs["certManagerVersion"] = args?.certManagerVersion;
+            resourceInputs["certificateArn"] = args?.certificateArn;
+            resourceInputs["clusterEndpointPrivateAccess"] = (args?.clusterEndpointPrivateAccess) ?? false;
+            resourceInputs["clusterEndpointPublicAccess"] = (args?.clusterEndpointPublicAccess) ?? true;
+            resourceInputs["clusterSubnetIds"] = args?.clusterSubnetIds;
+            resourceInputs["clusterVersion"] = args?.clusterVersion;
+            resourceInputs["eksIamAuthControllerVersion"] = args?.eksIamAuthControllerVersion;
+            resourceInputs["enableCertManager"] = (args?.enableCertManager) ?? true;
+            resourceInputs["enableCloudWatchAgent"] = (args?.enableCloudWatchAgent) ?? false;
+            resourceInputs["enableExternalDns"] = (args?.enableExternalDns) ?? true;
+            resourceInputs["enableExternalIngress"] = (args?.enableExternalIngress) ?? true;
+            resourceInputs["enableInternalIngress"] = (args?.enableInternalIngress) ?? true;
+            resourceInputs["enableKarpenter"] = (args?.enableKarpenter) ?? true;
+            resourceInputs["enableOtel"] = (args?.enableOtel) ?? false;
+            resourceInputs["enabledClusterLogTypes"] = args?.enabledClusterLogTypes;
+            resourceInputs["externalDNSVersion"] = args?.externalDNSVersion;
             resourceInputs["ingressConfig"] = args ? (args.ingressConfig ? pulumi.output(args.ingressConfig).apply(inputs.ingressConfigArgsProvideDefaults) : undefined) : undefined;
-            resourceInputs["karpenterVersion"] = (args ? args.karpenterVersion : undefined) ?? "0.36.2";
-            resourceInputs["lbType"] = (args ? args.lbType : undefined) ?? "nlb";
-            resourceInputs["letsEncryptEmail"] = args ? args.letsEncryptEmail : undefined;
-            resourceInputs["nginxIngressRegistry"] = (args ? args.nginxIngressRegistry : undefined) ?? "registry.k8s.io";
-            resourceInputs["nginxIngressTag"] = (args ? args.nginxIngressTag : undefined) ?? "v1.12.0";
-            resourceInputs["nginxIngressVersion"] = args ? args.nginxIngressVersion : undefined;
-            resourceInputs["systemNodeDesiredCount"] = args ? args.systemNodeDesiredCount : undefined;
-            resourceInputs["systemNodeInstanceTypes"] = args ? args.systemNodeInstanceTypes : undefined;
-            resourceInputs["systemNodeMaxCount"] = args ? args.systemNodeMaxCount : undefined;
-            resourceInputs["systemNodeMinCount"] = args ? args.systemNodeMinCount : undefined;
-            resourceInputs["systemNodeSubnetIds"] = args ? args.systemNodeSubnetIds : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["karpenterVersion"] = (args?.karpenterVersion) ?? "0.36.2";
+            resourceInputs["lbType"] = (args?.lbType) ?? "nlb";
+            resourceInputs["letsEncryptEmail"] = args?.letsEncryptEmail;
+            resourceInputs["nginxIngressRegistry"] = (args?.nginxIngressRegistry) ?? "registry.k8s.io";
+            resourceInputs["nginxIngressTag"] = (args?.nginxIngressTag) ?? "v1.12.0";
+            resourceInputs["nginxIngressVersion"] = args?.nginxIngressVersion;
+            resourceInputs["systemNodeDesiredCount"] = args?.systemNodeDesiredCount;
+            resourceInputs["systemNodeInstanceTypes"] = args?.systemNodeInstanceTypes;
+            resourceInputs["systemNodeMaxCount"] = args?.systemNodeMaxCount;
+            resourceInputs["systemNodeMinCount"] = args?.systemNodeMinCount;
+            resourceInputs["systemNodeSubnetIds"] = args?.systemNodeSubnetIds;
+            resourceInputs["tags"] = args?.tags;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
