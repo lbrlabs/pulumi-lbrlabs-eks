@@ -41,6 +41,18 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         public Input<int>? ControllerReplicas { get; set; }
 
         /// <summary>
+        /// Whether to create the external-facing ingress controller.
+        /// </summary>
+        [Input("enableExternal")]
+        public Input<bool>? EnableExternal { get; set; }
+
+        /// <summary>
+        /// Whether to create the internal-facing ingress controller.
+        /// </summary>
+        [Input("enableInternal")]
+        public Input<bool>? EnableInternal { get; set; }
+
+        /// <summary>
         /// Enable metrics for the ingress controller.
         /// </summary>
         [Input("enableMetrics")]
@@ -68,6 +80,8 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         {
             AllowSnippetAnnotations = false;
             ControllerReplicas = 1;
+            EnableExternal = true;
+            EnableInternal = true;
             EnableMetrics = false;
             EnableServiceMonitor = false;
             NlbTargetType = "ip";

@@ -191,7 +191,7 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<string>? ExternalDNSVersion { get; set; }
 
         /// <summary>
-        /// Configuration for the ingress controller.
+        /// Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         /// </summary>
         [Input("ingressConfig")]
         public Input<Inputs.IngressConfigArgs>? IngressConfig { get; set; }
@@ -213,6 +213,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// </summary>
         [Input("letsEncryptEmail")]
         public string? LetsEncryptEmail { get; set; }
+
+        /// <summary>
+        /// Configuration for the nginx ingress controllers.
+        /// </summary>
+        [Input("nginxIngressConfig")]
+        public Input<Inputs.NginxIngressConfigArgs>? NginxIngressConfig { get; set; }
 
         /// <summary>
         /// The container registry to pull images from.

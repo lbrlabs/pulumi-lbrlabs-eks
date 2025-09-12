@@ -43,6 +43,7 @@ class ClusterArgs:
                  karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
+                 nginx_ingress_config: Optional[pulumi.Input['NginxIngressConfigArgs']] = None,
                  nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
@@ -68,10 +69,11 @@ class ClusterArgs:
         :param _builtins.bool enable_karpenter: Whether to enable karpenter.
         :param _builtins.bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[_builtins.str] external_dns_version: The version of the external-dns helm chart to deploy.
-        :param pulumi.Input['IngressConfigArgs'] ingress_config: Configuration for the ingress controller.
+        :param pulumi.Input['IngressConfigArgs'] ingress_config: Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         :param pulumi.Input[_builtins.str] karpenter_version: The version of karpenter to deploy.
         :param pulumi.Input[_builtins.str] lb_type: The type of loadbalancer to provision.
         :param _builtins.str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input['NginxIngressConfigArgs'] nginx_ingress_config: Configuration for the nginx ingress controllers.
         :param pulumi.Input[_builtins.str] nginx_ingress_registry: The container registry to pull images from.
         :param pulumi.Input[_builtins.str] nginx_ingress_tag: The tag to use for the nginx ingress controller images.
         :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
@@ -144,6 +146,8 @@ class ClusterArgs:
             pulumi.set(__self__, "lb_type", lb_type)
         if lets_encrypt_email is not None:
             pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
+        if nginx_ingress_config is not None:
+            pulumi.set(__self__, "nginx_ingress_config", nginx_ingress_config)
         if nginx_ingress_registry is None:
             nginx_ingress_registry = 'registry.k8s.io'
         if nginx_ingress_registry is not None:
@@ -376,7 +380,7 @@ class ClusterArgs:
     @pulumi.getter(name="ingressConfig")
     def ingress_config(self) -> Optional[pulumi.Input['IngressConfigArgs']]:
         """
-        Configuration for the ingress controller.
+        Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         """
         return pulumi.get(self, "ingress_config")
 
@@ -419,6 +423,18 @@ class ClusterArgs:
     @lets_encrypt_email.setter
     def lets_encrypt_email(self, value: Optional[_builtins.str]):
         pulumi.set(self, "lets_encrypt_email", value)
+
+    @_builtins.property
+    @pulumi.getter(name="nginxIngressConfig")
+    def nginx_ingress_config(self) -> Optional[pulumi.Input['NginxIngressConfigArgs']]:
+        """
+        Configuration for the nginx ingress controllers.
+        """
+        return pulumi.get(self, "nginx_ingress_config")
+
+    @nginx_ingress_config.setter
+    def nginx_ingress_config(self, value: Optional[pulumi.Input['NginxIngressConfigArgs']]):
+        pulumi.set(self, "nginx_ingress_config", value)
 
     @_builtins.property
     @pulumi.getter(name="nginxIngressRegistry")
@@ -541,6 +557,7 @@ class Cluster(pulumi.ComponentResource):
                  karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
+                 nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
                  nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
@@ -570,10 +587,11 @@ class Cluster(pulumi.ComponentResource):
         :param _builtins.bool enable_karpenter: Whether to enable karpenter.
         :param _builtins.bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[_builtins.str] external_dns_version: The version of the external-dns helm chart to deploy.
-        :param pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']] ingress_config: Configuration for the ingress controller.
+        :param pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']] ingress_config: Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         :param pulumi.Input[_builtins.str] karpenter_version: The version of karpenter to deploy.
         :param pulumi.Input[_builtins.str] lb_type: The type of loadbalancer to provision.
         :param _builtins.str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
+        :param pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']] nginx_ingress_config: Configuration for the nginx ingress controllers.
         :param pulumi.Input[_builtins.str] nginx_ingress_registry: The container registry to pull images from.
         :param pulumi.Input[_builtins.str] nginx_ingress_tag: The tag to use for the nginx ingress controller images.
         :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
@@ -626,6 +644,7 @@ class Cluster(pulumi.ComponentResource):
                  karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
+                 nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
                  nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
@@ -691,6 +710,7 @@ class Cluster(pulumi.ComponentResource):
                 lb_type = 'nlb'
             __props__.__dict__["lb_type"] = lb_type
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
+            __props__.__dict__["nginx_ingress_config"] = nginx_ingress_config
             if nginx_ingress_registry is None:
                 nginx_ingress_registry = 'registry.k8s.io'
             __props__.__dict__["nginx_ingress_registry"] = nginx_ingress_registry

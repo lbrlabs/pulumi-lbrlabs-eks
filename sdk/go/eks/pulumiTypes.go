@@ -367,6 +367,10 @@ type IngressConfig struct {
 	AllowSnippetAnnotations *bool `pulumi:"allowSnippetAnnotations"`
 	// The number of replicas of the ingress controller.
 	ControllerReplicas *int `pulumi:"controllerReplicas"`
+	// Whether to create the external-facing ingress controller.
+	EnableExternal *bool `pulumi:"enableExternal"`
+	// Whether to create the internal-facing ingress controller.
+	EnableInternal *bool `pulumi:"enableInternal"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics *bool `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
@@ -390,6 +394,14 @@ func (val *IngressConfig) Defaults() *IngressConfig {
 	if tmp.ControllerReplicas == nil {
 		controllerReplicas_ := 1
 		tmp.ControllerReplicas = &controllerReplicas_
+	}
+	if tmp.EnableExternal == nil {
+		enableExternal_ := true
+		tmp.EnableExternal = &enableExternal_
+	}
+	if tmp.EnableInternal == nil {
+		enableInternal_ := true
+		tmp.EnableInternal = &enableInternal_
 	}
 	if tmp.EnableMetrics == nil {
 		enableMetrics_ := false
@@ -425,6 +437,10 @@ type IngressConfigArgs struct {
 	AllowSnippetAnnotations pulumi.BoolPtrInput `pulumi:"allowSnippetAnnotations"`
 	// The number of replicas of the ingress controller.
 	ControllerReplicas pulumi.IntPtrInput `pulumi:"controllerReplicas"`
+	// Whether to create the external-facing ingress controller.
+	EnableExternal pulumi.BoolPtrInput `pulumi:"enableExternal"`
+	// Whether to create the internal-facing ingress controller.
+	EnableInternal pulumi.BoolPtrInput `pulumi:"enableInternal"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stackl.
@@ -446,6 +462,12 @@ func (val *IngressConfigArgs) Defaults() *IngressConfigArgs {
 	}
 	if tmp.ControllerReplicas == nil {
 		tmp.ControllerReplicas = pulumi.IntPtr(1)
+	}
+	if tmp.EnableExternal == nil {
+		tmp.EnableExternal = pulumi.BoolPtr(true)
+	}
+	if tmp.EnableInternal == nil {
+		tmp.EnableInternal = pulumi.BoolPtr(true)
 	}
 	if tmp.EnableMetrics == nil {
 		tmp.EnableMetrics = pulumi.BoolPtr(false)
@@ -551,6 +573,16 @@ func (o IngressConfigOutput) ControllerReplicas() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *int { return v.ControllerReplicas }).(pulumi.IntPtrOutput)
 }
 
+// Whether to create the external-facing ingress controller.
+func (o IngressConfigOutput) EnableExternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableExternal }).(pulumi.BoolPtrOutput)
+}
+
+// Whether to create the internal-facing ingress controller.
+func (o IngressConfigOutput) EnableInternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableInternal }).(pulumi.BoolPtrOutput)
+}
+
 // Enable metrics for the ingress controller.
 func (o IngressConfigOutput) EnableMetrics() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableMetrics }).(pulumi.BoolPtrOutput)
@@ -625,6 +657,26 @@ func (o IngressConfigPtrOutput) ControllerReplicas() pulumi.IntPtrOutput {
 	}).(pulumi.IntPtrOutput)
 }
 
+// Whether to create the external-facing ingress controller.
+func (o IngressConfigPtrOutput) EnableExternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableExternal
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Whether to create the internal-facing ingress controller.
+func (o IngressConfigPtrOutput) EnableInternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *IngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableInternal
+	}).(pulumi.BoolPtrOutput)
+}
+
 // Enable metrics for the ingress controller.
 func (o IngressConfigPtrOutput) EnableMetrics() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *IngressConfig) *bool {
@@ -658,6 +710,364 @@ func (o IngressConfigPtrOutput) NlbTargetType() pulumi.StringPtrOutput {
 // The namespace to deploy the service monitor to.
 func (o IngressConfigPtrOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *IngressConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ServiceMonitorNamespace
+	}).(pulumi.StringPtrOutput)
+}
+
+// Configuration for the nginx ingress controllers.
+type NginxIngressConfig struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
+	// Whether to allow snippet annotations in the ingress controller.
+	AllowSnippetAnnotations *bool `pulumi:"allowSnippetAnnotations"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas *int `pulumi:"controllerReplicas"`
+	// Whether to create the external-facing ingress controller.
+	EnableExternal *bool `pulumi:"enableExternal"`
+	// Whether to create the internal-facing ingress controller.
+	EnableInternal *bool `pulumi:"enableInternal"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics *bool `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stack.
+	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType *string `pulumi:"nlbTargetType"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace *string `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for NginxIngressConfig
+func (val *NginxIngressConfig) Defaults() *NginxIngressConfig {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.AllowSnippetAnnotations == nil {
+		allowSnippetAnnotations_ := false
+		tmp.AllowSnippetAnnotations = &allowSnippetAnnotations_
+	}
+	if tmp.ControllerReplicas == nil {
+		controllerReplicas_ := 1
+		tmp.ControllerReplicas = &controllerReplicas_
+	}
+	if tmp.EnableExternal == nil {
+		enableExternal_ := true
+		tmp.EnableExternal = &enableExternal_
+	}
+	if tmp.EnableInternal == nil {
+		enableInternal_ := true
+		tmp.EnableInternal = &enableInternal_
+	}
+	if tmp.EnableMetrics == nil {
+		enableMetrics_ := false
+		tmp.EnableMetrics = &enableMetrics_
+	}
+	if tmp.EnableServiceMonitor == nil {
+		enableServiceMonitor_ := false
+		tmp.EnableServiceMonitor = &enableServiceMonitor_
+	}
+	if tmp.NlbTargetType == nil {
+		nlbTargetType_ := "ip"
+		tmp.NlbTargetType = &nlbTargetType_
+	}
+	return &tmp
+}
+
+// NginxIngressConfigInput is an input type that accepts NginxIngressConfigArgs and NginxIngressConfigOutput values.
+// You can construct a concrete instance of `NginxIngressConfigInput` via:
+//
+//	NginxIngressConfigArgs{...}
+type NginxIngressConfigInput interface {
+	pulumi.Input
+
+	ToNginxIngressConfigOutput() NginxIngressConfigOutput
+	ToNginxIngressConfigOutputWithContext(context.Context) NginxIngressConfigOutput
+}
+
+// Configuration for the nginx ingress controllers.
+type NginxIngressConfigArgs struct {
+	// Additional configuration for the ingress controller.
+	AdditionalConfig pulumi.StringMapInput `pulumi:"additionalConfig"`
+	// Whether to allow snippet annotations in the ingress controller.
+	AllowSnippetAnnotations pulumi.BoolPtrInput `pulumi:"allowSnippetAnnotations"`
+	// The number of replicas of the ingress controller.
+	ControllerReplicas pulumi.IntPtrInput `pulumi:"controllerReplicas"`
+	// Whether to create the external-facing ingress controller.
+	EnableExternal pulumi.BoolPtrInput `pulumi:"enableExternal"`
+	// Whether to create the internal-facing ingress controller.
+	EnableInternal pulumi.BoolPtrInput `pulumi:"enableInternal"`
+	// Enable metrics for the ingress controller.
+	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
+	// Enable the service monitor for kube-prometheus-stack.
+	EnableServiceMonitor pulumi.BoolPtrInput `pulumi:"enableServiceMonitor"`
+	// NLB target type for NLB loadbalancers.
+	NlbTargetType pulumi.StringPtrInput `pulumi:"nlbTargetType"`
+	// The namespace to deploy the service monitor to.
+	ServiceMonitorNamespace pulumi.StringPtrInput `pulumi:"serviceMonitorNamespace"`
+}
+
+// Defaults sets the appropriate defaults for NginxIngressConfigArgs
+func (val *NginxIngressConfigArgs) Defaults() *NginxIngressConfigArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if tmp.AllowSnippetAnnotations == nil {
+		tmp.AllowSnippetAnnotations = pulumi.BoolPtr(false)
+	}
+	if tmp.ControllerReplicas == nil {
+		tmp.ControllerReplicas = pulumi.IntPtr(1)
+	}
+	if tmp.EnableExternal == nil {
+		tmp.EnableExternal = pulumi.BoolPtr(true)
+	}
+	if tmp.EnableInternal == nil {
+		tmp.EnableInternal = pulumi.BoolPtr(true)
+	}
+	if tmp.EnableMetrics == nil {
+		tmp.EnableMetrics = pulumi.BoolPtr(false)
+	}
+	if tmp.EnableServiceMonitor == nil {
+		tmp.EnableServiceMonitor = pulumi.BoolPtr(false)
+	}
+	if tmp.NlbTargetType == nil {
+		tmp.NlbTargetType = pulumi.StringPtr("ip")
+	}
+	return &tmp
+}
+func (NginxIngressConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*NginxIngressConfig)(nil)).Elem()
+}
+
+func (i NginxIngressConfigArgs) ToNginxIngressConfigOutput() NginxIngressConfigOutput {
+	return i.ToNginxIngressConfigOutputWithContext(context.Background())
+}
+
+func (i NginxIngressConfigArgs) ToNginxIngressConfigOutputWithContext(ctx context.Context) NginxIngressConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NginxIngressConfigOutput)
+}
+
+func (i NginxIngressConfigArgs) ToNginxIngressConfigPtrOutput() NginxIngressConfigPtrOutput {
+	return i.ToNginxIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (i NginxIngressConfigArgs) ToNginxIngressConfigPtrOutputWithContext(ctx context.Context) NginxIngressConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NginxIngressConfigOutput).ToNginxIngressConfigPtrOutputWithContext(ctx)
+}
+
+// NginxIngressConfigPtrInput is an input type that accepts NginxIngressConfigArgs, NginxIngressConfigPtr and NginxIngressConfigPtrOutput values.
+// You can construct a concrete instance of `NginxIngressConfigPtrInput` via:
+//
+//	        NginxIngressConfigArgs{...}
+//
+//	or:
+//
+//	        nil
+type NginxIngressConfigPtrInput interface {
+	pulumi.Input
+
+	ToNginxIngressConfigPtrOutput() NginxIngressConfigPtrOutput
+	ToNginxIngressConfigPtrOutputWithContext(context.Context) NginxIngressConfigPtrOutput
+}
+
+type nginxIngressConfigPtrType NginxIngressConfigArgs
+
+func NginxIngressConfigPtr(v *NginxIngressConfigArgs) NginxIngressConfigPtrInput {
+	return (*nginxIngressConfigPtrType)(v)
+}
+
+func (*nginxIngressConfigPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**NginxIngressConfig)(nil)).Elem()
+}
+
+func (i *nginxIngressConfigPtrType) ToNginxIngressConfigPtrOutput() NginxIngressConfigPtrOutput {
+	return i.ToNginxIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (i *nginxIngressConfigPtrType) ToNginxIngressConfigPtrOutputWithContext(ctx context.Context) NginxIngressConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NginxIngressConfigPtrOutput)
+}
+
+// Configuration for the nginx ingress controllers.
+type NginxIngressConfigOutput struct{ *pulumi.OutputState }
+
+func (NginxIngressConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*NginxIngressConfig)(nil)).Elem()
+}
+
+func (o NginxIngressConfigOutput) ToNginxIngressConfigOutput() NginxIngressConfigOutput {
+	return o
+}
+
+func (o NginxIngressConfigOutput) ToNginxIngressConfigOutputWithContext(ctx context.Context) NginxIngressConfigOutput {
+	return o
+}
+
+func (o NginxIngressConfigOutput) ToNginxIngressConfigPtrOutput() NginxIngressConfigPtrOutput {
+	return o.ToNginxIngressConfigPtrOutputWithContext(context.Background())
+}
+
+func (o NginxIngressConfigOutput) ToNginxIngressConfigPtrOutputWithContext(ctx context.Context) NginxIngressConfigPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v NginxIngressConfig) *NginxIngressConfig {
+		return &v
+	}).(NginxIngressConfigPtrOutput)
+}
+
+// Additional configuration for the ingress controller.
+func (o NginxIngressConfigOutput) AdditionalConfig() pulumi.StringMapOutput {
+	return o.ApplyT(func(v NginxIngressConfig) map[string]string { return v.AdditionalConfig }).(pulumi.StringMapOutput)
+}
+
+// Whether to allow snippet annotations in the ingress controller.
+func (o NginxIngressConfigOutput) AllowSnippetAnnotations() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.AllowSnippetAnnotations }).(pulumi.BoolPtrOutput)
+}
+
+// The number of replicas of the ingress controller.
+func (o NginxIngressConfigOutput) ControllerReplicas() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *int { return v.ControllerReplicas }).(pulumi.IntPtrOutput)
+}
+
+// Whether to create the external-facing ingress controller.
+func (o NginxIngressConfigOutput) EnableExternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.EnableExternal }).(pulumi.BoolPtrOutput)
+}
+
+// Whether to create the internal-facing ingress controller.
+func (o NginxIngressConfigOutput) EnableInternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.EnableInternal }).(pulumi.BoolPtrOutput)
+}
+
+// Enable metrics for the ingress controller.
+func (o NginxIngressConfigOutput) EnableMetrics() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.EnableMetrics }).(pulumi.BoolPtrOutput)
+}
+
+// Enable the service monitor for kube-prometheus-stack.
+func (o NginxIngressConfigOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.EnableServiceMonitor }).(pulumi.BoolPtrOutput)
+}
+
+// NLB target type for NLB loadbalancers.
+func (o NginxIngressConfigOutput) NlbTargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *string { return v.NlbTargetType }).(pulumi.StringPtrOutput)
+}
+
+// The namespace to deploy the service monitor to.
+func (o NginxIngressConfigOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v NginxIngressConfig) *string { return v.ServiceMonitorNamespace }).(pulumi.StringPtrOutput)
+}
+
+type NginxIngressConfigPtrOutput struct{ *pulumi.OutputState }
+
+func (NginxIngressConfigPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**NginxIngressConfig)(nil)).Elem()
+}
+
+func (o NginxIngressConfigPtrOutput) ToNginxIngressConfigPtrOutput() NginxIngressConfigPtrOutput {
+	return o
+}
+
+func (o NginxIngressConfigPtrOutput) ToNginxIngressConfigPtrOutputWithContext(ctx context.Context) NginxIngressConfigPtrOutput {
+	return o
+}
+
+func (o NginxIngressConfigPtrOutput) Elem() NginxIngressConfigOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) NginxIngressConfig {
+		if v != nil {
+			return *v
+		}
+		var ret NginxIngressConfig
+		return ret
+	}).(NginxIngressConfigOutput)
+}
+
+// Additional configuration for the ingress controller.
+func (o NginxIngressConfigPtrOutput) AdditionalConfig() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.AdditionalConfig
+	}).(pulumi.StringMapOutput)
+}
+
+// Whether to allow snippet annotations in the ingress controller.
+func (o NginxIngressConfigPtrOutput) AllowSnippetAnnotations() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.AllowSnippetAnnotations
+	}).(pulumi.BoolPtrOutput)
+}
+
+// The number of replicas of the ingress controller.
+func (o NginxIngressConfigPtrOutput) ControllerReplicas() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *int {
+		if v == nil {
+			return nil
+		}
+		return v.ControllerReplicas
+	}).(pulumi.IntPtrOutput)
+}
+
+// Whether to create the external-facing ingress controller.
+func (o NginxIngressConfigPtrOutput) EnableExternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableExternal
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Whether to create the internal-facing ingress controller.
+func (o NginxIngressConfigPtrOutput) EnableInternal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableInternal
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Enable metrics for the ingress controller.
+func (o NginxIngressConfigPtrOutput) EnableMetrics() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableMetrics
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Enable the service monitor for kube-prometheus-stack.
+func (o NginxIngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableServiceMonitor
+	}).(pulumi.BoolPtrOutput)
+}
+
+// NLB target type for NLB loadbalancers.
+func (o NginxIngressConfigPtrOutput) NlbTargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NlbTargetType
+	}).(pulumi.StringPtrOutput)
+}
+
+// The namespace to deploy the service monitor to.
+func (o NginxIngressConfigPtrOutput) ServiceMonitorNamespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) *string {
 		if v == nil {
 			return nil
 		}
@@ -800,6 +1210,8 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DisruptionConfigPtrInput)(nil)).Elem(), DisruptionConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigInput)(nil)).Elem(), IngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*IngressConfigPtrInput)(nil)).Elem(), IngressConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*NginxIngressConfigInput)(nil)).Elem(), NginxIngressConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*NginxIngressConfigPtrInput)(nil)).Elem(), NginxIngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})
 	pulumi.RegisterOutputType(BudgetConfigOutput{})
@@ -808,6 +1220,8 @@ func init() {
 	pulumi.RegisterOutputType(DisruptionConfigPtrOutput{})
 	pulumi.RegisterOutputType(IngressConfigOutput{})
 	pulumi.RegisterOutputType(IngressConfigPtrOutput{})
+	pulumi.RegisterOutputType(NginxIngressConfigOutput{})
+	pulumi.RegisterOutputType(NginxIngressConfigPtrOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})
 	pulumi.RegisterOutputType(RequirementArrayOutput{})
 }

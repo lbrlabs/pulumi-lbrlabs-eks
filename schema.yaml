@@ -87,6 +87,54 @@ types:
         additionalProperties:
           type: string
         description: Additional configuration for the ingress controller.
+      enableExternal:
+        type: boolean
+        default: true
+        description: Whether to create the external-facing ingress controller.
+      enableInternal:
+        type: boolean
+        default: true
+        description: Whether to create the internal-facing ingress controller.
+  lbrlabs-eks:index:NginxIngressConfig:
+    description: Configuration for the nginx ingress controllers.
+    type: object
+    properties:
+      enableMetrics:
+        type: boolean
+        default: false
+        description: Enable metrics for the ingress controller.
+      enableServiceMonitor:
+        type: boolean
+        default: false
+        description: Enable the service monitor for kube-prometheus-stack.
+      serviceMonitorNamespace:
+        type: string
+        description: The namespace to deploy the service monitor to.
+      controllerReplicas:
+        type: integer
+        default: 1
+        description: The number of replicas of the ingress controller.
+      allowSnippetAnnotations:
+        type: boolean
+        default: false
+        description: Whether to allow snippet annotations in the ingress controller.
+      nlbTargetType:
+        type: string
+        description: NLB target type for NLB loadbalancers.
+        default: "ip"
+      additionalConfig:
+        type: object
+        additionalProperties:
+          type: string
+        description: Additional configuration for the ingress controller.
+      enableExternal:
+        type: boolean
+        default: true
+        description: Whether to create the external-facing ingress controller.
+      enableInternal:
+        type: boolean
+        default: true
+        description: Whether to create the internal-facing ingress controller.
   lbrlabs-eks:index:Requirement:
     description: Represents a single requirement with key, operator, and values.
     type: object
@@ -123,7 +171,10 @@ resources:
     inputProperties:
       ingressConfig:
         "$ref": "#/types/lbrlabs-eks:index:IngressConfig"
-        description: Configuration for the ingress controller.
+        description: Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
+      nginxIngressConfig:
+        "$ref": "#/types/lbrlabs-eks:index:NginxIngressConfig"
+        description: Configuration for the nginx ingress controllers.
       clusterVersion:
         type: string
         description: The version of the EKS cluster to create.
