@@ -12,9 +12,9 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
 {
 
     /// <summary>
-    /// Configuration for the ingress controller (deprecated, use nginxIngressConfig).
+    /// Configuration for the nginx ingress controllers.
     /// </summary>
-    public sealed class IngressConfigArgs : global::Pulumi.ResourceArgs
+    public sealed class NginxIngressConfigArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalConfig")]
         private InputMap<string>? _additionalConfig;
@@ -88,7 +88,7 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
         [Input("serviceMonitorNamespace")]
         public Input<string>? ServiceMonitorNamespace { get; set; }
 
-        public IngressConfigArgs()
+        public NginxIngressConfigArgs()
         {
             AllowSnippetAnnotations = false;
             ControllerReplicas = 1;
@@ -98,6 +98,6 @@ namespace Lbrlabs.PulumiPackage.Eks.Inputs
             EnableServiceMonitor = false;
             NlbTargetType = "ip";
         }
-        public static new IngressConfigArgs Empty => new IngressConfigArgs();
+        public static new NginxIngressConfigArgs Empty => new NginxIngressConfigArgs();
     }
 }

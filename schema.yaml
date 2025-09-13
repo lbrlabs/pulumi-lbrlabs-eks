@@ -56,7 +56,7 @@ types:
           "$ref": "#/types/lbrlabs-eks:index:BudgetConfig"
         description: "Budgets control the speed Karpenter can scale down nodes."
   lbrlabs-eks:index:IngressConfig:
-    description: Configuration for the ingress controller.
+    description: Configuration for the ingress controller (deprecated, use nginxIngressConfig).
     type: object
     properties:
       enableMetrics:
@@ -66,7 +66,7 @@ types:
       enableServiceMonitor:
         type: boolean
         default: false
-        description: Enable the service monitor for kube-prometheus-stackl.
+        description: Enable the service monitor for kube-prometheus-stack.
       serviceMonitorNamespace:
         type: string
         description: The namespace to deploy the service monitor to.
@@ -87,6 +87,11 @@ types:
         additionalProperties:
           type: string
         description: Additional configuration for the ingress controller.
+      extraServiceAnnotations:
+        type: object
+        additionalProperties:
+          type: string
+        description: Extra annotations to apply to the ingress controller service.
       enableExternal:
         type: boolean
         default: true
@@ -127,6 +132,11 @@ types:
         additionalProperties:
           type: string
         description: Additional configuration for the ingress controller.
+      extraServiceAnnotations:
+        type: object
+        additionalProperties:
+          type: string
+        description: Extra annotations to apply to the ingress controller service.
       enableExternal:
         type: boolean
         default: true
@@ -256,12 +266,12 @@ resources:
         plain: true
       enableInternalIngress:
         type: boolean
-        description: Whether to create an ingress controller for internal traffic.
+        description: Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         default: true
         plain: true
       enableExternalIngress:
         type: boolean
-        description: Whether to create an ingress controller for external traffic.
+        description: Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
         default: true
         plain: true
       enableCertManager:

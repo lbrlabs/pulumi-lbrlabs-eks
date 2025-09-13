@@ -1,20 +1,28 @@
-Metadata-Version: 2.1
-Name: lbrlabs-pulumi-eks
+Metadata-Version: 2.4
+Name: lbrlabs_pulumi_eks
 Version: 0.0.0
 Summary: A batteries included EKS cluster following best practices.
-Home-page: UNKNOWN
-License: UNKNOWN
 Project-URL: Repository, https://github.com/lbrlabs/pulumi-lbrlabs-eks
 Keywords: eks kubernetes aws lbrlabs kind/component category/cloud
-Platform: UNKNOWN
-Requires-Python: >=3.7
+Requires-Python: >=3.9
 Description-Content-Type: text/markdown
+Requires-Dist: parver>=0.2.1
+Requires-Dist: pulumi<4.0.0,>=3.0.0
+Requires-Dist: pulumi-aws<8.0.0,>=7.0.0
+Requires-Dist: pulumi-kubernetes<5.0.0,>=4.0.0
+Requires-Dist: semver>=2.8.1
+Requires-Dist: typing-extensions<5,>=4.11; python_version < "3.11"
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
 # Pulumi LBr Labs EKS 
 
 This repo provides a [multi-language](https://www.pulumi.com/blog/pulumiup-pulumi-packages-multi-language-components/) component that creates a "batteries included" cluster ready for you to attach your EKS nodes to.
-
-> :warning: **This is a work in progress**
 
 It creates:
 
@@ -96,4 +104,3 @@ $ dotnet add package Lbrlabs.PulumiPackage.Eks
 See the Pulumi registry for API docs:
 
 https://www.pulumi.com/registry/packages/lbrlabs-eks/api-docs/
-

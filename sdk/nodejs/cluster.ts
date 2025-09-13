@@ -167,11 +167,11 @@ export interface ClusterArgs {
      */
     enableExternalDns?: boolean;
     /**
-     * Whether to create an ingress controller for external traffic.
+     * Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
      */
     enableExternalIngress?: boolean;
     /**
-     * Whether to create an ingress controller for internal traffic.
+     * Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
      */
     enableInternalIngress?: boolean;
     /**

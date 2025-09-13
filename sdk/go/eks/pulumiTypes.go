@@ -359,7 +359,7 @@ func (o DisruptionConfigPtrOutput) ExpireAfter() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration for the ingress controller.
+// Configuration for the ingress controller (deprecated, use nginxIngressConfig).
 type IngressConfig struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig map[string]string `pulumi:"additionalConfig"`
@@ -373,8 +373,10 @@ type IngressConfig struct {
 	EnableInternal *bool `pulumi:"enableInternal"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics *bool `pulumi:"enableMetrics"`
-	// Enable the service monitor for kube-prometheus-stackl.
+	// Enable the service monitor for kube-prometheus-stack.
 	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// Extra annotations to apply to the ingress controller service.
+	ExtraServiceAnnotations map[string]string `pulumi:"extraServiceAnnotations"`
 	// NLB target type for NLB loadbalancers.
 	NlbTargetType *string `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
@@ -429,7 +431,7 @@ type IngressConfigInput interface {
 	ToIngressConfigOutputWithContext(context.Context) IngressConfigOutput
 }
 
-// Configuration for the ingress controller.
+// Configuration for the ingress controller (deprecated, use nginxIngressConfig).
 type IngressConfigArgs struct {
 	// Additional configuration for the ingress controller.
 	AdditionalConfig pulumi.StringMapInput `pulumi:"additionalConfig"`
@@ -443,8 +445,10 @@ type IngressConfigArgs struct {
 	EnableInternal pulumi.BoolPtrInput `pulumi:"enableInternal"`
 	// Enable metrics for the ingress controller.
 	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
-	// Enable the service monitor for kube-prometheus-stackl.
+	// Enable the service monitor for kube-prometheus-stack.
 	EnableServiceMonitor pulumi.BoolPtrInput `pulumi:"enableServiceMonitor"`
+	// Extra annotations to apply to the ingress controller service.
+	ExtraServiceAnnotations pulumi.StringMapInput `pulumi:"extraServiceAnnotations"`
 	// NLB target type for NLB loadbalancers.
 	NlbTargetType pulumi.StringPtrInput `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
@@ -533,7 +537,7 @@ func (i *ingressConfigPtrType) ToIngressConfigPtrOutputWithContext(ctx context.C
 	return pulumi.ToOutputWithContext(ctx, i).(IngressConfigPtrOutput)
 }
 
-// Configuration for the ingress controller.
+// Configuration for the ingress controller (deprecated, use nginxIngressConfig).
 type IngressConfigOutput struct{ *pulumi.OutputState }
 
 func (IngressConfigOutput) ElementType() reflect.Type {
@@ -588,9 +592,14 @@ func (o IngressConfigOutput) EnableMetrics() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableMetrics }).(pulumi.BoolPtrOutput)
 }
 
-// Enable the service monitor for kube-prometheus-stackl.
+// Enable the service monitor for kube-prometheus-stack.
 func (o IngressConfigOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v IngressConfig) *bool { return v.EnableServiceMonitor }).(pulumi.BoolPtrOutput)
+}
+
+// Extra annotations to apply to the ingress controller service.
+func (o IngressConfigOutput) ExtraServiceAnnotations() pulumi.StringMapOutput {
+	return o.ApplyT(func(v IngressConfig) map[string]string { return v.ExtraServiceAnnotations }).(pulumi.StringMapOutput)
 }
 
 // NLB target type for NLB loadbalancers.
@@ -687,7 +696,7 @@ func (o IngressConfigPtrOutput) EnableMetrics() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Enable the service monitor for kube-prometheus-stackl.
+// Enable the service monitor for kube-prometheus-stack.
 func (o IngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *IngressConfig) *bool {
 		if v == nil {
@@ -695,6 +704,16 @@ func (o IngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 		}
 		return v.EnableServiceMonitor
 	}).(pulumi.BoolPtrOutput)
+}
+
+// Extra annotations to apply to the ingress controller service.
+func (o IngressConfigPtrOutput) ExtraServiceAnnotations() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *IngressConfig) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.ExtraServiceAnnotations
+	}).(pulumi.StringMapOutput)
 }
 
 // NLB target type for NLB loadbalancers.
@@ -733,6 +752,8 @@ type NginxIngressConfig struct {
 	EnableMetrics *bool `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stack.
 	EnableServiceMonitor *bool `pulumi:"enableServiceMonitor"`
+	// Extra annotations to apply to the ingress controller service.
+	ExtraServiceAnnotations map[string]string `pulumi:"extraServiceAnnotations"`
 	// NLB target type for NLB loadbalancers.
 	NlbTargetType *string `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
@@ -803,6 +824,8 @@ type NginxIngressConfigArgs struct {
 	EnableMetrics pulumi.BoolPtrInput `pulumi:"enableMetrics"`
 	// Enable the service monitor for kube-prometheus-stack.
 	EnableServiceMonitor pulumi.BoolPtrInput `pulumi:"enableServiceMonitor"`
+	// Extra annotations to apply to the ingress controller service.
+	ExtraServiceAnnotations pulumi.StringMapInput `pulumi:"extraServiceAnnotations"`
 	// NLB target type for NLB loadbalancers.
 	NlbTargetType pulumi.StringPtrInput `pulumi:"nlbTargetType"`
 	// The namespace to deploy the service monitor to.
@@ -951,6 +974,11 @@ func (o NginxIngressConfigOutput) EnableServiceMonitor() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v NginxIngressConfig) *bool { return v.EnableServiceMonitor }).(pulumi.BoolPtrOutput)
 }
 
+// Extra annotations to apply to the ingress controller service.
+func (o NginxIngressConfigOutput) ExtraServiceAnnotations() pulumi.StringMapOutput {
+	return o.ApplyT(func(v NginxIngressConfig) map[string]string { return v.ExtraServiceAnnotations }).(pulumi.StringMapOutput)
+}
+
 // NLB target type for NLB loadbalancers.
 func (o NginxIngressConfigOutput) NlbTargetType() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v NginxIngressConfig) *string { return v.NlbTargetType }).(pulumi.StringPtrOutput)
@@ -1053,6 +1081,16 @@ func (o NginxIngressConfigPtrOutput) EnableServiceMonitor() pulumi.BoolPtrOutput
 		}
 		return v.EnableServiceMonitor
 	}).(pulumi.BoolPtrOutput)
+}
+
+// Extra annotations to apply to the ingress controller service.
+func (o NginxIngressConfigPtrOutput) ExtraServiceAnnotations() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *NginxIngressConfig) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.ExtraServiceAnnotations
+	}).(pulumi.StringMapOutput)
 }
 
 // NLB target type for NLB loadbalancers.

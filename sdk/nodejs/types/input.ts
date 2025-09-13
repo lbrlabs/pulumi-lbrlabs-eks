@@ -58,7 +58,7 @@ export function disruptionConfigArgsProvideDefaults(val: DisruptionConfigArgs): 
 }
 
 /**
- * Configuration for the ingress controller.
+ * Configuration for the ingress controller (deprecated, use nginxIngressConfig).
  */
 export interface IngressConfigArgs {
     /**
@@ -86,9 +86,13 @@ export interface IngressConfigArgs {
      */
     enableMetrics?: pulumi.Input<boolean>;
     /**
-     * Enable the service monitor for kube-prometheus-stackl.
+     * Enable the service monitor for kube-prometheus-stack.
      */
     enableServiceMonitor?: pulumi.Input<boolean>;
+    /**
+     * Extra annotations to apply to the ingress controller service.
+     */
+    extraServiceAnnotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * NLB target type for NLB loadbalancers.
      */
@@ -146,6 +150,10 @@ export interface NginxIngressConfigArgs {
      * Enable the service monitor for kube-prometheus-stack.
      */
     enableServiceMonitor?: pulumi.Input<boolean>;
+    /**
+     * Extra annotations to apply to the ingress controller service.
+     */
+    extraServiceAnnotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * NLB target type for NLB loadbalancers.
      */

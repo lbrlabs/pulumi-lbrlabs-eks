@@ -64,8 +64,8 @@ class ClusterArgs:
         :param _builtins.bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param _builtins.bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param _builtins.bool enable_external_dns: Whether to enable external dns with route 53 integration.
-        :param _builtins.bool enable_external_ingress: Whether to create an ingress controller for external traffic.
-        :param _builtins.bool enable_internal_ingress: Whether to create an ingress controller for internal traffic.
+        :param _builtins.bool enable_external_ingress: Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
+        :param _builtins.bool enable_internal_ingress: Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         :param _builtins.bool enable_karpenter: Whether to enable karpenter.
         :param _builtins.bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[_builtins.str] external_dns_version: The version of the external-dns helm chart to deploy.
@@ -311,7 +311,7 @@ class ClusterArgs:
     @pulumi.getter(name="enableExternalIngress")
     def enable_external_ingress(self) -> Optional[_builtins.bool]:
         """
-        Whether to create an ingress controller for external traffic.
+        Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
         """
         return pulumi.get(self, "enable_external_ingress")
 
@@ -323,7 +323,7 @@ class ClusterArgs:
     @pulumi.getter(name="enableInternalIngress")
     def enable_internal_ingress(self) -> Optional[_builtins.bool]:
         """
-        Whether to create an ingress controller for internal traffic.
+        Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         """
         return pulumi.get(self, "enable_internal_ingress")
 
@@ -582,8 +582,8 @@ class Cluster(pulumi.ComponentResource):
         :param _builtins.bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param _builtins.bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
         :param _builtins.bool enable_external_dns: Whether to enable external dns with route 53 integration.
-        :param _builtins.bool enable_external_ingress: Whether to create an ingress controller for external traffic.
-        :param _builtins.bool enable_internal_ingress: Whether to create an ingress controller for internal traffic.
+        :param _builtins.bool enable_external_ingress: Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
+        :param _builtins.bool enable_internal_ingress: Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         :param _builtins.bool enable_karpenter: Whether to enable karpenter.
         :param _builtins.bool enable_otel: Whether to enable the OTEL Distro for EKS.
         :param pulumi.Input[_builtins.str] external_dns_version: The version of the external-dns helm chart to deploy.

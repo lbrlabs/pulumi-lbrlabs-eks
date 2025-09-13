@@ -208,7 +208,7 @@ class DisruptionConfigArgs:
 if not MYPY:
     class IngressConfigArgsDict(TypedDict):
         """
-        Configuration for the ingress controller.
+        Configuration for the ingress controller (deprecated, use nginxIngressConfig).
         """
         additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
         """
@@ -236,7 +236,11 @@ if not MYPY:
         """
         enable_service_monitor: NotRequired[pulumi.Input[_builtins.bool]]
         """
-        Enable the service monitor for kube-prometheus-stackl.
+        Enable the service monitor for kube-prometheus-stack.
+        """
+        extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+        """
+        Extra annotations to apply to the ingress controller service.
         """
         nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -259,17 +263,19 @@ class IngressConfigArgs:
                  enable_internal: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_metrics: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_service_monitor: Optional[pulumi.Input[_builtins.bool]] = None,
+                 extra_service_annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  nlb_target_type: Optional[pulumi.Input[_builtins.str]] = None,
                  service_monitor_namespace: Optional[pulumi.Input[_builtins.str]] = None):
         """
-        Configuration for the ingress controller.
+        Configuration for the ingress controller (deprecated, use nginxIngressConfig).
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] additional_config: Additional configuration for the ingress controller.
         :param pulumi.Input[_builtins.bool] allow_snippet_annotations: Whether to allow snippet annotations in the ingress controller.
         :param pulumi.Input[_builtins.int] controller_replicas: The number of replicas of the ingress controller.
         :param pulumi.Input[_builtins.bool] enable_external: Whether to create the external-facing ingress controller.
         :param pulumi.Input[_builtins.bool] enable_internal: Whether to create the internal-facing ingress controller.
         :param pulumi.Input[_builtins.bool] enable_metrics: Enable metrics for the ingress controller.
-        :param pulumi.Input[_builtins.bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stackl.
+        :param pulumi.Input[_builtins.bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stack.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] extra_service_annotations: Extra annotations to apply to the ingress controller service.
         :param pulumi.Input[_builtins.str] nlb_target_type: NLB target type for NLB loadbalancers.
         :param pulumi.Input[_builtins.str] service_monitor_namespace: The namespace to deploy the service monitor to.
         """
@@ -299,6 +305,8 @@ class IngressConfigArgs:
             enable_service_monitor = False
         if enable_service_monitor is not None:
             pulumi.set(__self__, "enable_service_monitor", enable_service_monitor)
+        if extra_service_annotations is not None:
+            pulumi.set(__self__, "extra_service_annotations", extra_service_annotations)
         if nlb_target_type is None:
             nlb_target_type = 'ip'
         if nlb_target_type is not None:
@@ -382,13 +390,25 @@ class IngressConfigArgs:
     @pulumi.getter(name="enableServiceMonitor")
     def enable_service_monitor(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Enable the service monitor for kube-prometheus-stackl.
+        Enable the service monitor for kube-prometheus-stack.
         """
         return pulumi.get(self, "enable_service_monitor")
 
     @enable_service_monitor.setter
     def enable_service_monitor(self, value: Optional[pulumi.Input[_builtins.bool]]):
         pulumi.set(self, "enable_service_monitor", value)
+
+    @_builtins.property
+    @pulumi.getter(name="extraServiceAnnotations")
+    def extra_service_annotations(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+        """
+        Extra annotations to apply to the ingress controller service.
+        """
+        return pulumi.get(self, "extra_service_annotations")
+
+    @extra_service_annotations.setter
+    def extra_service_annotations(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "extra_service_annotations", value)
 
     @_builtins.property
     @pulumi.getter(name="nlbTargetType")
@@ -448,6 +468,10 @@ if not MYPY:
         """
         Enable the service monitor for kube-prometheus-stack.
         """
+        extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+        """
+        Extra annotations to apply to the ingress controller service.
+        """
         nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
         """
         NLB target type for NLB loadbalancers.
@@ -469,6 +493,7 @@ class NginxIngressConfigArgs:
                  enable_internal: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_metrics: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_service_monitor: Optional[pulumi.Input[_builtins.bool]] = None,
+                 extra_service_annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  nlb_target_type: Optional[pulumi.Input[_builtins.str]] = None,
                  service_monitor_namespace: Optional[pulumi.Input[_builtins.str]] = None):
         """
@@ -480,6 +505,7 @@ class NginxIngressConfigArgs:
         :param pulumi.Input[_builtins.bool] enable_internal: Whether to create the internal-facing ingress controller.
         :param pulumi.Input[_builtins.bool] enable_metrics: Enable metrics for the ingress controller.
         :param pulumi.Input[_builtins.bool] enable_service_monitor: Enable the service monitor for kube-prometheus-stack.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] extra_service_annotations: Extra annotations to apply to the ingress controller service.
         :param pulumi.Input[_builtins.str] nlb_target_type: NLB target type for NLB loadbalancers.
         :param pulumi.Input[_builtins.str] service_monitor_namespace: The namespace to deploy the service monitor to.
         """
@@ -509,6 +535,8 @@ class NginxIngressConfigArgs:
             enable_service_monitor = False
         if enable_service_monitor is not None:
             pulumi.set(__self__, "enable_service_monitor", enable_service_monitor)
+        if extra_service_annotations is not None:
+            pulumi.set(__self__, "extra_service_annotations", extra_service_annotations)
         if nlb_target_type is None:
             nlb_target_type = 'ip'
         if nlb_target_type is not None:
@@ -599,6 +627,18 @@ class NginxIngressConfigArgs:
     @enable_service_monitor.setter
     def enable_service_monitor(self, value: Optional[pulumi.Input[_builtins.bool]]):
         pulumi.set(self, "enable_service_monitor", value)
+
+    @_builtins.property
+    @pulumi.getter(name="extraServiceAnnotations")
+    def extra_service_annotations(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+        """
+        Extra annotations to apply to the ingress controller service.
+        """
+        return pulumi.get(self, "extra_service_annotations")
+
+    @extra_service_annotations.setter
+    def extra_service_annotations(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "extra_service_annotations", value)
 
     @_builtins.property
     @pulumi.getter(name="nlbTargetType")

@@ -36,10 +36,10 @@ type IngressConfig struct {
 	AllowSnippetAnnotations pulumi.BoolInput   `pulumi:"allowSnippetAnnotations"`
 	// EnableExternal controls whether to create the external-facing ingress controller
 	// TODO: In future versions, this will override the EnableExternalIngress cluster arg
-	EnableExternal          pulumi.BoolInput   `pulumi:"enableExternal"`
-	// EnableInternal controls whether to create the internal-facing ingress controller  
+	EnableExternal pulumi.BoolInput `pulumi:"enableExternal"`
+	// EnableInternal controls whether to create the internal-facing ingress controller
 	// TODO: In future versions, this will override the EnableInternalIngress cluster arg
-	EnableInternal          pulumi.BoolInput   `pulumi:"enableInternal"`
+	EnableInternal pulumi.BoolInput `pulumi:"enableInternal"`
 }
 
 // nginx ingress configuration args
@@ -53,9 +53,9 @@ type NginxIngressConfig struct {
 	ExtraServiceAnnotations pulumi.MapInput    `pulumi:"extraServiceAnnotations"`
 	AllowSnippetAnnotations pulumi.BoolInput   `pulumi:"allowSnippetAnnotations"`
 	// EnableExternal controls whether to create the external-facing ingress controller
-	EnableExternal          pulumi.BoolInput   `pulumi:"enableExternal"`
+	EnableExternal pulumi.BoolInput `pulumi:"enableExternal"`
 	// EnableInternal controls whether to create the internal-facing ingress controller
-	EnableInternal          pulumi.BoolInput   `pulumi:"enableInternal"`
+	EnableInternal pulumi.BoolInput `pulumi:"enableInternal"`
 }
 
 // The set of arguments for creating a Cluster component resource.
@@ -78,19 +78,25 @@ type ClusterArgs struct {
 	LetsEncryptEmail             string                   `pulumi:"letsEncryptEmail"`
 	IngressConfig                *IngressConfig           `pulumi:"ingressConfig"`
 	NginxIngressConfig           *NginxIngressConfig      `pulumi:"nginxIngressConfig"`
-	EnableInternalIngress        bool                     `pulumi:"enableInternalIngress"`
-	EnableExternalIngress        bool                     `pulumi:"enableExternalIngress"`
-	LbType                       pulumi.StringInput       `pulumi:"lbType"`
-	CertificateArn               *pulumi.StringInput      `pulumi:"certificateArn"`
-	Tags                         *pulumi.StringMapInput   `pulumi:"tags"`
-	NginxIngressVersion          pulumi.StringInput       `pulumi:"nginxIngressVersion"`
-	NginxIngressRegistry         pulumi.StringInput       `pulumi:"nginxIngressRegistry"`
-	NginxIngressTag              pulumi.StringInput       `pulumi:"nginxIngressTag"`
-	EksIamAuthControllerVersion  pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
-	ExternalDNSVersion           pulumi.StringInput       `pulumi:"externalDNSVersion"`
-	CertManagerVersion           pulumi.StringInput       `pulumi:"certManagerVersion"`
-	EnabledClusterLogTypes       *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
-	AdminAccessPrincipal         pulumi.StringInput       `pulumi:"adminAccessPrincipal"`
+	// EnableInternalIngress controls whether to create the internal ingress controller
+	// To disable, set this to false. In future versions, this will be controlled by
+	// NginxIngressConfig.EnableInternal
+	EnableInternalIngress bool `pulumi:"enableInternalIngress"`
+	// EnableExternalIngress controls whether to create the external ingress controller
+	// To disable, set this to false. In future versions, this will be controlled by
+	// NginxIngressConfig.EnableExternal
+	EnableExternalIngress       bool                     `pulumi:"enableExternalIngress"`
+	LbType                      pulumi.StringInput       `pulumi:"lbType"`
+	CertificateArn              *pulumi.StringInput      `pulumi:"certificateArn"`
+	Tags                        *pulumi.StringMapInput   `pulumi:"tags"`
+	NginxIngressVersion         pulumi.StringInput       `pulumi:"nginxIngressVersion"`
+	NginxIngressRegistry        pulumi.StringInput       `pulumi:"nginxIngressRegistry"`
+	NginxIngressTag             pulumi.StringInput       `pulumi:"nginxIngressTag"`
+	EksIamAuthControllerVersion pulumi.StringInput       `pulumi:"eksIamAuthControllerVersion"`
+	ExternalDNSVersion          pulumi.StringInput       `pulumi:"externalDNSVersion"`
+	CertManagerVersion          pulumi.StringInput       `pulumi:"certManagerVersion"`
+	EnabledClusterLogTypes      *pulumi.StringArrayInput `pulumi:"enabledClusterLogTypes"`
+	AdminAccessPrincipal        pulumi.StringInput       `pulumi:"adminAccessPrincipal"`
 }
 
 // The Cluster component resource.
@@ -697,10 +703,6 @@ func NewCluster(ctx *pulumi.Context,
 		realisedIngressConfig = *args.NginxIngressConfig
 	}
 
-	// For now, keep the existing boolean flags for backward compatibility
-	// TODO: In future version, migrate to using only IngressConfig enable flags
-	// Users can set these flags in their IngressConfig for better organization
-	
 	if args.EnableExternalIngress {
 		nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
 			Chart:     pulumi.String("ingress-nginx"),

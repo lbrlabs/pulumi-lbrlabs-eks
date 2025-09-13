@@ -153,13 +153,13 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableExternalDns { get; set; }
 
         /// <summary>
-        /// Whether to create an ingress controller for external traffic.
+        /// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
         /// </summary>
         [Input("enableExternalIngress")]
         public bool? EnableExternalIngress { get; set; }
 
         /// <summary>
-        /// Whether to create an ingress controller for internal traffic.
+        /// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         /// </summary>
         [Input("enableInternalIngress")]
         public bool? EnableInternalIngress { get; set; }

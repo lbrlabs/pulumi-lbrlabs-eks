@@ -129,9 +129,9 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
-	// Whether to create an ingress controller for external traffic.
+	// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
 	EnableExternalIngress *bool `pulumi:"enableExternalIngress"`
-	// Whether to create an ingress controller for internal traffic.
+	// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
 	EnableInternalIngress *bool `pulumi:"enableInternalIngress"`
 	// Whether to enable karpenter.
 	EnableKarpenter *bool `pulumi:"enableKarpenter"`
@@ -191,9 +191,9 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
-	// Whether to create an ingress controller for external traffic.
+	// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
 	EnableExternalIngress *bool
-	// Whether to create an ingress controller for internal traffic.
+	// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
 	EnableInternalIngress *bool
 	// Whether to enable karpenter.
 	EnableKarpenter *bool
