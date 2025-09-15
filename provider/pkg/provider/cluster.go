@@ -667,6 +667,46 @@ func NewCluster(ctx *pulumi.Context,
 		}
 	}
 
+	// mergeNginxIngressConfig merges non-nil fields from source into destination.
+	// This ensures that zero values (false, 0, "", nil) don't override defaults - 
+	// only explicitly set values take precedence. This follows Pulumi's principle
+	// that unset values should not override configured defaults.
+	mergeNginxIngressConfig := func(source, dest *NginxIngressConfig) {
+		if source == nil || dest == nil {
+			return
+		}
+		if source.EnableMetrics != nil {
+			dest.EnableMetrics = source.EnableMetrics
+		}
+		if source.EnableServiceMonitor != nil {
+			dest.EnableServiceMonitor = source.EnableServiceMonitor
+		}
+		if source.ServiceMonitorNamespace != nil {
+			dest.ServiceMonitorNamespace = source.ServiceMonitorNamespace
+		}
+		if source.ControllerReplicas != nil {
+			dest.ControllerReplicas = source.ControllerReplicas
+		}
+		if source.AdditionalConfig != nil {
+			dest.AdditionalConfig = source.AdditionalConfig
+		}
+		if source.NlbTargetType != nil {
+			dest.NlbTargetType = source.NlbTargetType
+		}
+		if source.ExtraServiceAnnotations != nil {
+			dest.ExtraServiceAnnotations = source.ExtraServiceAnnotations
+		}
+		if source.AllowSnippetAnnotations != nil {
+			dest.AllowSnippetAnnotations = source.AllowSnippetAnnotations
+		}
+		if source.EnableExternal != nil {
+			dest.EnableExternal = source.EnableExternal
+		}
+		if source.EnableInternal != nil {
+			dest.EnableInternal = source.EnableInternal
+		}
+	}
+
 	// Determine which ingress configuration to use with backward compatibility
 	var realisedIngressConfig NginxIngressConfig
 
@@ -698,40 +738,9 @@ func NewCluster(ctx *pulumi.Context,
 		realisedIngressConfig = defaultConfig
 	}
 
-	// Merge with new NginxIngressConfig if provided (takes precedence for set fields)
-	if args.NginxIngressConfig != nil {
-		// Merge configurations - NginxIngressConfig takes precedence for non-nil fields
-		if args.NginxIngressConfig.EnableMetrics != nil {
-			realisedIngressConfig.EnableMetrics = args.NginxIngressConfig.EnableMetrics
-		}
-		if args.NginxIngressConfig.EnableServiceMonitor != nil {
-			realisedIngressConfig.EnableServiceMonitor = args.NginxIngressConfig.EnableServiceMonitor
-		}
-		if args.NginxIngressConfig.ServiceMonitorNamespace != nil {
-			realisedIngressConfig.ServiceMonitorNamespace = args.NginxIngressConfig.ServiceMonitorNamespace
-		}
-		if args.NginxIngressConfig.ControllerReplicas != nil {
-			realisedIngressConfig.ControllerReplicas = args.NginxIngressConfig.ControllerReplicas
-		}
-		if args.NginxIngressConfig.AdditionalConfig != nil {
-			realisedIngressConfig.AdditionalConfig = args.NginxIngressConfig.AdditionalConfig
-		}
-		if args.NginxIngressConfig.NlbTargetType != nil {
-			realisedIngressConfig.NlbTargetType = args.NginxIngressConfig.NlbTargetType
-		}
-		if args.NginxIngressConfig.ExtraServiceAnnotations != nil {
-			realisedIngressConfig.ExtraServiceAnnotations = args.NginxIngressConfig.ExtraServiceAnnotations
-		}
-		if args.NginxIngressConfig.AllowSnippetAnnotations != nil {
-			realisedIngressConfig.AllowSnippetAnnotations = args.NginxIngressConfig.AllowSnippetAnnotations
-		}
-		if args.NginxIngressConfig.EnableExternal != nil {
-			realisedIngressConfig.EnableExternal = args.NginxIngressConfig.EnableExternal
-		}
-		if args.NginxIngressConfig.EnableInternal != nil {
-			realisedIngressConfig.EnableInternal = args.NginxIngressConfig.EnableInternal
-		}
-	}
+	// Merge with new NginxIngressConfig if provided (takes precedence for explicitly set fields)
+	// Note: Only non-nil values override defaults to preserve backward compatibility
+	mergeNginxIngressConfig(args.NginxIngressConfig, &realisedIngressConfig)
 
 	if args.EnableExternalIngress {
 		// Check realisedIngressConfig.EnableExternal to allow controlling this via IngressConfig/NginxIngressConfig
