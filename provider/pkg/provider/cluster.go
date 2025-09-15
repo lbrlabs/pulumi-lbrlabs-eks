@@ -698,40 +698,115 @@ func NewCluster(ctx *pulumi.Context,
 		realisedIngressConfig = defaultConfig
 	}
 
-	// Override with new NginxIngressConfig if provided (takes precedence)
+	// Merge with new NginxIngressConfig if provided (takes precedence for set fields)
 	if args.NginxIngressConfig != nil {
-		realisedIngressConfig = *args.NginxIngressConfig
+		// Merge configurations - NginxIngressConfig takes precedence for non-nil fields
+		if args.NginxIngressConfig.EnableMetrics != nil {
+			realisedIngressConfig.EnableMetrics = args.NginxIngressConfig.EnableMetrics
+		}
+		if args.NginxIngressConfig.EnableServiceMonitor != nil {
+			realisedIngressConfig.EnableServiceMonitor = args.NginxIngressConfig.EnableServiceMonitor
+		}
+		if args.NginxIngressConfig.ServiceMonitorNamespace != nil {
+			realisedIngressConfig.ServiceMonitorNamespace = args.NginxIngressConfig.ServiceMonitorNamespace
+		}
+		if args.NginxIngressConfig.ControllerReplicas != nil {
+			realisedIngressConfig.ControllerReplicas = args.NginxIngressConfig.ControllerReplicas
+		}
+		if args.NginxIngressConfig.AdditionalConfig != nil {
+			realisedIngressConfig.AdditionalConfig = args.NginxIngressConfig.AdditionalConfig
+		}
+		if args.NginxIngressConfig.NlbTargetType != nil {
+			realisedIngressConfig.NlbTargetType = args.NginxIngressConfig.NlbTargetType
+		}
+		if args.NginxIngressConfig.ExtraServiceAnnotations != nil {
+			realisedIngressConfig.ExtraServiceAnnotations = args.NginxIngressConfig.ExtraServiceAnnotations
+		}
+		if args.NginxIngressConfig.AllowSnippetAnnotations != nil {
+			realisedIngressConfig.AllowSnippetAnnotations = args.NginxIngressConfig.AllowSnippetAnnotations
+		}
+		if args.NginxIngressConfig.EnableExternal != nil {
+			realisedIngressConfig.EnableExternal = args.NginxIngressConfig.EnableExternal
+		}
+		if args.NginxIngressConfig.EnableInternal != nil {
+			realisedIngressConfig.EnableInternal = args.NginxIngressConfig.EnableInternal
+		}
 	}
 
 	if args.EnableExternalIngress {
-		nginxIngressExternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
-			Chart:     pulumi.String("ingress-nginx"),
-			Namespace: pulumi.String("kube-system"),
-			Version:   args.NginxIngressVersion,
+		// Check realisedIngressConfig.EnableExternal to allow controlling this via IngressConfig/NginxIngressConfig
+		enableExternal := realisedIngressConfig.EnableExternal
+		if enableExternal == nil {
+			enableExternal = pulumi.Bool(true)
+		}
 
-			FetchArgs: &helm.FetchArgs{
-				Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
-			},
-			Values: pulumi.Map{
-				"controller": pulumi.Map{
-					"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
-					"image": pulumi.Map{
-						"registry": args.NginxIngressRegistry,
-						"tag":      args.NginxIngressTag,
+		// Convert to output for conditional logic
+		enableExternalOutput := enableExternal.ToBoolPtrOutput()
+
+		// Use ApplyT on the output to conditionally create the nginx ingress external chart
+		nginxIngressExternal := enableExternalOutput.ApplyT(func(enabled *bool) (interface{}, error) {
+			if enabled != nil && *enabled {
+				chart, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-ext", name), helm.ChartArgs{
+					Chart:     pulumi.String("ingress-nginx"),
+					Namespace: pulumi.String("kube-system"),
+					Version:   args.NginxIngressVersion,
+
+					FetchArgs: &helm.FetchArgs{
+						Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 					},
-					"metrics": pulumi.Map{
-						"enabled": realisedIngressConfig.EnableMetrics,
-						"serviceMonitor": pulumi.Map{
-							"enabled":   realisedIngressConfig.EnableServiceMonitor,
-							"namespace": realisedIngressConfig.ServiceMonitorNamespace,
-						},
-					},
-					"config":       realisedIngressConfig.AdditionalConfig,
-					"replicaCount": realisedIngressConfig.ControllerReplicas,
-					"admissionWebhooks": pulumi.Map{
-						"patch": pulumi.Map{
+					Values: pulumi.Map{
+						"controller": pulumi.Map{
+							"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
 							"image": pulumi.Map{
 								"registry": args.NginxIngressRegistry,
+								"tag":      args.NginxIngressTag,
+							},
+							"metrics": pulumi.Map{
+								"enabled": realisedIngressConfig.EnableMetrics,
+								"serviceMonitor": pulumi.Map{
+									"enabled":   realisedIngressConfig.EnableServiceMonitor,
+									"namespace": realisedIngressConfig.ServiceMonitorNamespace,
+								},
+							},
+							"config":       realisedIngressConfig.AdditionalConfig,
+							"replicaCount": realisedIngressConfig.ControllerReplicas,
+							"admissionWebhooks": pulumi.Map{
+								"patch": pulumi.Map{
+									"image": pulumi.Map{
+										"registry": args.NginxIngressRegistry,
+									},
+									"tolerations": pulumi.MapArray{
+										pulumi.Map{
+											"key":      pulumi.String("node.lbrlabs.com/system"),
+											"operator": pulumi.String("Equal"),
+											"value":    pulumi.String("true"),
+											"effect":   pulumi.String("NoSchedule"),
+										},
+									},
+								},
+							},
+							"tolerations": pulumi.MapArray{
+								pulumi.Map{
+									"key":      pulumi.String("node.lbrlabs.com/system"),
+									"operator": pulumi.String("Equal"),
+									"value":    pulumi.String("true"),
+									"effect":   pulumi.String("NoSchedule"),
+								},
+							},
+							"ingressClassResource": pulumi.Map{
+								"name":            pulumi.String("external"),
+								"default":         pulumi.Bool(true),
+								"controllerValue": pulumi.String("k8s.io/ingress-nginx/external"),
+							},
+							"ingressClass": pulumi.String("external"),
+							"service": pulumi.Map{
+								"annotations": externalAnnotations,
+							},
+						},
+						"defaultBackend": pulumi.Map{
+							"image": pulumi.Map{
+								"registry": args.NginxIngressRegistry,
+								"tag":      args.NginxIngressTag,
 							},
 							"tolerations": pulumi.MapArray{
 								pulumi.Map{
@@ -743,108 +818,121 @@ func NewCluster(ctx *pulumi.Context,
 							},
 						},
 					},
-					"tolerations": pulumi.MapArray{
-						pulumi.Map{
-							"key":      pulumi.String("node.lbrlabs.com/system"),
-							"operator": pulumi.String("Equal"),
-							"value":    pulumi.String("true"),
-							"effect":   pulumi.String("NoSchedule"),
-						},
-					},
-					"ingressClassResource": pulumi.Map{
-						"name":            pulumi.String("external"),
-						"default":         pulumi.Bool(true),
-						"controllerValue": pulumi.String("k8s.io/ingress-nginx/external"),
-					},
-					"ingressClass": pulumi.String("external"),
-					"service": pulumi.Map{
-						"annotations": externalAnnotations,
-					},
-				},
-				"defaultBackend": pulumi.Map{
-					"image": pulumi.Map{
-						"registry": args.NginxIngressRegistry,
-						"tag":      args.NginxIngressTag,
-					},
-					"tolerations": pulumi.MapArray{
-						pulumi.Map{
-							"key":      pulumi.String("node.lbrlabs.com/system"),
-							"operator": pulumi.String("Equal"),
-							"value":    pulumi.String("true"),
-							"effect":   pulumi.String("NoSchedule"),
-						},
-					},
-				},
-			},
-		}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
-		if err != nil {
-			return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
-		}
+				}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
+				if err != nil {
+					return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
+				}
+				return chart, nil
+			}
+			return nil, nil // Return nil when disabled
+		})
 
 		_ = nginxIngressExternal
 	}
 
 	if args.EnableInternalIngress {
-		// TODO: In future version, also check realisedIngressConfig.EnableInternal
-		// to allow controlling this via IngressConfig
-
-		var internalAnnotations pulumi.Map
-
-		if args.CertificateArn != nil {
-			internalAnnotations = pulumi.Map{
-				"service.beta.kubernetes.io/aws-load-balancer-ssl-cert":         *args.CertificateArn,
-				"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
-				"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
-				"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
-				"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
-			}
-
-			if args.IngressConfig != nil && args.IngressConfig.NlbTargetType != nil {
-				internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.IngressConfig.NlbTargetType
-			}
-			if args.NginxIngressConfig != nil && args.NginxIngressConfig.NlbTargetType != nil {
-				internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.NginxIngressConfig.NlbTargetType
-			}
-		} else {
-			internalAnnotations = pulumi.Map{
-				"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
-				"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
-				"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
-				"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
-			}
-			if args.IngressConfig != nil && args.IngressConfig.NlbTargetType != nil {
-				internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.IngressConfig.NlbTargetType
-			}
-			if args.NginxIngressConfig != nil && args.NginxIngressConfig.NlbTargetType != nil {
-				internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.NginxIngressConfig.NlbTargetType
-			}
+		// Check realisedIngressConfig.EnableInternal to allow controlling this via IngressConfig/NginxIngressConfig
+		enableInternal := realisedIngressConfig.EnableInternal
+		if enableInternal == nil {
+			enableInternal = pulumi.Bool(true)
 		}
 
-		nginxIngressInternal, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-int", name), helm.ChartArgs{
-			Chart:     pulumi.String("ingress-nginx"),
-			Namespace: pulumi.String("kube-system"),
-			Version:   args.NginxIngressVersion,
-			FetchArgs: &helm.FetchArgs{
-				Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
-			},
-			Values: pulumi.Map{
-				"controller": pulumi.Map{
-					"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
-					"image": pulumi.Map{
-						"registry": args.NginxIngressRegistry,
-						"tag":      args.NginxIngressTag,
+		// Convert to output for conditional logic
+		enableInternalOutput := enableInternal.ToBoolPtrOutput()
+
+		// Use ApplyT on the output to conditionally create the nginx ingress internal chart
+		nginxIngressInternal := enableInternalOutput.ApplyT(func(enabled *bool) (interface{}, error) {
+			if enabled != nil && *enabled {
+				var internalAnnotations pulumi.Map
+
+				if args.CertificateArn != nil {
+					internalAnnotations = pulumi.Map{
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-cert":         *args.CertificateArn,
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
+						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+						"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+					}
+
+					if args.IngressConfig != nil && args.IngressConfig.NlbTargetType != nil {
+						internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.IngressConfig.NlbTargetType
+					}
+					if args.NginxIngressConfig != nil && args.NginxIngressConfig.NlbTargetType != nil {
+						internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.NginxIngressConfig.NlbTargetType
+					}
+				} else {
+					internalAnnotations = pulumi.Map{
+						"service.beta.kubernetes.io/aws-load-balancer-ssl-ports":        pulumi.String("https"),
+						"service.beta.kubernetes.io/aws-load-balancer-internal":         pulumi.Bool(true),
+						"service.beta.kubernetes.io/aws-load-balancer-backend-protocol": pulumi.String("tcp"),
+						"service.beta.kubernetes.io/aws-load-balancer-type":             args.LbType,
+					}
+					if args.IngressConfig != nil && args.IngressConfig.NlbTargetType != nil {
+						internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.IngressConfig.NlbTargetType
+					}
+					if args.NginxIngressConfig != nil && args.NginxIngressConfig.NlbTargetType != nil {
+						internalAnnotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"] = args.NginxIngressConfig.NlbTargetType
+					}
+				}
+
+				chart, err := helm.NewChart(ctx, fmt.Sprintf("%s-nginx-int", name), helm.ChartArgs{
+					Chart:     pulumi.String("ingress-nginx"),
+					Namespace: pulumi.String("kube-system"),
+					Version:   args.NginxIngressVersion,
+					FetchArgs: &helm.FetchArgs{
+						Repo: pulumi.String("https://kubernetes.github.io/ingress-nginx"),
 					},
-					"replicaCount": realisedIngressConfig.ControllerReplicas,
-					"metrics": pulumi.Map{
-						"enabled": realisedIngressConfig.EnableMetrics,
-						"serviceMonitor": pulumi.Map{
-							"enabled":   realisedIngressConfig.EnableServiceMonitor,
-							"namespace": realisedIngressConfig.ServiceMonitorNamespace,
+					Values: pulumi.Map{
+						"controller": pulumi.Map{
+							"allowSnippetAnnotations": realisedIngressConfig.AllowSnippetAnnotations,
+							"image": pulumi.Map{
+								"registry": args.NginxIngressRegistry,
+								"tag":      args.NginxIngressTag,
+							},
+							"replicaCount": realisedIngressConfig.ControllerReplicas,
+							"metrics": pulumi.Map{
+								"enabled": realisedIngressConfig.EnableMetrics,
+								"serviceMonitor": pulumi.Map{
+									"enabled":   realisedIngressConfig.EnableServiceMonitor,
+									"namespace": realisedIngressConfig.ServiceMonitorNamespace,
+								},
+							},
+							"config": realisedIngressConfig.AdditionalConfig,
+							"admissionWebhooks": pulumi.Map{
+								"patch": pulumi.Map{
+									"tolerations": pulumi.MapArray{
+										pulumi.Map{
+											"key":      pulumi.String("node.lbrlabs.com/system"),
+											"operator": pulumi.String("Equal"),
+											"value":    pulumi.String("true"),
+											"effect":   pulumi.String("NoSchedule"),
+										},
+									},
+								},
+							},
+							"tolerations": pulumi.MapArray{
+								pulumi.Map{
+									"key":      pulumi.String("node.lbrlabs.com/system"),
+									"operator": pulumi.String("Equal"),
+									"value":    pulumi.String("true"),
+									"effect":   pulumi.String("NoSchedule"),
+								},
+							},
+							"ingressClassResource": pulumi.Map{
+								"name":            pulumi.String("internal"),
+								"default":         pulumi.Bool(true),
+								"controllerValue": pulumi.String("k8s.io/ingress-nginx/internal"),
+							},
+							"ingressClass": pulumi.String("internal"),
+							"service": pulumi.Map{
+								"annotations": internalAnnotations,
+							},
 						},
-					},
-					"config": realisedIngressConfig.AdditionalConfig,
-					"admissionWebhooks": pulumi.Map{
-						"patch": pulumi.Map{
+						"defaultBackend": pulumi.Map{
+							"image": pulumi.Map{
+								"registry": args.NginxIngressRegistry,
+								"tag":      args.NginxIngressTag,
+							},
 							"tolerations": pulumi.MapArray{
 								pulumi.Map{
 									"key":      pulumi.String("node.lbrlabs.com/system"),
@@ -855,43 +943,14 @@ func NewCluster(ctx *pulumi.Context,
 							},
 						},
 					},
-					"tolerations": pulumi.MapArray{
-						pulumi.Map{
-							"key":      pulumi.String("node.lbrlabs.com/system"),
-							"operator": pulumi.String("Equal"),
-							"value":    pulumi.String("true"),
-							"effect":   pulumi.String("NoSchedule"),
-						},
-					},
-					"ingressClassResource": pulumi.Map{
-						"name":            pulumi.String("internal"),
-						"default":         pulumi.Bool(true),
-						"controllerValue": pulumi.String("k8s.io/ingress-nginx/internal"),
-					},
-					"ingressClass": pulumi.String("internal"),
-					"service": pulumi.Map{
-						"annotations": internalAnnotations,
-					},
-				},
-				"defaultBackend": pulumi.Map{
-					"image": pulumi.Map{
-						"registry": args.NginxIngressRegistry,
-						"tag":      args.NginxIngressTag,
-					},
-					"tolerations": pulumi.MapArray{
-						pulumi.Map{
-							"key":      pulumi.String("node.lbrlabs.com/system"),
-							"operator": pulumi.String("Equal"),
-							"value":    pulumi.String("true"),
-							"effect":   pulumi.String("NoSchedule"),
-						},
-					},
-				},
-			},
-		}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
-		if err != nil {
-			return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
-		}
+				}, pulumi.Parent(controlPlane), pulumi.Provider(provider), pulumi.DependsOn([]pulumi.Resource{systemNodes, controlPlane, ebsCsiAddon}))
+				if err != nil {
+					return nil, fmt.Errorf("error installing nginx ingress helm release: %w", err)
+				}
+				return chart, nil
+			}
+			return nil, nil // Return nil when disabled
+		})
 
 		_ = nginxIngressInternal
 	}
