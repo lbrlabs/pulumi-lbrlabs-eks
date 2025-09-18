@@ -89,6 +89,9 @@ func NewCluster(ctx *pulumi.Context,
 	if args.LbType == nil {
 		args.LbType = pulumi.StringPtr("nlb")
 	}
+	if args.NginxIngressConfig != nil {
+		args.NginxIngressConfig = args.NginxIngressConfig.ToNginxIngressConfigPtrOutput().ApplyT(func(v *NginxIngressConfig) *NginxIngressConfig { return v.Defaults() }).(NginxIngressConfigPtrOutput)
+	}
 	if args.NginxIngressRegistry == nil {
 		args.NginxIngressRegistry = pulumi.StringPtr("registry.k8s.io")
 	}
@@ -126,9 +129,9 @@ type clusterArgs struct {
 	EnableCloudWatchAgent *bool `pulumi:"enableCloudWatchAgent"`
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool `pulumi:"enableExternalDns"`
-	// Whether to create an ingress controller for external traffic.
+	// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
 	EnableExternalIngress *bool `pulumi:"enableExternalIngress"`
-	// Whether to create an ingress controller for internal traffic.
+	// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
 	EnableInternalIngress *bool `pulumi:"enableInternalIngress"`
 	// Whether to enable karpenter.
 	EnableKarpenter *bool `pulumi:"enableKarpenter"`
@@ -137,7 +140,7 @@ type clusterArgs struct {
 	EnabledClusterLogTypes []string `pulumi:"enabledClusterLogTypes"`
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion *string `pulumi:"externalDNSVersion"`
-	// Configuration for the ingress controller.
+	// Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
 	IngressConfig *IngressConfig `pulumi:"ingressConfig"`
 	// The version of karpenter to deploy.
 	KarpenterVersion *string `pulumi:"karpenterVersion"`
@@ -145,6 +148,8 @@ type clusterArgs struct {
 	LbType *string `pulumi:"lbType"`
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
+	// Configuration for the nginx ingress controllers.
+	NginxIngressConfig *NginxIngressConfig `pulumi:"nginxIngressConfig"`
 	// The container registry to pull images from.
 	NginxIngressRegistry *string `pulumi:"nginxIngressRegistry"`
 	// The tag to use for the nginx ingress controller images.
@@ -186,9 +191,9 @@ type ClusterArgs struct {
 	EnableCloudWatchAgent *bool
 	// Whether to enable external dns with route 53 integration.
 	EnableExternalDns *bool
-	// Whether to create an ingress controller for external traffic.
+	// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
 	EnableExternalIngress *bool
-	// Whether to create an ingress controller for internal traffic.
+	// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
 	EnableInternalIngress *bool
 	// Whether to enable karpenter.
 	EnableKarpenter *bool
@@ -197,7 +202,7 @@ type ClusterArgs struct {
 	EnabledClusterLogTypes pulumi.StringArrayInput
 	// The version of the external-dns helm chart to deploy.
 	ExternalDNSVersion pulumi.StringPtrInput
-	// Configuration for the ingress controller.
+	// Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
 	IngressConfig IngressConfigPtrInput
 	// The version of karpenter to deploy.
 	KarpenterVersion pulumi.StringPtrInput
@@ -205,6 +210,8 @@ type ClusterArgs struct {
 	LbType pulumi.StringPtrInput
 	// The email address to use to issue certificates from Lets Encrypt.
 	LetsEncryptEmail *string
+	// Configuration for the nginx ingress controllers.
+	NginxIngressConfig NginxIngressConfigPtrInput
 	// The container registry to pull images from.
 	NginxIngressRegistry pulumi.StringPtrInput
 	// The tag to use for the nginx ingress controller images.

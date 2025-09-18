@@ -153,13 +153,13 @@ namespace Lbrlabs.PulumiPackage.Eks
         public bool? EnableExternalDns { get; set; }
 
         /// <summary>
-        /// Whether to create an ingress controller for external traffic.
+        /// Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
         /// </summary>
         [Input("enableExternalIngress")]
         public bool? EnableExternalIngress { get; set; }
 
         /// <summary>
-        /// Whether to create an ingress controller for internal traffic.
+        /// Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
         /// </summary>
         [Input("enableInternalIngress")]
         public bool? EnableInternalIngress { get; set; }
@@ -191,7 +191,7 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<string>? ExternalDNSVersion { get; set; }
 
         /// <summary>
-        /// Configuration for the ingress controller.
+        /// Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         /// </summary>
         [Input("ingressConfig")]
         public Input<Inputs.IngressConfigArgs>? IngressConfig { get; set; }
@@ -213,6 +213,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// </summary>
         [Input("letsEncryptEmail")]
         public string? LetsEncryptEmail { get; set; }
+
+        /// <summary>
+        /// Configuration for the nginx ingress controllers.
+        /// </summary>
+        [Input("nginxIngressConfig")]
+        public Input<Inputs.NginxIngressConfigArgs>? NginxIngressConfig { get; set; }
 
         /// <summary>
         /// The container registry to pull images from.

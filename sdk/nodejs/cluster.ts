@@ -90,6 +90,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["karpenterVersion"] = (args?.karpenterVersion) ?? "0.36.2";
             resourceInputs["lbType"] = (args?.lbType) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args?.letsEncryptEmail;
+            resourceInputs["nginxIngressConfig"] = args ? (args.nginxIngressConfig ? pulumi.output(args.nginxIngressConfig).apply(inputs.nginxIngressConfigArgsProvideDefaults) : undefined) : undefined;
             resourceInputs["nginxIngressRegistry"] = (args?.nginxIngressRegistry) ?? "registry.k8s.io";
             resourceInputs["nginxIngressTag"] = (args?.nginxIngressTag) ?? "v1.12.0";
             resourceInputs["nginxIngressVersion"] = args?.nginxIngressVersion;
@@ -166,11 +167,11 @@ export interface ClusterArgs {
      */
     enableExternalDns?: boolean;
     /**
-     * Whether to create an ingress controller for external traffic.
+     * Whether to create an ingress controller for external traffic. (deprecated, use nginxIngressConfig.enableExternal)
      */
     enableExternalIngress?: boolean;
     /**
-     * Whether to create an ingress controller for internal traffic.
+     * Whether to create an ingress controller for internal traffic. (deprecated, use nginxIngressConfig.enableInternal)
      */
     enableInternalIngress?: boolean;
     /**
@@ -187,7 +188,7 @@ export interface ClusterArgs {
      */
     externalDNSVersion?: pulumi.Input<string>;
     /**
-     * Configuration for the ingress controller.
+     * Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
      */
     ingressConfig?: pulumi.Input<inputs.IngressConfigArgs>;
     /**
@@ -202,6 +203,10 @@ export interface ClusterArgs {
      * The email address to use to issue certificates from Lets Encrypt.
      */
     letsEncryptEmail?: string;
+    /**
+     * Configuration for the nginx ingress controllers.
+     */
+    nginxIngressConfig?: pulumi.Input<inputs.NginxIngressConfigArgs>;
     /**
      * The container registry to pull images from.
      */

@@ -1,9 +1,11 @@
 README.md
 setup.py
 lbrlabs_pulumi_eks/__init__.py
+lbrlabs_pulumi_eks/_inputs.py
 lbrlabs_pulumi_eks/_utilities.py
 lbrlabs_pulumi_eks/attached_fargate_profile.py
 lbrlabs_pulumi_eks/attached_node_group.py
+lbrlabs_pulumi_eks/autoscaled_node_group.py
 lbrlabs_pulumi_eks/cluster.py
 lbrlabs_pulumi_eks/iam_role_mapping.py
 lbrlabs_pulumi_eks/iam_service_account_role.py

@@ -58,7 +58,7 @@ export function disruptionConfigArgsProvideDefaults(val: DisruptionConfigArgs): 
 }
 
 /**
- * Configuration for the ingress controller.
+ * Configuration for the ingress controller (deprecated, use nginxIngressConfig).
  */
 export interface IngressConfigArgs {
     /**
@@ -74,13 +74,25 @@ export interface IngressConfigArgs {
      */
     controllerReplicas?: pulumi.Input<number>;
     /**
+     * Whether to create the external-facing ingress controller.
+     */
+    enableExternal?: pulumi.Input<boolean>;
+    /**
+     * Whether to create the internal-facing ingress controller.
+     */
+    enableInternal?: pulumi.Input<boolean>;
+    /**
      * Enable metrics for the ingress controller.
      */
     enableMetrics?: pulumi.Input<boolean>;
     /**
-     * Enable the service monitor for kube-prometheus-stackl.
+     * Enable the service monitor for kube-prometheus-stack.
      */
     enableServiceMonitor?: pulumi.Input<boolean>;
+    /**
+     * Extra annotations to apply to the ingress controller service.
+     */
+    extraServiceAnnotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * NLB target type for NLB loadbalancers.
      */
@@ -98,6 +110,69 @@ export function ingressConfigArgsProvideDefaults(val: IngressConfigArgs): Ingres
         ...val,
         allowSnippetAnnotations: (val.allowSnippetAnnotations) ?? false,
         controllerReplicas: (val.controllerReplicas) ?? 1,
+        enableExternal: (val.enableExternal) ?? true,
+        enableInternal: (val.enableInternal) ?? true,
+        enableMetrics: (val.enableMetrics) ?? false,
+        enableServiceMonitor: (val.enableServiceMonitor) ?? false,
+        nlbTargetType: (val.nlbTargetType) ?? "ip",
+    };
+}
+
+/**
+ * Configuration for the nginx ingress controllers.
+ */
+export interface NginxIngressConfigArgs {
+    /**
+     * Additional configuration for the ingress controller.
+     */
+    additionalConfig?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Whether to allow snippet annotations in the ingress controller.
+     */
+    allowSnippetAnnotations?: pulumi.Input<boolean>;
+    /**
+     * The number of replicas of the ingress controller.
+     */
+    controllerReplicas?: pulumi.Input<number>;
+    /**
+     * Whether to create the external-facing ingress controller.
+     */
+    enableExternal?: pulumi.Input<boolean>;
+    /**
+     * Whether to create the internal-facing ingress controller.
+     */
+    enableInternal?: pulumi.Input<boolean>;
+    /**
+     * Enable metrics for the ingress controller.
+     */
+    enableMetrics?: pulumi.Input<boolean>;
+    /**
+     * Enable the service monitor for kube-prometheus-stack.
+     */
+    enableServiceMonitor?: pulumi.Input<boolean>;
+    /**
+     * Extra annotations to apply to the ingress controller service.
+     */
+    extraServiceAnnotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * NLB target type for NLB loadbalancers.
+     */
+    nlbTargetType?: pulumi.Input<string>;
+    /**
+     * The namespace to deploy the service monitor to.
+     */
+    serviceMonitorNamespace?: pulumi.Input<string>;
+}
+/**
+ * nginxIngressConfigArgsProvideDefaults sets the appropriate defaults for NginxIngressConfigArgs
+ */
+export function nginxIngressConfigArgsProvideDefaults(val: NginxIngressConfigArgs): NginxIngressConfigArgs {
+    return {
+        ...val,
+        allowSnippetAnnotations: (val.allowSnippetAnnotations) ?? false,
+        controllerReplicas: (val.controllerReplicas) ?? 1,
+        enableExternal: (val.enableExternal) ?? true,
+        enableInternal: (val.enableInternal) ?? true,
         enableMetrics: (val.enableMetrics) ?? false,
         enableServiceMonitor: (val.enableServiceMonitor) ?? false,
         nlbTargetType: (val.nlbTargetType) ?? "ip",
