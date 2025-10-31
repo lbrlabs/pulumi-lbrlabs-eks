@@ -730,6 +730,7 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["karpenter_node_role"] = None
             __props__.__dict__["karpenter_queue_name"] = None
+            __props__.__dict__["karpenter_role"] = None
             __props__.__dict__["kubeconfig"] = None
             __props__.__dict__["oidc_provider"] = None
             __props__.__dict__["system_nodes"] = None
@@ -771,6 +772,14 @@ class Cluster(pulumi.ComponentResource):
         Name of the SQS queue that Karpenter uses for interruption events.
         """
         return pulumi.get(self, "karpenter_queue_name")
+
+    @_builtins.property
+    @pulumi.getter(name="karpenterRole")
+    def karpenter_role(self) -> pulumi.Output[Optional['pulumi_aws.iam.Role']]:
+        """
+        The role created for the karpenter controller.
+        """
+        return pulumi.get(self, "karpenter_role")
 
     @_builtins.property
     @pulumi.getter

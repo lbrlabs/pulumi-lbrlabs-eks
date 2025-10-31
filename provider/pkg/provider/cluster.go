@@ -109,6 +109,7 @@ type Cluster struct {
 	OidcProvider       *iam.OpenIdConnectProvider    `pulumi:"oidcProvider"`
 	KubeConfig         pulumi.StringOutput           `pulumi:"kubeconfig"`
 	ClusterIssuer      *apiextensions.CustomResource `pulumi:"clusterIssuer"`
+	KarpenterRole      *iam.Role                     `pulumi:"karpenterRole"`
 	KarpenterNodeRole  *iam.Role                     `pulumi:"karpenterNodeRole"`
 	KarpenterQueueName pulumi.StringPtrOutput        `pulumi:"karpenterQueueName"`
 }
@@ -668,7 +669,7 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	// mergeNginxIngressConfig merges non-nil fields from source into destination.
-	// This ensures that zero values (false, 0, "", nil) don't override defaults - 
+	// This ensures that zero values (false, 0, "", nil) don't override defaults -
 	// only explicitly set values take precedence. This follows Pulumi's principle
 	// that unset values should not override configured defaults.
 	mergeNginxIngressConfig := func(source, dest *NginxIngressConfig) {
@@ -1364,6 +1365,7 @@ func NewCluster(ctx *pulumi.Context,
 		}
 	}
 
+	var karpenterRole *IamServiceAccountRole
 	var karpenterNodeRole *iam.Role
 
 	if args.EnableKarpenter {
@@ -1482,7 +1484,7 @@ func NewCluster(ctx *pulumi.Context,
 			return nil, fmt.Errorf("error creating karpenter service account: %w", err)
 		}
 
-		karpenterRole, err := NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-karpenter-role", name), &IamServiceAccountRoleArgs{
+		karpenterRole, err = NewIamServiceAccountRole(ctx, fmt.Sprintf("%s-karpenter-role", name), &IamServiceAccountRoleArgs{
 			OidcProviderArn:    oidcProvider.Arn,
 			OidcProviderURL:    oidcProvider.Url,
 			NamespaceName:      pulumi.String("kube-system"),
@@ -1631,6 +1633,7 @@ func NewCluster(ctx *pulumi.Context,
 						pulumi.String("iam:RemoveRoleFromInstanceProfile"),
 						pulumi.String("iam:DeleteInstanceProfile"),
 						pulumi.String("iam:GetInstanceProfile"),
+						pulumi.String("iam:ListInstanceProfiles"),
 					},
 					Resources: pulumi.StringArray{
 						pulumi.String("*"),
@@ -1791,6 +1794,9 @@ func NewCluster(ctx *pulumi.Context,
 	component.ControlPlane = controlPlane
 	component.OidcProvider = oidcProvider
 	component.SystemNodes = systemNodes
+	if karpenterRole != nil {
+		component.KarpenterRole = karpenterRole.Role
+	}
 	component.KarpenterNodeRole = karpenterNodeRole
 	component.KubeConfig = kc
 
@@ -1801,6 +1807,7 @@ func NewCluster(ctx *pulumi.Context,
 		"kubeconfig":            kc,
 		"clusterSecurityGroups": controlPlane.VpcConfig.SecurityGroupIds(),
 		"karpenterQueueName":    component.KarpenterQueueName,
+		"karpenterRole":         component.KarpenterRole,
 	}); err != nil {
 		return nil, err
 	}

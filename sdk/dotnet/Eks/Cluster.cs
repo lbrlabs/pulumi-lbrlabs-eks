@@ -38,6 +38,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Output<string?> KarpenterQueueName { get; private set; } = null!;
 
         /// <summary>
+        /// The role created for the karpenter controller.
+        /// </summary>
+        [Output("karpenterRole")]
+        public Output<Pulumi.Aws.Iam.Role?> KarpenterRole { get; private set; } = null!;
+
+        /// <summary>
         /// The kubeconfig for this cluster.
         /// </summary>
         [Output("kubeconfig")]

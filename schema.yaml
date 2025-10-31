@@ -321,6 +321,9 @@ resources:
       systemNodes:
         "$ref": "/aws/v6.38.1/schema.json#/resources/aws:eks%2FnodeGroup:NodeGroup"
         "description": The system node group.
+      karpenterRole:
+        "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
+        "description": The role created for the karpenter controller.
       karpenterNodeRole:
         "$ref": "/aws/v6.38.1/schema.json#/resources/aws:iam%2Frole:Role"
         "description": The role created for karpenter nodes.
