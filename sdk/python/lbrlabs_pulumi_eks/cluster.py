@@ -44,8 +44,6 @@ class ClusterArgs:
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
                  nginx_ingress_config: Optional[pulumi.Input['NginxIngressConfigArgs']] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
@@ -74,9 +72,7 @@ class ClusterArgs:
         :param pulumi.Input[_builtins.str] lb_type: The type of loadbalancer to provision.
         :param _builtins.str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input['NginxIngressConfigArgs'] nginx_ingress_config: Configuration for the nginx ingress controllers.
-        :param pulumi.Input[_builtins.str] nginx_ingress_registry: The container registry to pull images from.
-        :param pulumi.Input[_builtins.str] nginx_ingress_tag: The tag to use for the nginx ingress controller images.
-        :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
+        :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the F5 NGINX Ingress Controller helm chart to deploy.
         :param pulumi.Input[_builtins.float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -148,14 +144,8 @@ class ClusterArgs:
             pulumi.set(__self__, "lets_encrypt_email", lets_encrypt_email)
         if nginx_ingress_config is not None:
             pulumi.set(__self__, "nginx_ingress_config", nginx_ingress_config)
-        if nginx_ingress_registry is None:
-            nginx_ingress_registry = 'registry.k8s.io'
-        if nginx_ingress_registry is not None:
-            pulumi.set(__self__, "nginx_ingress_registry", nginx_ingress_registry)
-        if nginx_ingress_tag is None:
-            nginx_ingress_tag = 'v1.12.0'
-        if nginx_ingress_tag is not None:
-            pulumi.set(__self__, "nginx_ingress_tag", nginx_ingress_tag)
+        if nginx_ingress_version is None:
+            nginx_ingress_version = '2.3.1'
         if nginx_ingress_version is not None:
             pulumi.set(__self__, "nginx_ingress_version", nginx_ingress_version)
         if system_node_desired_count is not None:
@@ -437,34 +427,10 @@ class ClusterArgs:
         pulumi.set(self, "nginx_ingress_config", value)
 
     @_builtins.property
-    @pulumi.getter(name="nginxIngressRegistry")
-    def nginx_ingress_registry(self) -> Optional[pulumi.Input[_builtins.str]]:
-        """
-        The container registry to pull images from.
-        """
-        return pulumi.get(self, "nginx_ingress_registry")
-
-    @nginx_ingress_registry.setter
-    def nginx_ingress_registry(self, value: Optional[pulumi.Input[_builtins.str]]):
-        pulumi.set(self, "nginx_ingress_registry", value)
-
-    @_builtins.property
-    @pulumi.getter(name="nginxIngressTag")
-    def nginx_ingress_tag(self) -> Optional[pulumi.Input[_builtins.str]]:
-        """
-        The tag to use for the nginx ingress controller images.
-        """
-        return pulumi.get(self, "nginx_ingress_tag")
-
-    @nginx_ingress_tag.setter
-    def nginx_ingress_tag(self, value: Optional[pulumi.Input[_builtins.str]]):
-        pulumi.set(self, "nginx_ingress_tag", value)
-
-    @_builtins.property
     @pulumi.getter(name="nginxIngressVersion")
     def nginx_ingress_version(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        The version of the nginx ingress controller helm chart to deploy.
+        The version of the F5 NGINX Ingress Controller helm chart to deploy.
         """
         return pulumi.get(self, "nginx_ingress_version")
 
@@ -558,8 +524,6 @@ class Cluster(pulumi.ComponentResource):
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
                  nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
@@ -592,9 +556,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.str] lb_type: The type of loadbalancer to provision.
         :param _builtins.str lets_encrypt_email: The email address to use to issue certificates from Lets Encrypt.
         :param pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']] nginx_ingress_config: Configuration for the nginx ingress controllers.
-        :param pulumi.Input[_builtins.str] nginx_ingress_registry: The container registry to pull images from.
-        :param pulumi.Input[_builtins.str] nginx_ingress_tag: The tag to use for the nginx ingress controller images.
-        :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the nginx ingress controller helm chart to deploy.
+        :param pulumi.Input[_builtins.str] nginx_ingress_version: The version of the F5 NGINX Ingress Controller helm chart to deploy.
         :param pulumi.Input[_builtins.float] system_node_desired_count: The initial number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
@@ -645,8 +607,6 @@ class Cluster(pulumi.ComponentResource):
                  lb_type: Optional[pulumi.Input[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
                  nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
                  nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
                  system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
@@ -711,12 +671,8 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["lb_type"] = lb_type
             __props__.__dict__["lets_encrypt_email"] = lets_encrypt_email
             __props__.__dict__["nginx_ingress_config"] = nginx_ingress_config
-            if nginx_ingress_registry is None:
-                nginx_ingress_registry = 'registry.k8s.io'
-            __props__.__dict__["nginx_ingress_registry"] = nginx_ingress_registry
-            if nginx_ingress_tag is None:
-                nginx_ingress_tag = 'v1.12.0'
-            __props__.__dict__["nginx_ingress_tag"] = nginx_ingress_tag
+            if nginx_ingress_version is None:
+                nginx_ingress_version = '2.3.1'
             __props__.__dict__["nginx_ingress_version"] = nginx_ingress_version
             __props__.__dict__["system_node_desired_count"] = system_node_desired_count
             __props__.__dict__["system_node_instance_types"] = system_node_instance_types

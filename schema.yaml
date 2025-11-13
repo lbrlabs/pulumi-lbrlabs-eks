@@ -210,15 +210,8 @@ resources:
           type: string
       nginxIngressVersion:
         type: string
-        description: The version of the nginx ingress controller helm chart to deploy.
-      nginxIngressRegistry:
-        type: string
-        description: The container registry to pull images from.
-        default: "registry.k8s.io"
-      nginxIngressTag:
-        type: string
-        description: The tag to use for the nginx ingress controller images.
-        default: "v1.12.0"
+        description: The version of the F5 NGINX Ingress Controller helm chart to deploy.
+        default: "2.3.1"
       eksIamAuthControllerVersion:
         type: string
         description: The version of the eks-iam-auth-controller helm chart to deploy.
