@@ -94,11 +94,8 @@ func NewCluster(ctx *pulumi.Context,
 	if args.NginxIngressConfig != nil {
 		args.NginxIngressConfig = args.NginxIngressConfig.ToNginxIngressConfigPtrOutput().ApplyT(func(v *NginxIngressConfig) *NginxIngressConfig { return v.Defaults() }).(NginxIngressConfigPtrOutput)
 	}
-	if args.NginxIngressRegistry == nil {
-		args.NginxIngressRegistry = pulumi.StringPtr("registry.k8s.io")
-	}
-	if args.NginxIngressTag == nil {
-		args.NginxIngressTag = pulumi.StringPtr("v1.12.0")
+	if args.NginxIngressVersion == nil {
+		args.NginxIngressVersion = pulumi.StringPtr("2.3.1")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Cluster
@@ -152,11 +149,7 @@ type clusterArgs struct {
 	LetsEncryptEmail *string `pulumi:"letsEncryptEmail"`
 	// Configuration for the nginx ingress controllers.
 	NginxIngressConfig *NginxIngressConfig `pulumi:"nginxIngressConfig"`
-	// The container registry to pull images from.
-	NginxIngressRegistry *string `pulumi:"nginxIngressRegistry"`
-	// The tag to use for the nginx ingress controller images.
-	NginxIngressTag *string `pulumi:"nginxIngressTag"`
-	// The version of the nginx ingress controller helm chart to deploy.
+	// The version of the F5 NGINX Ingress Controller helm chart to deploy.
 	NginxIngressVersion *string `pulumi:"nginxIngressVersion"`
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  *float64 `pulumi:"systemNodeDesiredCount"`
@@ -214,11 +207,7 @@ type ClusterArgs struct {
 	LetsEncryptEmail *string
 	// Configuration for the nginx ingress controllers.
 	NginxIngressConfig NginxIngressConfigPtrInput
-	// The container registry to pull images from.
-	NginxIngressRegistry pulumi.StringPtrInput
-	// The tag to use for the nginx ingress controller images.
-	NginxIngressTag pulumi.StringPtrInput
-	// The version of the nginx ingress controller helm chart to deploy.
+	// The version of the F5 NGINX Ingress Controller helm chart to deploy.
 	NginxIngressVersion pulumi.StringPtrInput
 	// The initial number of nodes in the system autoscaling group.
 	SystemNodeDesiredCount  pulumi.Float64PtrInput
