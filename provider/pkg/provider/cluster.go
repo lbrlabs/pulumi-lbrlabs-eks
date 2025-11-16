@@ -430,6 +430,8 @@ func NewCluster(ctx *pulumi.Context,
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
 		Tags:                  tags,
+		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
+		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
 	}, pulumi.Parent(vpcCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
