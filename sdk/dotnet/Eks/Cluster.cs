@@ -227,19 +227,7 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<Inputs.NginxIngressConfigArgs>? NginxIngressConfig { get; set; }
 
         /// <summary>
-        /// The container registry to pull images from.
-        /// </summary>
-        [Input("nginxIngressRegistry")]
-        public Input<string>? NginxIngressRegistry { get; set; }
-
-        /// <summary>
-        /// The tag to use for the nginx ingress controller images.
-        /// </summary>
-        [Input("nginxIngressTag")]
-        public Input<string>? NginxIngressTag { get; set; }
-
-        /// <summary>
-        /// The version of the nginx ingress controller helm chart to deploy.
+        /// The version of the F5 NGINX Ingress Controller helm chart to deploy.
         /// </summary>
         [Input("nginxIngressVersion")]
         public Input<string>? NginxIngressVersion { get; set; }
@@ -303,8 +291,7 @@ namespace Lbrlabs.PulumiPackage.Eks
             EnableOtel = false;
             KarpenterVersion = "0.36.2";
             LbType = "nlb";
-            NginxIngressRegistry = "registry.k8s.io";
-            NginxIngressTag = "v1.12.0";
+            NginxIngressVersion = "2.3.1";
         }
         public static new ClusterArgs Empty => new ClusterArgs();
     }

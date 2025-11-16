@@ -95,9 +95,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["lbType"] = (args?.lbType) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args?.letsEncryptEmail;
             resourceInputs["nginxIngressConfig"] = args ? (args.nginxIngressConfig ? pulumi.output(args.nginxIngressConfig).apply(inputs.nginxIngressConfigArgsProvideDefaults) : undefined) : undefined;
-            resourceInputs["nginxIngressRegistry"] = (args?.nginxIngressRegistry) ?? "registry.k8s.io";
-            resourceInputs["nginxIngressTag"] = (args?.nginxIngressTag) ?? "v1.12.0";
-            resourceInputs["nginxIngressVersion"] = args?.nginxIngressVersion;
+            resourceInputs["nginxIngressVersion"] = (args?.nginxIngressVersion) ?? "2.3.1";
             resourceInputs["systemNodeDesiredCount"] = args?.systemNodeDesiredCount;
             resourceInputs["systemNodeInstanceTypes"] = args?.systemNodeInstanceTypes;
             resourceInputs["systemNodeMaxCount"] = args?.systemNodeMaxCount;
@@ -214,15 +212,7 @@ export interface ClusterArgs {
      */
     nginxIngressConfig?: pulumi.Input<inputs.NginxIngressConfigArgs>;
     /**
-     * The container registry to pull images from.
-     */
-    nginxIngressRegistry?: pulumi.Input<string>;
-    /**
-     * The tag to use for the nginx ingress controller images.
-     */
-    nginxIngressTag?: pulumi.Input<string>;
-    /**
-     * The version of the nginx ingress controller helm chart to deploy.
+     * The version of the F5 NGINX Ingress Controller helm chart to deploy.
      */
     nginxIngressVersion?: pulumi.Input<string>;
     /**
