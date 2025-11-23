@@ -3,8 +3,11 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
+
 	//"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -46,6 +49,11 @@ func NewNodeGroup(ctx *pulumi.Context,
 		return nil, err
 	}
 
+	current, err := aws.GetPartition(ctx, nil, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error getting partition: %w", err)
+	}
+
 	var tags pulumi.StringMapInput
 
 	if args.Tags != nil {
@@ -63,7 +71,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 				"Action": "sts:AssumeRole",
 				"Effect": "Allow",
 				"Principal": map[string]interface{}{
-					"Service": "ec2.amazonaws.com",
+					"Service": fmt.Sprintf("ec2.%s", current.DnsSuffix),
 				},
 			},
 		},
@@ -82,7 +90,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 	}
 
 	workerNodePolicyAttachment, err := iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEKSWorkerNodePolicy", current.Partition),
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
 	if err != nil {
@@ -90,7 +98,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 	}
 
 	ecrPolicyAttachment, err := iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", current.Partition),
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
 	if err != nil {
@@ -98,7 +106,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 	}
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-node-ssm-policy", name), &iam.RolePolicyAttachmentArgs{
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonSSMManagedInstanceCore", current.Partition),
 		Role:      nodeRole.Name,
 	}, pulumi.Parent(nodeRole))
 	if err != nil {

@@ -170,7 +170,7 @@ func NewCluster(ctx *pulumi.Context,
 				"Action": "sts:AssumeRole",
 				"Principal": map[string]interface{}{
 					"Service": []interface{}{
-						"eks.amazonaws.com",
+						fmt.Sprintf("eks.%s", current.DnsSuffix),
 					},
 				},
 				"Effect": "Allow",
@@ -191,7 +191,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-policy", name), &iam.RolePolicyAttachmentArgs{
 		Role:      role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEKSClusterPolicy", current.Partition),
 	}, pulumi.Parent(role))
 	if err != nil {
 		return nil, fmt.Errorf("error attaching cluster policy: %w", err)
@@ -199,7 +199,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cluster-policy-vpc", name), &iam.RolePolicyAttachmentArgs{
 		Role:      role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEKSVPCResourceController", current.Partition),
 	}, pulumi.Parent(role))
 	if err != nil {
 		return nil, fmt.Errorf("error attaching cluster policy for VPC: %w", err)
@@ -305,7 +305,7 @@ func NewCluster(ctx *pulumi.Context,
 			Type: pulumi.String("cluster"),
 		},
 		ClusterName:  controlPlane.Name,
-		PolicyArn:    pulumi.String("arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"),
+		PolicyArn:    pulumi.Sprintf("arn:%s:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy", current.Partition),
 		PrincipalArn: accessEntry.PrincipalArn,
 	}, pulumi.Parent(accessEntry))
 	if err != nil {
@@ -331,7 +331,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	oidcProvider, err := iam.NewOpenIdConnectProvider(ctx, fmt.Sprintf("%s-oidc-provider", name), &iam.OpenIdConnectProviderArgs{
 		ClientIdLists: pulumi.StringArray{
-			pulumi.String("sts.amazonaws.com"),
+			pulumi.Sprintf("sts.%s", current.DnsSuffix),
 		},
 		Url: controlPlane.Identities.Index(pulumi.Int(0)).Oidcs().Index(pulumi.Int(0)).Issuer().Elem(),
 		ThumbprintLists: pulumi.StringArray{
@@ -455,7 +455,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-vpc-csi-policy", name), &iam.RolePolicyAttachmentArgs{
 		Role:      vpcCsiRole.Role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEKS_CNI_Policy", current.Partition),
 	}, pulumi.Parent(vpcCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error attaching cni policy to role: %w", err)
@@ -484,7 +484,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-ebs-csi-policy", name), &iam.RolePolicyAttachmentArgs{
 		Role:      ebsCsiRole.Role.Name,
-		PolicyArn: pulumi.String("arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"),
+		PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy", current.Partition),
 	}, pulumi.Parent(ebsCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error attaching EBS policy to role: %w", err)
@@ -986,7 +986,7 @@ func NewCluster(ctx *pulumi.Context,
 					},
 					Effect: pulumi.String("Allow"),
 					Resources: pulumi.StringArray{
-						pulumi.String("arn:aws:route53:::hostedzone/*"),
+						pulumi.Sprintf("arn:%s:route53:::hostedzone/*", current.Partition),
 					},
 				},
 				iam.GetPolicyDocumentStatementArgs{
@@ -1085,7 +1085,7 @@ func NewCluster(ctx *pulumi.Context,
 					},
 					Effect: pulumi.String("Allow"),
 					Resources: pulumi.StringArray{
-						pulumi.String("arn:aws:route53:::change/*"),
+						pulumi.Sprintf("arn:%s:route53:::change/*", current.Partition),
 					},
 				},
 				iam.GetPolicyDocumentStatementArgs{
@@ -1096,7 +1096,7 @@ func NewCluster(ctx *pulumi.Context,
 					},
 					Effect: pulumi.String("Allow"),
 					Resources: pulumi.StringArray{
-						pulumi.String("arn:aws:route53:::hostedzone/*"),
+						pulumi.Sprintf("arn:%s:route53:::hostedzone/*", current.Partition),
 					},
 				},
 				iam.GetPolicyDocumentStatementArgs{
@@ -1272,7 +1272,7 @@ func NewCluster(ctx *pulumi.Context,
 
 		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-obs-policy", name), &iam.RolePolicyAttachmentArgs{
 			Role:      cloudwatchRole.Role.Name,
-			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"),
+			PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/CloudWatchAgentServerPolicy", current.Partition),
 		}, pulumi.Parent(cloudwatchRole.Role))
 		if err != nil {
 			return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
@@ -1280,7 +1280,7 @@ func NewCluster(ctx *pulumi.Context,
 
 		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-cw-xray-policy", name), &iam.RolePolicyAttachmentArgs{
 			Role:      cloudwatchRole.Role.Name,
-			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"),
+			PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AWSXrayWriteOnlyAccess", current.Partition),
 		}, pulumi.Parent(cloudwatchRole.Role))
 		if err != nil {
 			return nil, fmt.Errorf("error attaching cloudwatch agent policy to role: %w", err)
@@ -1397,8 +1397,8 @@ func NewCluster(ctx *pulumi.Context,
 						iam.GetPolicyDocumentStatementPrincipalArgs{
 							Type: pulumi.String("Service"),
 							Identifiers: pulumi.StringArray{
-								pulumi.String("events.amazonaws.com"),
-								pulumi.String("sqs.amazonaws.com"),
+								pulumi.Sprintf("events.%s", current.DnsSuffix),
+								pulumi.Sprintf("sqs.%s", current.DnsSuffix),
 							},
 						},
 					},
@@ -1674,7 +1674,7 @@ func NewCluster(ctx *pulumi.Context,
 					"Action": "sts:AssumeRole",
 					"Effect": "Allow",
 					"Principal": map[string]interface{}{
-						"Service": "ec2.amazonaws.com",
+						"Service": fmt.Sprintf("ec2.%s", current.DnsSuffix),
 					},
 				},
 			},
@@ -1693,7 +1693,7 @@ func NewCluster(ctx *pulumi.Context,
 		}
 
 		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-worker-policy", name), &iam.RolePolicyAttachmentArgs{
-			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"),
+			PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEKSWorkerNodePolicy", current.Partition),
 			Role:      karpenterNodeRole.Name,
 		}, pulumi.Parent(karpenterNodeRole))
 		if err != nil {
@@ -1701,7 +1701,7 @@ func NewCluster(ctx *pulumi.Context,
 		}
 
 		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-ecr-policy", name), &iam.RolePolicyAttachmentArgs{
-			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"),
+			PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", current.Partition),
 			Role:      karpenterNodeRole.Name,
 		}, pulumi.Parent(karpenterNodeRole))
 		if err != nil {
@@ -1709,7 +1709,7 @@ func NewCluster(ctx *pulumi.Context,
 		}
 
 		_, err = iam.NewRolePolicyAttachment(ctx, fmt.Sprintf("%s-karpenter-node-ssm-policy", name), &iam.RolePolicyAttachmentArgs{
-			PolicyArn: pulumi.String("arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"),
+			PolicyArn: pulumi.Sprintf("arn:%s:iam::aws:policy/AmazonSSMManagedInstanceCore", current.Partition),
 			Role:      karpenterNodeRole.Name,
 		}, pulumi.Parent(karpenterNodeRole))
 		if err != nil {

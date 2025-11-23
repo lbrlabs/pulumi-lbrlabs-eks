@@ -3,6 +3,7 @@ package provider
 import (
 	"fmt"
 
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -35,6 +36,11 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 		return nil, err
 	}
 
+	current, err := aws.GetPartition(ctx, nil, pulumi.Parent(component))
+	if err != nil {
+		return nil, fmt.Errorf("error getting partition: %w", err)
+	}
+
 	if args.Tags != nil {
 		tags = *args.Tags
 	} else {
@@ -57,7 +63,7 @@ func NewIamServiceAccountRole(ctx *pulumi.Context, name string, args *IamService
 						Test:     pulumi.String("StringEquals"),
 						Variable: pulumi.Sprintf("%s:aud", args.OidcProviderURL),
 						Values: pulumi.StringArray{
-							pulumi.String("sts.amazonaws.com"),
+							pulumi.Sprintf("sts.%s", current.DnsSuffix),
 						},
 					},
 					iam.GetPolicyDocumentStatementConditionArgs{
