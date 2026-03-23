@@ -25,29 +25,28 @@ __all__ = [
     'NginxIngressConfigArgsDict',
     'RequirementArgs',
     'RequirementArgsDict',
+    'VpcCniConfigArgs',
+    'VpcCniConfigArgsDict',
+    'VpcCniNodeAgentConfigArgs',
+    'VpcCniNodeAgentConfigArgsDict',
 ]
 
-MYPY = False
-
-if not MYPY:
-    class BudgetConfigArgsDict(TypedDict):
-        """
-        Configuration for Autoscaled Node budgets.
-        """
-        duration: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The duration during which disruptuon can happen.
-        """
-        nodes: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The maximum number of nodes that can be scaled down at any time.
-        """
-        schedule: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        A cron schedule for when disruption can happen.
-        """
-elif False:
-    BudgetConfigArgsDict: TypeAlias = Mapping[str, Any]
+class BudgetConfigArgsDict(TypedDict):
+    """
+    Configuration for Autoscaled Node budgets.
+    """
+    duration: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The duration during which disruptuon can happen.
+    """
+    nodes: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The maximum number of nodes that can be scaled down at any time.
+    """
+    schedule: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    A cron schedule for when disruption can happen.
+    """
 
 @pulumi.input_type
 class BudgetConfigArgs:
@@ -57,6 +56,7 @@ class BudgetConfigArgs:
                  schedule: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Configuration for Autoscaled Node budgets.
+
         :param pulumi.Input[_builtins.str] duration: The duration during which disruptuon can happen.
         :param pulumi.Input[_builtins.str] nodes: The maximum number of nodes that can be scaled down at any time.
         :param pulumi.Input[_builtins.str] schedule: A cron schedule for when disruption can happen.
@@ -105,29 +105,26 @@ class BudgetConfigArgs:
         pulumi.set(self, "schedule", value)
 
 
-if not MYPY:
-    class DisruptionConfigArgsDict(TypedDict):
-        """
-        Configuration for Autoscaled nodes disruption.
-        """
-        budgets: NotRequired[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgsDict']]]]
-        """
-        Budgets control the speed Karpenter can scale down nodes.
-        """
-        consolidate_after: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
-        """
-        consolidation_policy: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Describes which types of Nodes Karpenter should consider for consolidation.
-        """
-        expire_after: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount of time a Node can live on the cluster before being removed.
-        """
-elif False:
-    DisruptionConfigArgsDict: TypeAlias = Mapping[str, Any]
+class DisruptionConfigArgsDict(TypedDict):
+    """
+    Configuration for Autoscaled nodes disruption.
+    """
+    budgets: NotRequired[pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgsDict']]]]
+    """
+    Budgets control the speed Karpenter can scale down nodes.
+    """
+    consolidate_after: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
+    """
+    consolidation_policy: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Describes which types of Nodes Karpenter should consider for consolidation.
+    """
+    expire_after: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The amount of time a Node can live on the cluster before being removed.
+    """
 
 @pulumi.input_type
 class DisruptionConfigArgs:
@@ -138,6 +135,7 @@ class DisruptionConfigArgs:
                  expire_after: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Configuration for Autoscaled nodes disruption.
+
         :param pulumi.Input[Sequence[pulumi.Input['BudgetConfigArgs']]] budgets: Budgets control the speed Karpenter can scale down nodes.
         :param pulumi.Input[_builtins.str] consolidate_after: The amount of time Karpenter should wait after discovering a consolidation decision. This value can currently only be set when the consolidationPolicy is 'WhenEmpty'. You can choose to disable consolidation entirely by setting the string value 'Never' here.
         :param pulumi.Input[_builtins.str] consolidation_policy: Describes which types of Nodes Karpenter should consider for consolidation.
@@ -205,53 +203,50 @@ class DisruptionConfigArgs:
         pulumi.set(self, "expire_after", value)
 
 
-if not MYPY:
-    class IngressConfigArgsDict(TypedDict):
-        """
-        Configuration for the ingress controller (deprecated, use nginxIngressConfig).
-        """
-        additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Additional configuration for the ingress controller.
-        """
-        allow_snippet_annotations: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to allow snippet annotations in the ingress controller.
-        """
-        controller_replicas: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The number of replicas of the ingress controller.
-        """
-        enable_external: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to create the external-facing ingress controller.
-        """
-        enable_internal: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to create the internal-facing ingress controller.
-        """
-        enable_metrics: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enable metrics for the ingress controller.
-        """
-        enable_service_monitor: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enable the service monitor for kube-prometheus-stack.
-        """
-        extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Extra annotations to apply to the ingress controller service.
-        """
-        nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        NLB target type for NLB loadbalancers.
-        """
-        service_monitor_namespace: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The namespace to deploy the service monitor to.
-        """
-elif False:
-    IngressConfigArgsDict: TypeAlias = Mapping[str, Any]
+class IngressConfigArgsDict(TypedDict):
+    """
+    Configuration for the ingress controller (deprecated, use nginxIngressConfig).
+    """
+    additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Additional configuration for the ingress controller.
+    """
+    allow_snippet_annotations: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to allow snippet annotations in the ingress controller.
+    """
+    controller_replicas: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The number of replicas of the ingress controller.
+    """
+    enable_external: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to create the external-facing ingress controller.
+    """
+    enable_internal: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to create the internal-facing ingress controller.
+    """
+    enable_metrics: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enable metrics for the ingress controller.
+    """
+    enable_service_monitor: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enable the service monitor for kube-prometheus-stack.
+    """
+    extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Extra annotations to apply to the ingress controller service.
+    """
+    nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    NLB target type for NLB loadbalancers.
+    """
+    service_monitor_namespace: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The namespace to deploy the service monitor to.
+    """
 
 @pulumi.input_type
 class IngressConfigArgs:
@@ -268,6 +263,7 @@ class IngressConfigArgs:
                  service_monitor_namespace: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Configuration for the ingress controller (deprecated, use nginxIngressConfig).
+
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] additional_config: Additional configuration for the ingress controller.
         :param pulumi.Input[_builtins.bool] allow_snippet_annotations: Whether to allow snippet annotations in the ingress controller.
         :param pulumi.Input[_builtins.int] controller_replicas: The number of replicas of the ingress controller.
@@ -435,53 +431,50 @@ class IngressConfigArgs:
         pulumi.set(self, "service_monitor_namespace", value)
 
 
-if not MYPY:
-    class NginxIngressConfigArgsDict(TypedDict):
-        """
-        Configuration for the nginx ingress controllers.
-        """
-        additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Additional configuration for the ingress controller.
-        """
-        allow_snippet_annotations: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to allow snippet annotations in the ingress controller.
-        """
-        controller_replicas: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The number of replicas of the ingress controller.
-        """
-        enable_external: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to create the external-facing ingress controller.
-        """
-        enable_internal: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to create the internal-facing ingress controller.
-        """
-        enable_metrics: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enable metrics for the ingress controller.
-        """
-        enable_service_monitor: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enable the service monitor for kube-prometheus-stack.
-        """
-        extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Extra annotations to apply to the ingress controller service.
-        """
-        nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        NLB target type for NLB loadbalancers.
-        """
-        service_monitor_namespace: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The namespace to deploy the service monitor to.
-        """
-elif False:
-    NginxIngressConfigArgsDict: TypeAlias = Mapping[str, Any]
+class NginxIngressConfigArgsDict(TypedDict):
+    """
+    Configuration for the nginx ingress controllers.
+    """
+    additional_config: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Additional configuration for the ingress controller.
+    """
+    allow_snippet_annotations: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to allow snippet annotations in the ingress controller.
+    """
+    controller_replicas: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The number of replicas of the ingress controller.
+    """
+    enable_external: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to create the external-facing ingress controller.
+    """
+    enable_internal: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to create the internal-facing ingress controller.
+    """
+    enable_metrics: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enable metrics for the ingress controller.
+    """
+    enable_service_monitor: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enable the service monitor for kube-prometheus-stack.
+    """
+    extra_service_annotations: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Extra annotations to apply to the ingress controller service.
+    """
+    nlb_target_type: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    NLB target type for NLB loadbalancers.
+    """
+    service_monitor_namespace: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The namespace to deploy the service monitor to.
+    """
 
 @pulumi.input_type
 class NginxIngressConfigArgs:
@@ -498,6 +491,7 @@ class NginxIngressConfigArgs:
                  service_monitor_namespace: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Configuration for the nginx ingress controllers.
+
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] additional_config: Additional configuration for the ingress controller.
         :param pulumi.Input[_builtins.bool] allow_snippet_annotations: Whether to allow snippet annotations in the ingress controller.
         :param pulumi.Input[_builtins.int] controller_replicas: The number of replicas of the ingress controller.
@@ -665,25 +659,22 @@ class NginxIngressConfigArgs:
         pulumi.set(self, "service_monitor_namespace", value)
 
 
-if not MYPY:
-    class RequirementArgsDict(TypedDict):
-        """
-        Represents a single requirement with key, operator, and values.
-        """
-        key: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The key of the requirement.
-        """
-        operator: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The operator for the requirement (e.g., In, Gt).
-        """
-        values: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        """
-        The list of values for the requirement.
-        """
-elif False:
-    RequirementArgsDict: TypeAlias = Mapping[str, Any]
+class RequirementArgsDict(TypedDict):
+    """
+    Represents a single requirement with key, operator, and values.
+    """
+    key: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The key of the requirement.
+    """
+    operator: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The operator for the requirement (e.g., In, Gt).
+    """
+    values: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    """
+    The list of values for the requirement.
+    """
 
 @pulumi.input_type
 class RequirementArgs:
@@ -693,6 +684,7 @@ class RequirementArgs:
                  values: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None):
         """
         Represents a single requirement with key, operator, and values.
+
         :param pulumi.Input[_builtins.str] key: The key of the requirement.
         :param pulumi.Input[_builtins.str] operator: The operator for the requirement (e.g., In, Gt).
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] values: The list of values for the requirement.
@@ -739,5 +731,153 @@ class RequirementArgs:
     @values.setter
     def values(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "values", value)
+
+
+class VpcCniConfigArgsDict(TypedDict):
+    """
+    Configuration for the Amazon VPC CNI add-on.
+    """
+    enable_network_policy: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+    """
+    node_agent: NotRequired[pulumi.Input['VpcCniNodeAgentConfigArgsDict']]
+    """
+    Configuration for the Amazon VPC CNI node agent used by network policy support.
+    """
+
+@pulumi.input_type
+class VpcCniConfigArgs:
+    def __init__(__self__, *,
+                 enable_network_policy: Optional[pulumi.Input[_builtins.bool]] = None,
+                 node_agent: Optional[pulumi.Input['VpcCniNodeAgentConfigArgs']] = None):
+        """
+        Configuration for the Amazon VPC CNI add-on.
+
+        :param pulumi.Input[_builtins.bool] enable_network_policy: Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+        :param pulumi.Input['VpcCniNodeAgentConfigArgs'] node_agent: Configuration for the Amazon VPC CNI node agent used by network policy support.
+        """
+        if enable_network_policy is not None:
+            pulumi.set(__self__, "enable_network_policy", enable_network_policy)
+        if node_agent is not None:
+            pulumi.set(__self__, "node_agent", node_agent)
+
+    @_builtins.property
+    @pulumi.getter(name="enableNetworkPolicy")
+    def enable_network_policy(self) -> Optional[pulumi.Input[_builtins.bool]]:
+        """
+        Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+        """
+        return pulumi.get(self, "enable_network_policy")
+
+    @enable_network_policy.setter
+    def enable_network_policy(self, value: Optional[pulumi.Input[_builtins.bool]]):
+        pulumi.set(self, "enable_network_policy", value)
+
+    @_builtins.property
+    @pulumi.getter(name="nodeAgent")
+    def node_agent(self) -> Optional[pulumi.Input['VpcCniNodeAgentConfigArgs']]:
+        """
+        Configuration for the Amazon VPC CNI node agent used by network policy support.
+        """
+        return pulumi.get(self, "node_agent")
+
+    @node_agent.setter
+    def node_agent(self, value: Optional[pulumi.Input['VpcCniNodeAgentConfigArgs']]):
+        pulumi.set(self, "node_agent", value)
+
+
+class VpcCniNodeAgentConfigArgsDict(TypedDict):
+    """
+    Configuration for the Amazon VPC CNI node agent.
+    """
+    enable_cloud_watch_logs: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+    """
+    enable_policy_event_logs: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+    """
+    health_probe_bind_addr: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    Port used by the Amazon VPC CNI node agent health probe endpoint.
+    """
+    metrics_bind_addr: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    Port used by the Amazon VPC CNI node agent metrics endpoint.
+    """
+
+@pulumi.input_type
+class VpcCniNodeAgentConfigArgs:
+    def __init__(__self__, *,
+                 enable_cloud_watch_logs: Optional[pulumi.Input[_builtins.bool]] = None,
+                 enable_policy_event_logs: Optional[pulumi.Input[_builtins.bool]] = None,
+                 health_probe_bind_addr: Optional[pulumi.Input[_builtins.int]] = None,
+                 metrics_bind_addr: Optional[pulumi.Input[_builtins.int]] = None):
+        """
+        Configuration for the Amazon VPC CNI node agent.
+
+        :param pulumi.Input[_builtins.bool] enable_cloud_watch_logs: Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+        :param pulumi.Input[_builtins.bool] enable_policy_event_logs: Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+        :param pulumi.Input[_builtins.int] health_probe_bind_addr: Port used by the Amazon VPC CNI node agent health probe endpoint.
+        :param pulumi.Input[_builtins.int] metrics_bind_addr: Port used by the Amazon VPC CNI node agent metrics endpoint.
+        """
+        if enable_cloud_watch_logs is not None:
+            pulumi.set(__self__, "enable_cloud_watch_logs", enable_cloud_watch_logs)
+        if enable_policy_event_logs is not None:
+            pulumi.set(__self__, "enable_policy_event_logs", enable_policy_event_logs)
+        if health_probe_bind_addr is not None:
+            pulumi.set(__self__, "health_probe_bind_addr", health_probe_bind_addr)
+        if metrics_bind_addr is not None:
+            pulumi.set(__self__, "metrics_bind_addr", metrics_bind_addr)
+
+    @_builtins.property
+    @pulumi.getter(name="enableCloudWatchLogs")
+    def enable_cloud_watch_logs(self) -> Optional[pulumi.Input[_builtins.bool]]:
+        """
+        Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+        """
+        return pulumi.get(self, "enable_cloud_watch_logs")
+
+    @enable_cloud_watch_logs.setter
+    def enable_cloud_watch_logs(self, value: Optional[pulumi.Input[_builtins.bool]]):
+        pulumi.set(self, "enable_cloud_watch_logs", value)
+
+    @_builtins.property
+    @pulumi.getter(name="enablePolicyEventLogs")
+    def enable_policy_event_logs(self) -> Optional[pulumi.Input[_builtins.bool]]:
+        """
+        Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+        """
+        return pulumi.get(self, "enable_policy_event_logs")
+
+    @enable_policy_event_logs.setter
+    def enable_policy_event_logs(self, value: Optional[pulumi.Input[_builtins.bool]]):
+        pulumi.set(self, "enable_policy_event_logs", value)
+
+    @_builtins.property
+    @pulumi.getter(name="healthProbeBindAddr")
+    def health_probe_bind_addr(self) -> Optional[pulumi.Input[_builtins.int]]:
+        """
+        Port used by the Amazon VPC CNI node agent health probe endpoint.
+        """
+        return pulumi.get(self, "health_probe_bind_addr")
+
+    @health_probe_bind_addr.setter
+    def health_probe_bind_addr(self, value: Optional[pulumi.Input[_builtins.int]]):
+        pulumi.set(self, "health_probe_bind_addr", value)
+
+    @_builtins.property
+    @pulumi.getter(name="metricsBindAddr")
+    def metrics_bind_addr(self) -> Optional[pulumi.Input[_builtins.int]]:
+        """
+        Port used by the Amazon VPC CNI node agent metrics endpoint.
+        """
+        return pulumi.get(self, "metrics_bind_addr")
+
+    @metrics_bind_addr.setter
+    def metrics_bind_addr(self, value: Optional[pulumi.Input[_builtins.int]]):
+        pulumi.set(self, "metrics_bind_addr", value)
 
 

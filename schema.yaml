@@ -145,6 +145,32 @@ types:
         type: boolean
         default: true
         description: Whether to create the internal-facing ingress controller.
+  lbrlabs-eks:index:VpcCniNodeAgentConfig:
+    description: Configuration for the Amazon VPC CNI node agent.
+    type: object
+    properties:
+      enablePolicyEventLogs:
+        type: boolean
+        description: Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+      enableCloudWatchLogs:
+        type: boolean
+        description: Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+      metricsBindAddr:
+        type: integer
+        description: Port used by the Amazon VPC CNI node agent metrics endpoint.
+      healthProbeBindAddr:
+        type: integer
+        description: Port used by the Amazon VPC CNI node agent health probe endpoint.
+  lbrlabs-eks:index:VpcCniConfig:
+    description: Configuration for the Amazon VPC CNI add-on.
+    type: object
+    properties:
+      enableNetworkPolicy:
+        type: boolean
+        description: Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+      nodeAgent:
+        "$ref": "#/types/lbrlabs-eks:index:VpcCniNodeAgentConfig"
+        description: Configuration for the Amazon VPC CNI node agent used by network policy support.
   lbrlabs-eks:index:Requirement:
     description: Represents a single requirement with key, operator, and values.
     type: object
@@ -185,6 +211,9 @@ resources:
       nginxIngressConfig:
         "$ref": "#/types/lbrlabs-eks:index:NginxIngressConfig"
         description: Configuration for the nginx ingress controllers.
+      vpcCniConfig:
+        "$ref": "#/types/lbrlabs-eks:index:VpcCniConfig"
+        description: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
       clusterVersion:
         type: string
         description: The version of the EKS cluster to create.

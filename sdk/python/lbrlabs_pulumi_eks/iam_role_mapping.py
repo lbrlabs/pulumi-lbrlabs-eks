@@ -24,6 +24,7 @@ class IamRoleMappingArgs:
                  username: pulumi.Input[_builtins.str]):
         """
         The set of arguments for constructing a IamRoleMapping resource.
+
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] groups: An array of groups to map the IAM role to.
         :param pulumi.Input[_builtins.str] role_arn: The arn of the role to map to a Kubernetes group.
         :param pulumi.Input[_builtins.str] username: The username to assign to the rolemapping.
@@ -81,6 +82,7 @@ class IamRoleMapping(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a IamRoleMapping resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] groups: An array of groups to map the IAM role to.
@@ -95,6 +97,7 @@ class IamRoleMapping(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a IamRoleMapping resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param IamRoleMappingArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

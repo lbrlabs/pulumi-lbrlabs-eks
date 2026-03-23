@@ -33,6 +33,7 @@ class AttachedNodeGroupArgs:
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.eks.NodeGroupTaintArgs']]]] = None):
         """
         The set of arguments for constructing a AttachedNodeGroup resource.
+
         :param pulumi.Input[_builtins.str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[_builtins.str] ami_type: The AMI Type for the nodegroup.
         :param pulumi.Input[_builtins.str] capacity_type: The capacity type of the nodegroup.
@@ -207,6 +208,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a AttachedNodeGroup resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.str] ami_type: The AMI Type for the nodegroup.
@@ -225,6 +227,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a AttachedNodeGroup resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param AttachedNodeGroupArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

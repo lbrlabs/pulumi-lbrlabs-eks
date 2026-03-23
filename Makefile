@@ -84,8 +84,8 @@ clean::
 
 install_plugins::
 	[ -x $(shell which pulumi) ] || curl -fsSL https://get.pulumi.com | sh
-	pulumi plugin install resource kubernetes
-	pulumi plugin install resource aws
+	pulumi plugin ls | grep -Eq '^kubernetes[[:space:]]+resource[[:space:]]+' || pulumi plugin install resource kubernetes
+	pulumi plugin ls | grep -Eq '^aws[[:space:]]+resource[[:space:]]+' || pulumi plugin install resource aws
 
 install_dotnet_sdk::
 	mkdir -p $(WORKING_DIR)/nuget

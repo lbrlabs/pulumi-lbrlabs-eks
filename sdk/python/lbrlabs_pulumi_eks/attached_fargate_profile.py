@@ -26,6 +26,7 @@ class AttachedFargateProfileArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a AttachedFargateProfile resource.
+
         :param pulumi.Input[_builtins.str] cluster_name: The name of the cluster to assign the fargate profile to.
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] subnet_ids: The subnet IDs to use for the fargate profile.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map for tags to apply to Fargate Profile.
@@ -95,6 +96,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a AttachedFargateProfile resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.str] cluster_name: The name of the cluster to assign the fargate profile to.
@@ -109,6 +111,7 @@ class AttachedFargateProfile(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a AttachedFargateProfile resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param AttachedFargateProfileArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

@@ -27,6 +27,7 @@ class IamServiceAccountRoleArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a IamServiceAccountRole resource.
+
         :param pulumi.Input[_builtins.str] namespace_name: The namespace to create the service account in.
         :param pulumi.Input[_builtins.str] oidc_provider_arn: The arn of the OIDC provider attached to your EKS cluster.
         :param pulumi.Input[_builtins.str] oidc_provider_url: The URL of the OIDC provider attached to your EKS cluster.
@@ -115,6 +116,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a IamServiceAccountRole resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.str] namespace_name: The namespace to create the service account in.
@@ -131,6 +133,7 @@ class IamServiceAccountRole(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a IamServiceAccountRole resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param IamServiceAccountRoleArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

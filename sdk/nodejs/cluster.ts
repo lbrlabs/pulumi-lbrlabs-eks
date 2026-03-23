@@ -104,6 +104,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["systemNodeMinCount"] = args?.systemNodeMinCount;
             resourceInputs["systemNodeSubnetIds"] = args?.systemNodeSubnetIds;
             resourceInputs["tags"] = args?.tags;
+            resourceInputs["vpcCniConfig"] = args?.vpcCniConfig;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
@@ -243,4 +244,8 @@ export interface ClusterArgs {
      * Key-value map of tags to apply to the cluster.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+     */
+    vpcCniConfig?: pulumi.Input<inputs.VpcCniConfigArgs>;
 }

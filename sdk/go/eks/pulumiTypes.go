@@ -1241,6 +1241,362 @@ type Taint struct {
 	Value *string `pulumi:"value"`
 }
 
+// Configuration for the Amazon VPC CNI add-on.
+type VpcCniConfig struct {
+	// Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+	EnableNetworkPolicy *bool `pulumi:"enableNetworkPolicy"`
+	// Configuration for the Amazon VPC CNI node agent used by network policy support.
+	NodeAgent *VpcCniNodeAgentConfig `pulumi:"nodeAgent"`
+}
+
+// VpcCniConfigInput is an input type that accepts VpcCniConfigArgs and VpcCniConfigOutput values.
+// You can construct a concrete instance of `VpcCniConfigInput` via:
+//
+//	VpcCniConfigArgs{...}
+type VpcCniConfigInput interface {
+	pulumi.Input
+
+	ToVpcCniConfigOutput() VpcCniConfigOutput
+	ToVpcCniConfigOutputWithContext(context.Context) VpcCniConfigOutput
+}
+
+// Configuration for the Amazon VPC CNI add-on.
+type VpcCniConfigArgs struct {
+	// Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+	EnableNetworkPolicy pulumi.BoolPtrInput `pulumi:"enableNetworkPolicy"`
+	// Configuration for the Amazon VPC CNI node agent used by network policy support.
+	NodeAgent VpcCniNodeAgentConfigPtrInput `pulumi:"nodeAgent"`
+}
+
+func (VpcCniConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*VpcCniConfig)(nil)).Elem()
+}
+
+func (i VpcCniConfigArgs) ToVpcCniConfigOutput() VpcCniConfigOutput {
+	return i.ToVpcCniConfigOutputWithContext(context.Background())
+}
+
+func (i VpcCniConfigArgs) ToVpcCniConfigOutputWithContext(ctx context.Context) VpcCniConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniConfigOutput)
+}
+
+func (i VpcCniConfigArgs) ToVpcCniConfigPtrOutput() VpcCniConfigPtrOutput {
+	return i.ToVpcCniConfigPtrOutputWithContext(context.Background())
+}
+
+func (i VpcCniConfigArgs) ToVpcCniConfigPtrOutputWithContext(ctx context.Context) VpcCniConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniConfigOutput).ToVpcCniConfigPtrOutputWithContext(ctx)
+}
+
+// VpcCniConfigPtrInput is an input type that accepts VpcCniConfigArgs, VpcCniConfigPtr and VpcCniConfigPtrOutput values.
+// You can construct a concrete instance of `VpcCniConfigPtrInput` via:
+//
+//	        VpcCniConfigArgs{...}
+//
+//	or:
+//
+//	        nil
+type VpcCniConfigPtrInput interface {
+	pulumi.Input
+
+	ToVpcCniConfigPtrOutput() VpcCniConfigPtrOutput
+	ToVpcCniConfigPtrOutputWithContext(context.Context) VpcCniConfigPtrOutput
+}
+
+type vpcCniConfigPtrType VpcCniConfigArgs
+
+func VpcCniConfigPtr(v *VpcCniConfigArgs) VpcCniConfigPtrInput {
+	return (*vpcCniConfigPtrType)(v)
+}
+
+func (*vpcCniConfigPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**VpcCniConfig)(nil)).Elem()
+}
+
+func (i *vpcCniConfigPtrType) ToVpcCniConfigPtrOutput() VpcCniConfigPtrOutput {
+	return i.ToVpcCniConfigPtrOutputWithContext(context.Background())
+}
+
+func (i *vpcCniConfigPtrType) ToVpcCniConfigPtrOutputWithContext(ctx context.Context) VpcCniConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniConfigPtrOutput)
+}
+
+// Configuration for the Amazon VPC CNI add-on.
+type VpcCniConfigOutput struct{ *pulumi.OutputState }
+
+func (VpcCniConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*VpcCniConfig)(nil)).Elem()
+}
+
+func (o VpcCniConfigOutput) ToVpcCniConfigOutput() VpcCniConfigOutput {
+	return o
+}
+
+func (o VpcCniConfigOutput) ToVpcCniConfigOutputWithContext(ctx context.Context) VpcCniConfigOutput {
+	return o
+}
+
+func (o VpcCniConfigOutput) ToVpcCniConfigPtrOutput() VpcCniConfigPtrOutput {
+	return o.ToVpcCniConfigPtrOutputWithContext(context.Background())
+}
+
+func (o VpcCniConfigOutput) ToVpcCniConfigPtrOutputWithContext(ctx context.Context) VpcCniConfigPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v VpcCniConfig) *VpcCniConfig {
+		return &v
+	}).(VpcCniConfigPtrOutput)
+}
+
+// Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+func (o VpcCniConfigOutput) EnableNetworkPolicy() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v VpcCniConfig) *bool { return v.EnableNetworkPolicy }).(pulumi.BoolPtrOutput)
+}
+
+// Configuration for the Amazon VPC CNI node agent used by network policy support.
+func (o VpcCniConfigOutput) NodeAgent() VpcCniNodeAgentConfigPtrOutput {
+	return o.ApplyT(func(v VpcCniConfig) *VpcCniNodeAgentConfig { return v.NodeAgent }).(VpcCniNodeAgentConfigPtrOutput)
+}
+
+type VpcCniConfigPtrOutput struct{ *pulumi.OutputState }
+
+func (VpcCniConfigPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**VpcCniConfig)(nil)).Elem()
+}
+
+func (o VpcCniConfigPtrOutput) ToVpcCniConfigPtrOutput() VpcCniConfigPtrOutput {
+	return o
+}
+
+func (o VpcCniConfigPtrOutput) ToVpcCniConfigPtrOutputWithContext(ctx context.Context) VpcCniConfigPtrOutput {
+	return o
+}
+
+func (o VpcCniConfigPtrOutput) Elem() VpcCniConfigOutput {
+	return o.ApplyT(func(v *VpcCniConfig) VpcCniConfig {
+		if v != nil {
+			return *v
+		}
+		var ret VpcCniConfig
+		return ret
+	}).(VpcCniConfigOutput)
+}
+
+// Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+func (o VpcCniConfigPtrOutput) EnableNetworkPolicy() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *VpcCniConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableNetworkPolicy
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Configuration for the Amazon VPC CNI node agent used by network policy support.
+func (o VpcCniConfigPtrOutput) NodeAgent() VpcCniNodeAgentConfigPtrOutput {
+	return o.ApplyT(func(v *VpcCniConfig) *VpcCniNodeAgentConfig {
+		if v == nil {
+			return nil
+		}
+		return v.NodeAgent
+	}).(VpcCniNodeAgentConfigPtrOutput)
+}
+
+// Configuration for the Amazon VPC CNI node agent.
+type VpcCniNodeAgentConfig struct {
+	// Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+	EnableCloudWatchLogs *bool `pulumi:"enableCloudWatchLogs"`
+	// Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+	EnablePolicyEventLogs *bool `pulumi:"enablePolicyEventLogs"`
+	// Port used by the Amazon VPC CNI node agent health probe endpoint.
+	HealthProbeBindAddr *int `pulumi:"healthProbeBindAddr"`
+	// Port used by the Amazon VPC CNI node agent metrics endpoint.
+	MetricsBindAddr *int `pulumi:"metricsBindAddr"`
+}
+
+// VpcCniNodeAgentConfigInput is an input type that accepts VpcCniNodeAgentConfigArgs and VpcCniNodeAgentConfigOutput values.
+// You can construct a concrete instance of `VpcCniNodeAgentConfigInput` via:
+//
+//	VpcCniNodeAgentConfigArgs{...}
+type VpcCniNodeAgentConfigInput interface {
+	pulumi.Input
+
+	ToVpcCniNodeAgentConfigOutput() VpcCniNodeAgentConfigOutput
+	ToVpcCniNodeAgentConfigOutputWithContext(context.Context) VpcCniNodeAgentConfigOutput
+}
+
+// Configuration for the Amazon VPC CNI node agent.
+type VpcCniNodeAgentConfigArgs struct {
+	// Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+	EnableCloudWatchLogs pulumi.BoolPtrInput `pulumi:"enableCloudWatchLogs"`
+	// Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+	EnablePolicyEventLogs pulumi.BoolPtrInput `pulumi:"enablePolicyEventLogs"`
+	// Port used by the Amazon VPC CNI node agent health probe endpoint.
+	HealthProbeBindAddr pulumi.IntPtrInput `pulumi:"healthProbeBindAddr"`
+	// Port used by the Amazon VPC CNI node agent metrics endpoint.
+	MetricsBindAddr pulumi.IntPtrInput `pulumi:"metricsBindAddr"`
+}
+
+func (VpcCniNodeAgentConfigArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*VpcCniNodeAgentConfig)(nil)).Elem()
+}
+
+func (i VpcCniNodeAgentConfigArgs) ToVpcCniNodeAgentConfigOutput() VpcCniNodeAgentConfigOutput {
+	return i.ToVpcCniNodeAgentConfigOutputWithContext(context.Background())
+}
+
+func (i VpcCniNodeAgentConfigArgs) ToVpcCniNodeAgentConfigOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniNodeAgentConfigOutput)
+}
+
+func (i VpcCniNodeAgentConfigArgs) ToVpcCniNodeAgentConfigPtrOutput() VpcCniNodeAgentConfigPtrOutput {
+	return i.ToVpcCniNodeAgentConfigPtrOutputWithContext(context.Background())
+}
+
+func (i VpcCniNodeAgentConfigArgs) ToVpcCniNodeAgentConfigPtrOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniNodeAgentConfigOutput).ToVpcCniNodeAgentConfigPtrOutputWithContext(ctx)
+}
+
+// VpcCniNodeAgentConfigPtrInput is an input type that accepts VpcCniNodeAgentConfigArgs, VpcCniNodeAgentConfigPtr and VpcCniNodeAgentConfigPtrOutput values.
+// You can construct a concrete instance of `VpcCniNodeAgentConfigPtrInput` via:
+//
+//	        VpcCniNodeAgentConfigArgs{...}
+//
+//	or:
+//
+//	        nil
+type VpcCniNodeAgentConfigPtrInput interface {
+	pulumi.Input
+
+	ToVpcCniNodeAgentConfigPtrOutput() VpcCniNodeAgentConfigPtrOutput
+	ToVpcCniNodeAgentConfigPtrOutputWithContext(context.Context) VpcCniNodeAgentConfigPtrOutput
+}
+
+type vpcCniNodeAgentConfigPtrType VpcCniNodeAgentConfigArgs
+
+func VpcCniNodeAgentConfigPtr(v *VpcCniNodeAgentConfigArgs) VpcCniNodeAgentConfigPtrInput {
+	return (*vpcCniNodeAgentConfigPtrType)(v)
+}
+
+func (*vpcCniNodeAgentConfigPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**VpcCniNodeAgentConfig)(nil)).Elem()
+}
+
+func (i *vpcCniNodeAgentConfigPtrType) ToVpcCniNodeAgentConfigPtrOutput() VpcCniNodeAgentConfigPtrOutput {
+	return i.ToVpcCniNodeAgentConfigPtrOutputWithContext(context.Background())
+}
+
+func (i *vpcCniNodeAgentConfigPtrType) ToVpcCniNodeAgentConfigPtrOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(VpcCniNodeAgentConfigPtrOutput)
+}
+
+// Configuration for the Amazon VPC CNI node agent.
+type VpcCniNodeAgentConfigOutput struct{ *pulumi.OutputState }
+
+func (VpcCniNodeAgentConfigOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*VpcCniNodeAgentConfig)(nil)).Elem()
+}
+
+func (o VpcCniNodeAgentConfigOutput) ToVpcCniNodeAgentConfigOutput() VpcCniNodeAgentConfigOutput {
+	return o
+}
+
+func (o VpcCniNodeAgentConfigOutput) ToVpcCniNodeAgentConfigOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigOutput {
+	return o
+}
+
+func (o VpcCniNodeAgentConfigOutput) ToVpcCniNodeAgentConfigPtrOutput() VpcCniNodeAgentConfigPtrOutput {
+	return o.ToVpcCniNodeAgentConfigPtrOutputWithContext(context.Background())
+}
+
+func (o VpcCniNodeAgentConfigOutput) ToVpcCniNodeAgentConfigPtrOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v VpcCniNodeAgentConfig) *VpcCniNodeAgentConfig {
+		return &v
+	}).(VpcCniNodeAgentConfigPtrOutput)
+}
+
+// Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+func (o VpcCniNodeAgentConfigOutput) EnableCloudWatchLogs() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v VpcCniNodeAgentConfig) *bool { return v.EnableCloudWatchLogs }).(pulumi.BoolPtrOutput)
+}
+
+// Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+func (o VpcCniNodeAgentConfigOutput) EnablePolicyEventLogs() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v VpcCniNodeAgentConfig) *bool { return v.EnablePolicyEventLogs }).(pulumi.BoolPtrOutput)
+}
+
+// Port used by the Amazon VPC CNI node agent health probe endpoint.
+func (o VpcCniNodeAgentConfigOutput) HealthProbeBindAddr() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v VpcCniNodeAgentConfig) *int { return v.HealthProbeBindAddr }).(pulumi.IntPtrOutput)
+}
+
+// Port used by the Amazon VPC CNI node agent metrics endpoint.
+func (o VpcCniNodeAgentConfigOutput) MetricsBindAddr() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v VpcCniNodeAgentConfig) *int { return v.MetricsBindAddr }).(pulumi.IntPtrOutput)
+}
+
+type VpcCniNodeAgentConfigPtrOutput struct{ *pulumi.OutputState }
+
+func (VpcCniNodeAgentConfigPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**VpcCniNodeAgentConfig)(nil)).Elem()
+}
+
+func (o VpcCniNodeAgentConfigPtrOutput) ToVpcCniNodeAgentConfigPtrOutput() VpcCniNodeAgentConfigPtrOutput {
+	return o
+}
+
+func (o VpcCniNodeAgentConfigPtrOutput) ToVpcCniNodeAgentConfigPtrOutputWithContext(ctx context.Context) VpcCniNodeAgentConfigPtrOutput {
+	return o
+}
+
+func (o VpcCniNodeAgentConfigPtrOutput) Elem() VpcCniNodeAgentConfigOutput {
+	return o.ApplyT(func(v *VpcCniNodeAgentConfig) VpcCniNodeAgentConfig {
+		if v != nil {
+			return *v
+		}
+		var ret VpcCniNodeAgentConfig
+		return ret
+	}).(VpcCniNodeAgentConfigOutput)
+}
+
+// Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+func (o VpcCniNodeAgentConfigPtrOutput) EnableCloudWatchLogs() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *VpcCniNodeAgentConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableCloudWatchLogs
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+func (o VpcCniNodeAgentConfigPtrOutput) EnablePolicyEventLogs() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *VpcCniNodeAgentConfig) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnablePolicyEventLogs
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Port used by the Amazon VPC CNI node agent health probe endpoint.
+func (o VpcCniNodeAgentConfigPtrOutput) HealthProbeBindAddr() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *VpcCniNodeAgentConfig) *int {
+		if v == nil {
+			return nil
+		}
+		return v.HealthProbeBindAddr
+	}).(pulumi.IntPtrOutput)
+}
+
+// Port used by the Amazon VPC CNI node agent metrics endpoint.
+func (o VpcCniNodeAgentConfigPtrOutput) MetricsBindAddr() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *VpcCniNodeAgentConfig) *int {
+		if v == nil {
+			return nil
+		}
+		return v.MetricsBindAddr
+	}).(pulumi.IntPtrOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*BudgetConfigInput)(nil)).Elem(), BudgetConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*BudgetConfigArrayInput)(nil)).Elem(), BudgetConfigArray{})
@@ -1252,6 +1608,10 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*NginxIngressConfigPtrInput)(nil)).Elem(), NginxIngressConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementInput)(nil)).Elem(), RequirementArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RequirementArrayInput)(nil)).Elem(), RequirementArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*VpcCniConfigInput)(nil)).Elem(), VpcCniConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*VpcCniConfigPtrInput)(nil)).Elem(), VpcCniConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*VpcCniNodeAgentConfigInput)(nil)).Elem(), VpcCniNodeAgentConfigArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*VpcCniNodeAgentConfigPtrInput)(nil)).Elem(), VpcCniNodeAgentConfigArgs{})
 	pulumi.RegisterOutputType(BudgetConfigOutput{})
 	pulumi.RegisterOutputType(BudgetConfigArrayOutput{})
 	pulumi.RegisterOutputType(DisruptionConfigOutput{})
@@ -1262,4 +1622,8 @@ func init() {
 	pulumi.RegisterOutputType(NginxIngressConfigPtrOutput{})
 	pulumi.RegisterOutputType(RequirementOutput{})
 	pulumi.RegisterOutputType(RequirementArrayOutput{})
+	pulumi.RegisterOutputType(VpcCniConfigOutput{})
+	pulumi.RegisterOutputType(VpcCniConfigPtrOutput{})
+	pulumi.RegisterOutputType(VpcCniNodeAgentConfigOutput{})
+	pulumi.RegisterOutputType(VpcCniNodeAgentConfigPtrOutput{})
 }

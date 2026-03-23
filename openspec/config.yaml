@@ -7,6 +7,7 @@ context: |
   Public API source of truth: schema.yaml at the repository root
   Generated SDKs: Node.js, Python, Go, and .NET under sdk/
   Build workflow: Makefile targets generate the Pulumi schema, build the provider binary, and regenerate SDKs
+  Preferred build entrypoints: use Makefile targets such as `make provider`, `make build_sdks`, and `make test` instead of ad hoc build commands when a target already exists
   Testing workflow: examples are validated with go test from the examples/ directory
   Core integrations: AWS EKS, IAM, KMS, CloudWatch, SQS, Kubernetes, Helm, Route53, cert-manager, external-dns, and nginx ingress
   Product stance: this package is intentionally opinionated and batteries-included; avoid making core defaults optional unless there is a strong compatibility reason
@@ -30,5 +31,5 @@ rules:
     - Prefer designs that preserve existing stack behavior unless a breaking change is explicitly intended
   tasks:
     - Include source changes, regeneration steps, and verification steps as separate checklist items
-    - Name the exact commands to run when relevant, especially Makefile targets and go test coverage
+    - Prefer documented Makefile targets for build and regeneration steps, and name the exact target or command to run
     - Include docs/examples updates when the public API or user workflow changes

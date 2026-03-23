@@ -197,3 +197,38 @@ export interface RequirementArgs {
     values?: pulumi.Input<pulumi.Input<string>[]>;
 }
 
+/**
+ * Configuration for the Amazon VPC CNI add-on.
+ */
+export interface VpcCniConfigArgs {
+    /**
+     * Whether to enable Amazon EKS network policy support in the Amazon VPC CNI add-on.
+     */
+    enableNetworkPolicy?: pulumi.Input<boolean>;
+    /**
+     * Configuration for the Amazon VPC CNI node agent used by network policy support.
+     */
+    nodeAgent?: pulumi.Input<inputs.VpcCniNodeAgentConfigArgs>;
+}
+
+/**
+ * Configuration for the Amazon VPC CNI node agent.
+ */
+export interface VpcCniNodeAgentConfigArgs {
+    /**
+     * Whether to enable CloudWatch logging for the Amazon VPC CNI node agent.
+     */
+    enableCloudWatchLogs?: pulumi.Input<boolean>;
+    /**
+     * Whether to enable Amazon VPC CNI network policy event logs from the node agent.
+     */
+    enablePolicyEventLogs?: pulumi.Input<boolean>;
+    /**
+     * Port used by the Amazon VPC CNI node agent health probe endpoint.
+     */
+    healthProbeBindAddr?: pulumi.Input<number>;
+    /**
+     * Port used by the Amazon VPC CNI node agent metrics endpoint.
+     */
+    metricsBindAddr?: pulumi.Input<number>;
+}

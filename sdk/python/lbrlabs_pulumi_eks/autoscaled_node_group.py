@@ -36,6 +36,7 @@ class AutoscaledNodeGroupArgs:
                  taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
+
         :param pulumi.Input[_builtins.str] disk_size: Disk size for the node group.
         :param pulumi.Input[_builtins.str] node_role: Node role for the node group.
         :param pulumi.Input[Sequence[pulumi.Input['RequirementArgs']]] requirements: List of requirements for the node group.
@@ -253,6 +254,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a AutoscaledNodeGroup resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.str] ami_family: AMI family for the node group.
@@ -276,6 +278,7 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a AutoscaledNodeGroup resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param AutoscaledNodeGroupArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

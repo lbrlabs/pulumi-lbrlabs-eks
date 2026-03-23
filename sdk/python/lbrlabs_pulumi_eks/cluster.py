@@ -51,9 +51,11 @@ class ClusterArgs:
                  system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  system_node_max_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: Optional[pulumi.Input['VpcCniConfigArgs']] = None):
         """
         The set of arguments for constructing a Cluster resource.
+
         :param pulumi.Input[_builtins.str] admin_access_principal: The ARN of the AWS principal that should get admin access.
         :param pulumi.Input[_builtins.str] cert_manager_version: The version of the cert-manager helm chart to deploy.
         :param pulumi.Input[_builtins.str] certificate_arn: The ARN of the certificate to use for the ingress controller.
@@ -81,6 +83,7 @@ class ClusterArgs:
         :param pulumi.Input[_builtins.float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the cluster.
+        :param pulumi.Input['VpcCniConfigArgs'] vpc_cni_config: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
@@ -168,6 +171,8 @@ class ClusterArgs:
             pulumi.set(__self__, "system_node_min_count", system_node_min_count)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if vpc_cni_config is not None:
+            pulumi.set(__self__, "vpc_cni_config", vpc_cni_config)
 
     @_builtins.property
     @pulumi.getter(name="clusterSubnetIds")
@@ -529,6 +534,18 @@ class ClusterArgs:
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
 
+    @_builtins.property
+    @pulumi.getter(name="vpcCniConfig")
+    def vpc_cni_config(self) -> Optional[pulumi.Input['VpcCniConfigArgs']]:
+        """
+        Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+        """
+        return pulumi.get(self, "vpc_cni_config")
+
+    @vpc_cni_config.setter
+    def vpc_cni_config(self, value: Optional[pulumi.Input['VpcCniConfigArgs']]):
+        pulumi.set(self, "vpc_cni_config", value)
+
 
 @pulumi.type_token("lbrlabs-eks:index:Cluster")
 class Cluster(pulumi.ComponentResource):
@@ -567,9 +584,11 @@ class Cluster(pulumi.ComponentResource):
                  system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: Optional[pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
                  __props__=None):
         """
         Create a Cluster resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.str] admin_access_principal: The ARN of the AWS principal that should get admin access.
@@ -599,6 +618,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.float] system_node_max_count: The maximum number of nodes in the system autoscaling group.
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the cluster.
+        :param pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']] vpc_cni_config: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
         """
         ...
     @overload
@@ -608,6 +628,7 @@ class Cluster(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a Cluster resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param ClusterArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -654,6 +675,7 @@ class Cluster(pulumi.ComponentResource):
                  system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
                  system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: Optional[pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -726,6 +748,7 @@ class Cluster(pulumi.ComponentResource):
                 raise TypeError("Missing required property 'system_node_subnet_ids'")
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
             __props__.__dict__["tags"] = tags
+            __props__.__dict__["vpc_cni_config"] = vpc_cni_config
             __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["karpenter_node_role"] = None

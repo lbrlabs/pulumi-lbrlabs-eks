@@ -290,6 +290,12 @@ namespace Lbrlabs.PulumiPackage.Eks
             set => _tags = value;
         }
 
+        /// <summary>
+        /// Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+        /// </summary>
+        [Input("vpcCniConfig")]
+        public Input<Inputs.VpcCniConfigArgs>? VpcCniConfig { get; set; }
+
         public ClusterArgs()
         {
             ClusterEndpointPrivateAccess = false;
