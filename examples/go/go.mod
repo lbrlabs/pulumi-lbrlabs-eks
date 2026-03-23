@@ -1,8 +1,8 @@
 module github.com/lbrlabs/pulumi-lbrlabs-eks/examples/go
 
-go 1.22
+go 1.25.6
 
-toolchain go1.22.2
+toolchain go1.25.6
 
 require (
 	github.com/lbrlabs/pulumi-lbrlabs-eks/sdk v0.2.1

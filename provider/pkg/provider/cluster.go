@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/lbrlabs/pulumi-lbrlabs-eks/pkg/provider/kubeconfig"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
@@ -58,6 +59,20 @@ type NginxIngressConfig struct {
 	EnableInternal pulumi.BoolInput `pulumi:"enableInternal"`
 }
 
+// vpc cni node agent configuration args
+type VpcCniNodeAgentConfig struct {
+	EnablePolicyEventLogs pulumi.BoolInput `pulumi:"enablePolicyEventLogs"`
+	EnableCloudWatchLogs  pulumi.BoolInput `pulumi:"enableCloudWatchLogs"`
+	MetricsBindAddr       pulumi.IntInput  `pulumi:"metricsBindAddr"`
+	HealthProbeBindAddr   pulumi.IntInput  `pulumi:"healthProbeBindAddr"`
+}
+
+// vpc cni configuration args
+type VpcCniConfig struct {
+	EnableNetworkPolicy pulumi.BoolInput       `pulumi:"enableNetworkPolicy"`
+	NodeAgent           *VpcCniNodeAgentConfig `pulumi:"nodeAgent"`
+}
+
 // The set of arguments for creating a Cluster component resource.
 type ClusterArgs struct {
 	ClusterSubnetIds             pulumi.StringArrayInput  `pulumi:"clusterSubnetIds"`
@@ -78,6 +93,7 @@ type ClusterArgs struct {
 	LetsEncryptEmail             string                   `pulumi:"letsEncryptEmail"`
 	IngressConfig                *IngressConfig           `pulumi:"ingressConfig"`
 	NginxIngressConfig           *NginxIngressConfig      `pulumi:"nginxIngressConfig"`
+	VpcCniConfig                 *VpcCniConfig            `pulumi:"vpcCniConfig"`
 	// EnableInternalIngress controls whether to create the internal ingress controller
 	// To disable, set this to false. In future versions, this will be controlled by
 	// NginxIngressConfig.EnableInternal
@@ -119,6 +135,106 @@ type Event struct {
 	Name         string
 	Description  string
 	EventPattern map[string][]string
+}
+
+func hasVpcCniConfig(config *VpcCniConfig) bool {
+	if config == nil {
+		return false
+	}
+
+	if config.EnableNetworkPolicy != nil {
+		return true
+	}
+
+	if config.NodeAgent == nil {
+		return false
+	}
+
+	return config.NodeAgent.EnablePolicyEventLogs != nil ||
+		config.NodeAgent.EnableCloudWatchLogs != nil ||
+		config.NodeAgent.MetricsBindAddr != nil ||
+		config.NodeAgent.HealthProbeBindAddr != nil
+}
+
+func marshalVpcCniConfig(config *VpcCniConfig) pulumi.StringPtrOutput {
+	var inputs []interface{}
+	var assigners []func(interface{}, map[string]interface{}, map[string]interface{})
+
+	addBool := func(input pulumi.BoolInput, assign func(map[string]interface{}, map[string]interface{}, string)) {
+		if input == nil {
+			return
+		}
+
+		inputs = append(inputs, input.ToBoolPtrOutput())
+		assigners = append(assigners, func(value interface{}, configValues map[string]interface{}, nodeAgent map[string]interface{}) {
+			resolved, ok := value.(*bool)
+			if !ok || resolved == nil {
+				return
+			}
+
+			assign(configValues, nodeAgent, strconv.FormatBool(*resolved))
+		})
+	}
+
+	addInt := func(input pulumi.IntInput, assign func(map[string]interface{}, map[string]interface{}, string)) {
+		if input == nil {
+			return
+		}
+
+		inputs = append(inputs, input.ToIntPtrOutput())
+		assigners = append(assigners, func(value interface{}, configValues map[string]interface{}, nodeAgent map[string]interface{}) {
+			resolved, ok := value.(*int)
+			if !ok || resolved == nil {
+				return
+			}
+
+			assign(configValues, nodeAgent, strconv.Itoa(*resolved))
+		})
+	}
+
+	addBool(config.EnableNetworkPolicy, func(configValues map[string]interface{}, _ map[string]interface{}, value string) {
+		configValues["enableNetworkPolicy"] = value
+	})
+
+	if config.NodeAgent != nil {
+		addBool(config.NodeAgent.EnablePolicyEventLogs, func(_ map[string]interface{}, nodeAgent map[string]interface{}, value string) {
+			nodeAgent["enablePolicyEventLogs"] = value
+		})
+		addBool(config.NodeAgent.EnableCloudWatchLogs, func(_ map[string]interface{}, nodeAgent map[string]interface{}, value string) {
+			nodeAgent["enableCloudWatchLogs"] = value
+		})
+		addInt(config.NodeAgent.MetricsBindAddr, func(_ map[string]interface{}, nodeAgent map[string]interface{}, value string) {
+			nodeAgent["metricsBindAddr"] = value
+		})
+		addInt(config.NodeAgent.HealthProbeBindAddr, func(_ map[string]interface{}, nodeAgent map[string]interface{}, value string) {
+			nodeAgent["healthProbeBindAddr"] = value
+		})
+	}
+
+	return pulumi.All(inputs...).ApplyT(func(values []interface{}) (*string, error) {
+		configValues := map[string]interface{}{}
+		nodeAgent := map[string]interface{}{}
+
+		for idx, value := range values {
+			assigners[idx](value, configValues, nodeAgent)
+		}
+
+		if len(nodeAgent) > 0 {
+			configValues["nodeAgent"] = nodeAgent
+		}
+
+		if len(configValues) == 0 {
+			return nil, nil
+		}
+
+		payload, err := json.Marshal(configValues)
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling vpc cni config: %w", err)
+		}
+
+		result := string(payload)
+		return &result, nil
+	}).(pulumi.StringPtrOutput)
 }
 
 // NewCluster creates a new EKS Cluster component resource.
@@ -461,12 +577,17 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error attaching cni policy to role: %w", err)
 	}
 
-	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-vpc-cni", name), &eks.AddonArgs{
+	vpcCniAddonArgs := &eks.AddonArgs{
 		AddonName:             pulumi.String("vpc-cni"),
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
 		Tags:                  tags,
-	}, pulumi.Parent(vpcCsiRole))
+	}
+	if hasVpcCniConfig(args.VpcCniConfig) {
+		vpcCniAddonArgs.ConfigurationValues = marshalVpcCniConfig(args.VpcCniConfig)
+	}
+
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-vpc-cni", name), vpcCniAddonArgs, pulumi.Parent(vpcCsiRole))
 	if err != nil {
 		return nil, fmt.Errorf("error installing vpc cni: %w", err)
 	}

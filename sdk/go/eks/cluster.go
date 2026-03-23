@@ -168,6 +168,8 @@ type clusterArgs struct {
 	SystemNodeSubnetIds []string `pulumi:"systemNodeSubnetIds"`
 	// Key-value map of tags to apply to the cluster.
 	Tags map[string]string `pulumi:"tags"`
+	// Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+	VpcCniConfig *VpcCniConfig `pulumi:"vpcCniConfig"`
 }
 
 // The set of arguments for constructing a Cluster resource.
@@ -230,6 +232,8 @@ type ClusterArgs struct {
 	SystemNodeSubnetIds pulumi.StringArrayInput
 	// Key-value map of tags to apply to the cluster.
 	Tags pulumi.StringMapInput
+	// Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+	VpcCniConfig VpcCniConfigPtrInput
 }
 
 func (ClusterArgs) ElementType() reflect.Type {

@@ -30,7 +30,7 @@ It creates:
 - Installs an [operator](https://github.com/rustrial/aws-eks-iam-auth-controller) that eases the process of adding Role Mappings to the [aws-auth](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
 - A node group designed to run "system" workloads with a taint
 - The [AWS EBS CSI Addon](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
-- The [AWS VPC CBI Addon](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+- The [AWS VPC CNI Addon](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html) with an [IAM role using IAM Roles for Service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 - The CoreDNS Addon
 - An internal and external [NGINX ingress controller](https://github.com/kubernetes/ingress-nginx) with relevant ingress classes
 - [External DNS](https://github.com/kubernetes-sigs/external-dns), with an IAM role that can modify Route53 domains using IAM Roles for service accounts
@@ -45,6 +45,28 @@ It also provides a mechanism to quickly attached a workload node to your newly c
 Examples for all languages are in the [examples](examples/) directory. 
 
 Note, you need to create a VPC, and also add your worker nodes. 
+
+### Amazon VPC CNI network policy support
+
+You can opt into Amazon EKS network policy support by configuring the `vpcCniConfig` input on the cluster:
+
+```typescript
+const cluster = new lbrlabs_eks.Cluster("cluster", {
+  clusterSubnetIds: vpc.privateSubnetIds,
+  letsEncryptEmail: "mail@lbrlabs.com",
+  systemNodeSubnetIds: vpc.publicSubnetIds,
+  vpcCniConfig: {
+    enableNetworkPolicy: true,
+    nodeAgent: {
+      enablePolicyEventLogs: true,
+      metricsBindAddr: 8162,
+      healthProbeBindAddr: 8163,
+    },
+  },
+});
+```
+
+This setting is optional. AWS support still depends on the installed VPC CNI addon version and applies to Linux EC2 nodes, not Fargate or Windows nodes.
 
 ## FAQs
 

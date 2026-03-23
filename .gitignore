@@ -11,6 +11,8 @@ package-lock.json
 .idea/
 **/version.txt
 **/dist
+**/.gocache
+**/.gomodcache
 nuget/
 **/__pycache__
 

@@ -29,6 +29,14 @@ const cluster = new lbrlabs_eks.Cluster("cluster", {
   letsEncryptEmail: "mail@lbrlabs.com",
   systemNodeSubnetIds: vpc.publicSubnetIds,
   systemNodeDesiredCount: 2,
+  vpcCniConfig: {
+    enableNetworkPolicy: true,
+    nodeAgent: {
+      enablePolicyEventLogs: true,
+      metricsBindAddr: 8162,
+      healthProbeBindAddr: 8163,
+    },
+  },
 });
 
 const workloadNodes = new lbrlabs_eks.AttachedNodeGroup("workload", {

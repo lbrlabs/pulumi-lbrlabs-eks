@@ -1,0 +1,35 @@
+schema: spec-driven
+
+context: |
+  Project: pulumi-lbrlabs-eks
+  Domain: opinionated AWS EKS infrastructure packaged as a Pulumi multi-language component provider
+  Primary implementation: Go provider code under provider/pkg/provider
+  Public API source of truth: schema.yaml at the repository root
+  Generated SDKs: Node.js, Python, Go, and .NET under sdk/
+  Build workflow: Makefile targets generate the Pulumi schema, build the provider binary, and regenerate SDKs
+  Preferred build entrypoints: use Makefile targets such as `make provider`, `make build_sdks`, and `make test` instead of ad hoc build commands when a target already exists
+  Testing workflow: examples are validated with go test from the examples/ directory
+  Core integrations: AWS EKS, IAM, KMS, CloudWatch, SQS, Kubernetes, Helm, Route53, cert-manager, external-dns, and nginx ingress
+  Product stance: this package is intentionally opinionated and batteries-included; avoid making core defaults optional unless there is a strong compatibility reason
+  Architecture guidance:
+  - Treat schema.yaml and provider implementation as the authoritative inputs; generated SDK files should be regenerated, not hand-designed
+  - Changes to resource inputs, outputs, defaults, or types can affect existing Pulumi stacks and all generated SDKs
+  - Prefer backwards-compatible changes for public package behavior and clearly call out any migration or state impact
+
+rules:
+  proposal:
+    - Explain the user-facing impact for Pulumi package consumers and any AWS/Kubernetes resources affected
+    - Call out compatibility risk, migration needs, and whether existing stacks could observe different default behavior
+    - State whether the change touches schema.yaml, provider implementation, generated SDKs, examples, or documentation
+  specs:
+    - Reference concrete resource names, input/output properties, and files that define the behavior today
+    - Distinguish source-of-truth changes from generated artifacts so regeneration requirements stay explicit
+    - Use RFC 2119 language and include scenarios for compatibility-sensitive behavior
+  design:
+    - Describe how schema.yaml, provider code, and generated SDKs will stay in sync
+    - Note AWS partition, region, Kubernetes version, Helm chart, or addon version implications when relevant
+    - Prefer designs that preserve existing stack behavior unless a breaking change is explicitly intended
+  tasks:
+    - Include source changes, regeneration steps, and verification steps as separate checklist items
+    - Prefer documented Makefile targets for build and regeneration steps, and name the exact target or command to run
+    - Include docs/examples updates when the public API or user workflow changes
