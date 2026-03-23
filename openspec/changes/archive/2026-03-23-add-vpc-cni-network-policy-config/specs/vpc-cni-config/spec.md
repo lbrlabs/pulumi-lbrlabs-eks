@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Cluster exposes typed VPC CNI configuration
-The `lbrlabs-eks:index:Cluster` component SHALL expose an optional `vpcCniConfig` input property in [schema.yaml](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/schema.yaml). The property MUST reference a dedicated `lbrlabs-eks:index:VpcCniConfig` schema type rather than a free-form JSON string or untyped map.
+The `lbrlabs-eks:index:Cluster` component SHALL expose an optional `vpcCniConfig` input property in [schema.yaml](../../../../../../schema.yaml). The property MUST reference a dedicated `lbrlabs-eks:index:VpcCniConfig` schema type rather than a free-form JSON string or untyped map.
 
 #### Scenario: Consumer enables network policy through the package API
 - **WHEN** a Pulumi program sets `vpcCniConfig.enableNetworkPolicy` on a Cluster
@@ -23,7 +23,7 @@ The `lbrlabs-eks:index:VpcCniConfig` schema type MUST expose a nested `lbrlabs-e
 - **THEN** the generated SDKs expose those fields as typed numeric inputs
 
 ### Requirement: VPC CNI configuration is optional and backwards compatible
-The provider implementation in [provider/pkg/provider/cluster.go](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/provider/pkg/provider/cluster.go) SHALL preserve current `vpc-cni` add-on behavior when `vpcCniConfig` is omitted. Existing programs that do not set `vpcCniConfig` MUST continue to create or update the Cluster without being required to configure network policy settings.
+The provider implementation in [provider/pkg/provider/cluster.go](../../../../../../provider/pkg/provider/cluster.go) SHALL preserve current `vpc-cni` add-on behavior when `vpcCniConfig` is omitted. Existing programs that do not set `vpcCniConfig` MUST continue to create or update the Cluster without being required to configure network policy settings.
 
 #### Scenario: Existing stack does not opt in
 - **WHEN** a Cluster is created or updated without `vpcCniConfig`

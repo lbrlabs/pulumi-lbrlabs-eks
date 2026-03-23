@@ -1,8 +1,8 @@
 ## Context
 
-The Cluster component already creates the Amazon VPC CNI add-on in [provider/pkg/provider/cluster.go](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/provider/pkg/provider/cluster.go), but it does not pass any `ConfigurationValues`. AWS EKS network policy support is enabled through VPC CNI add-on configuration rather than through a separate resource in this provider, so the public package currently has no first-class way to opt into it.
+The Cluster component already creates the Amazon VPC CNI add-on in [provider/pkg/provider/cluster.go](../../../../provider/pkg/provider/cluster.go), but it does not pass any `ConfigurationValues`. AWS EKS network policy support is enabled through VPC CNI add-on configuration rather than through a separate resource in this provider, so the public package currently has no first-class way to opt into it.
 
-This repository treats [schema.yaml](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/schema.yaml) as the public API source of truth and generates SDKs for Go, Node.js, Python, and .NET from that schema. Any new Cluster input must therefore be modeled in schema types first, then implemented in the provider so code generation stays aligned.
+This repository treats [schema.yaml](../../../../schema.yaml) as the public API source of truth and generates SDKs for Go, Node.js, Python, and .NET from that schema. Any new Cluster input must therefore be modeled in schema types first, then implemented in the provider so code generation stays aligned.
 
 ## Goals / Non-Goals
 

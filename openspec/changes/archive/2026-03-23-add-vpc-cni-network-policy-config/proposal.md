@@ -21,4 +21,4 @@ The provider currently installs the Amazon VPC CNI add-on, but consumers cannot 
 
 ## Impact
 
-This change affects [schema.yaml](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/schema.yaml), [provider/pkg/provider/cluster.go](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/provider/pkg/provider/cluster.go), generated SDKs under [sdk/](/Users/lbriggs/src/github/lbrlabs/pulumi-lbrlabs-eks/sdk), and likely examples or README documentation. This is intended to be additive and backwards compatible: existing stacks should see no behavior change unless they opt into the new configuration.
+This change affects [schema.yaml](../../../../schema.yaml), [provider/pkg/provider/cluster.go](../../../../provider/pkg/provider/cluster.go), generated SDKs under [sdk/](../../../../sdk/), and likely examples or README documentation. This is intended to be additive and backwards compatible: existing stacks should see no behavior change unless they opt into the new configuration.
