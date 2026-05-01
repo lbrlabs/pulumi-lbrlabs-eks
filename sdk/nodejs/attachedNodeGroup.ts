@@ -44,7 +44,7 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiType"] = args?.amiType;
             resourceInputs["capacityType"] = (args?.capacityType) ?? "ON_DEMAND";
             resourceInputs["clusterName"] = args?.clusterName;
-            resourceInputs["diskSize"] = (args?.diskSize) ?? 20;
+            resourceInputs["diskSize"] = args?.diskSize;
             resourceInputs["instanceTypes"] = args?.instanceTypes;
             resourceInputs["labels"] = args?.labels;
             resourceInputs["releaseVersion"] = args?.releaseVersion;

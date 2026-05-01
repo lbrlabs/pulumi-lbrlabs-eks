@@ -2,8 +2,6 @@ permissions:
   contents: write
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
   PROVIDER: lbrlabs-eks
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -41,10 +39,9 @@ jobs:
     - name: Install Pulumi CLI
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.nodeversion}}
-        registry-url: https://registry.npmjs.org
     - name: Setup DotNet
       uses: actions/setup-dotnet@v4
       with:
@@ -91,7 +88,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   prerequisites:
@@ -156,7 +153,7 @@ jobs:
         goversion:
         - 1.25.6
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   publish:
@@ -199,11 +196,12 @@ jobs:
         goversion:
         - 1.25.6
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   publish_sdk:
     name: publish_sdk
+    if: ${{ false }}
     needs: publish
     runs-on: ubuntu-latest
     steps:
@@ -228,10 +226,9 @@ jobs:
     - name: Install Pulumi CLI
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.nodeversion}}
-        registry-url: https://registry.npmjs.org
     - name: Setup DotNet
       uses: actions/setup-dotnet@v4
       with:
@@ -262,9 +259,7 @@ jobs:
     - name: Uncompress nodejs SDK
       run: tar -zxf ${{github.workspace}}/sdk/nodejs.tar.gz -C ${{github.workspace}}/sdk/nodejs
     - run: python -m pip install pip twine
-    - env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      name: Publish SDKs
+    - name: Publish SDKs
       run: ./ci-scripts/ci/publish-tfgen-package ${{ github.workspace }}
     strategy:
       fail-fast: true
@@ -274,7 +269,7 @@ jobs:
         goversion:
         - 1.25.6
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   test:
@@ -303,10 +298,9 @@ jobs:
     - name: Install Pulumi CLI
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.nodeversion}}
-        registry-url: https://registry.npmjs.org
     - name: Setup DotNet
       uses: actions/setup-dotnet@v4
       with:
@@ -356,7 +350,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
 name: prerelease

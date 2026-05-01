@@ -37,9 +37,6 @@ func NewAttachedNodeGroup(ctx *pulumi.Context,
 	if args.CapacityType == nil {
 		args.CapacityType = pulumi.StringPtr("ON_DEMAND")
 	}
-	if args.DiskSize == nil {
-		args.DiskSize = pulumi.IntPtr(20)
-	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource AttachedNodeGroup
 	err := ctx.RegisterRemoteComponentResource("lbrlabs-eks:index:AttachedNodeGroup", name, args, &resource, opts...)

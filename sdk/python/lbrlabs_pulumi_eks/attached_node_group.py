@@ -50,8 +50,6 @@ class AttachedNodeGroupArgs:
             capacity_type = 'ON_DEMAND'
         if capacity_type is not None:
             pulumi.set(__self__, "capacity_type", capacity_type)
-        if disk_size is None:
-            disk_size = 20
         if disk_size is not None:
             pulumi.set(__self__, "disk_size", disk_size)
         if instance_types is not None:
@@ -272,8 +270,6 @@ class AttachedNodeGroup(pulumi.ComponentResource):
             if cluster_name is None and not opts.urn:
                 raise TypeError("Missing required property 'cluster_name'")
             __props__.__dict__["cluster_name"] = cluster_name
-            if disk_size is None:
-                disk_size = 20
             __props__.__dict__["disk_size"] = disk_size
             __props__.__dict__["instance_types"] = instance_types
             __props__.__dict__["labels"] = labels

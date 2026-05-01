@@ -59,12 +59,43 @@ func emitSDK(language, outdir, schemaPath string) error {
 	if err != nil {
 		return errors.Wrapf(err, "generating %s package", language)
 	}
+	if language == "nodejs" {
+		if err := normalizeNodeJSPackage(files); err != nil {
+			return err
+		}
+	}
 
 	for f, contents := range files {
 		if err := emitFile(outdir, f, contents); err != nil {
 			return errors.Wrapf(err, "emitting file %v", f)
 		}
 	}
+
+	return nil
+}
+
+func normalizeNodeJSPackage(files map[string][]byte) error {
+	packageJSON, ok := files["package.json"]
+	if !ok {
+		return nil
+	}
+
+	var metadata map[string]interface{}
+	if err := json.Unmarshal(packageJSON, &metadata); err != nil {
+		return errors.Wrap(err, "unmarshalling nodejs package metadata")
+	}
+
+	metadata["repository"] = map[string]string{
+		"type": "git",
+		"url":  "git+https://github.com/lbrlabs/pulumi-lbrlabs-eks.git",
+	}
+	metadata["packageManager"] = "yarn@1.22.22"
+
+	normalizedPackageJSON, err := json.MarshalIndent(metadata, "", "    ")
+	if err != nil {
+		return errors.Wrap(err, "marshalling nodejs package metadata")
+	}
+	files["package.json"] = append(normalizedPackageJSON, '\n')
 
 	return nil
 }

@@ -9,7 +9,11 @@
         "kind/component",
         "category/cloud"
     ],
-    "repository": "https://github.com/lbrlabs/pulumi-lbrlabs-eks",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lbrlabs/pulumi-lbrlabs-eks.git"
+    },
+    "packageManager": "yarn@1.22.22",
     "scripts": {
         "build": "tsc"
     },

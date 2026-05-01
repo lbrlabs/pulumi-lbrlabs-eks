@@ -132,7 +132,6 @@ namespace Lbrlabs.PulumiPackage.Eks
         public AttachedNodeGroupArgs()
         {
             CapacityType = "ON_DEMAND";
-            DiskSize = 20;
         }
         public static new AttachedNodeGroupArgs Empty => new AttachedNodeGroupArgs();
     }
