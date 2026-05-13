@@ -174,7 +174,9 @@ func NewNodeGroup(ctx *pulumi.Context,
 			},
 		).(pulumi.StringOutput)
 		amiType = amiTypeOutput.ToStringPtrOutput()
+	}
 
+	if args.ReleaseVersion == nil {
 		cluster := eks.LookupClusterOutput(ctx, eks.LookupClusterOutputArgs{
 			Name: args.ClusterName,
 		}, pulumi.Parent(component))

@@ -80,7 +80,7 @@ export interface AttachedNodeGroupArgs {
      */
     clusterName: pulumi.Input<string>;
     /**
-     * The size of the disk to attach to the nodes.
+     * The size of the disk to attach to the nodes. Defaults to 40 when omitted.
      */
     diskSize?: pulumi.Input<number>;
     instanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
