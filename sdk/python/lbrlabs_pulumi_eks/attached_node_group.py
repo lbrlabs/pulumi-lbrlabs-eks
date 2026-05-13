@@ -37,7 +37,7 @@ class AttachedNodeGroupArgs:
         :param pulumi.Input[_builtins.str] cluster_name: The cluster name to attach the nodegroup tp.
         :param pulumi.Input[_builtins.str] ami_type: The AMI Type for the nodegroup.
         :param pulumi.Input[_builtins.str] capacity_type: The capacity type of the nodegroup.
-        :param pulumi.Input[_builtins.int] disk_size: The size of the disk to attach to the nodes.
+        :param pulumi.Input[_builtins.int] disk_size: The size of the disk to attach to the nodes. Defaults to 40 when omitted.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[_builtins.str] release_version: The release version for the nodegroup.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the nodegroup.
@@ -114,7 +114,7 @@ class AttachedNodeGroupArgs:
     @pulumi.getter(name="diskSize")
     def disk_size(self) -> Optional[pulumi.Input[_builtins.int]]:
         """
-        The size of the disk to attach to the nodes.
+        The size of the disk to attach to the nodes. Defaults to 40 when omitted.
         """
         return pulumi.get(self, "disk_size")
 
@@ -212,7 +212,7 @@ class AttachedNodeGroup(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.str] ami_type: The AMI Type for the nodegroup.
         :param pulumi.Input[_builtins.str] capacity_type: The capacity type of the nodegroup.
         :param pulumi.Input[_builtins.str] cluster_name: The cluster name to attach the nodegroup tp.
-        :param pulumi.Input[_builtins.int] disk_size: The size of the disk to attach to the nodes.
+        :param pulumi.Input[_builtins.int] disk_size: The size of the disk to attach to the nodes. Defaults to 40 when omitted.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] labels: Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         :param pulumi.Input[_builtins.str] release_version: The release version for the nodegroup.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the nodegroup.

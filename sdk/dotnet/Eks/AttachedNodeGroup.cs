@@ -67,7 +67,7 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<string> ClusterName { get; set; } = null!;
 
         /// <summary>
-        /// The size of the disk to attach to the nodes.
+        /// The size of the disk to attach to the nodes. Defaults to 40 when omitted.
         /// </summary>
         [Input("diskSize")]
         public Input<int>? DiskSize { get; set; }

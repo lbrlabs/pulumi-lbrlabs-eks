@@ -53,7 +53,7 @@ type attachedNodeGroupArgs struct {
 	CapacityType *string `pulumi:"capacityType"`
 	// The cluster name to attach the nodegroup tp.
 	ClusterName string `pulumi:"clusterName"`
-	// The size of the disk to attach to the nodes.
+	// The size of the disk to attach to the nodes. Defaults to 40 when omitted.
 	DiskSize      *int     `pulumi:"diskSize"`
 	InstanceTypes []string `pulumi:"instanceTypes"`
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
@@ -75,7 +75,7 @@ type AttachedNodeGroupArgs struct {
 	CapacityType pulumi.StringPtrInput
 	// The cluster name to attach the nodegroup tp.
 	ClusterName pulumi.StringInput
-	// The size of the disk to attach to the nodes.
+	// The size of the disk to attach to the nodes. Defaults to 40 when omitted.
 	DiskSize      pulumi.IntPtrInput
 	InstanceTypes pulumi.StringArrayInput
 	// Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
