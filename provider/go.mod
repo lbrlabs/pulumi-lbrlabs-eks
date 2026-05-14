@@ -5,7 +5,7 @@ go 1.25.6
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/pulumi/pulumi-aws/sdk/v6 v6.83.0
+	github.com/pulumi/pulumi-aws/sdk/v6 v6.83.3
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.21.1
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.0.9
 	github.com/pulumi/pulumi/pkg/v3 v3.227.0
@@ -17,7 +17,6 @@ require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
-	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
@@ -31,9 +30,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.1.0 // indirect
 	github.com/charmbracelet/x/ansi v0.11.6 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.15 // indirect
-	github.com/charmbracelet/x/input v0.1.2 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
-	github.com/charmbracelet/x/windows v0.1.2 // indirect
 	github.com/cheggaaa/pb v1.0.29 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
