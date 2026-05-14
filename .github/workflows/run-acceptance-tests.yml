@@ -2,8 +2,6 @@ permissions:
   contents: write
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
   PROVIDER: lbrlabs-eks
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -45,10 +43,9 @@ jobs:
     - name: Install Pulumi CLI
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.nodeversion}}
-        registry-url: https://registry.npmjs.org
     - name: Setup DotNet
       uses: actions/setup-dotnet@v4
       with:
@@ -95,7 +92,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   comment-notification:
@@ -181,7 +178,7 @@ jobs:
         goversion:
         - 1.25.6
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
   test:
@@ -214,10 +211,9 @@ jobs:
     - name: Install Pulumi CLI
       uses: pulumi/action-install-pulumi-cli@v2
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.nodeversion}}
-        registry-url: https://registry.npmjs.org
     - name: Setup DotNet
       uses: actions/setup-dotnet@v4
       with:
@@ -267,7 +263,7 @@ jobs:
         - dotnet
         - go
         nodeversion:
-        - 20.x
+        - 24.x
         pythonversion:
         - "3.10"
 name: run-acceptance-tests

@@ -44,7 +44,7 @@ export class AttachedNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiType"] = args?.amiType;
             resourceInputs["capacityType"] = (args?.capacityType) ?? "ON_DEMAND";
             resourceInputs["clusterName"] = args?.clusterName;
-            resourceInputs["diskSize"] = (args?.diskSize) ?? 20;
+            resourceInputs["diskSize"] = args?.diskSize;
             resourceInputs["instanceTypes"] = args?.instanceTypes;
             resourceInputs["labels"] = args?.labels;
             resourceInputs["releaseVersion"] = args?.releaseVersion;
@@ -80,7 +80,7 @@ export interface AttachedNodeGroupArgs {
      */
     clusterName: pulumi.Input<string>;
     /**
-     * The size of the disk to attach to the nodes.
+     * The size of the disk to attach to the nodes. Defaults to 40 when omitted.
      */
     diskSize?: pulumi.Input<number>;
     instanceTypes?: pulumi.Input<pulumi.Input<string>[]>;

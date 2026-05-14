@@ -380,8 +380,7 @@ resources:
           type: string
       diskSize:
         type: integer
-        description: The size of the disk to attach to the nodes.
-        default: 20
+        description: The size of the disk to attach to the nodes. Defaults to 40 when omitted.
       capacityType:
         type: string
         description: The capacity type of the nodegroup.
