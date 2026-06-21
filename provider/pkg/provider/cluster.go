@@ -516,7 +516,7 @@ func NewCluster(ctx *pulumi.Context,
 
 	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system", name), &NodeGroupArgs{
 		ClusterName:    controlPlane.Name,
-		ClusterVersion: controlPlane.Version.ToStringPtrOutput(),
+		ClusterVersion: controlPlane.Version,
 		SubnetIds:      args.SystemNodeSubnetIds,
 		InstanceTypes:  &instanceTypes,
 		Labels:         systemNodeLabels,

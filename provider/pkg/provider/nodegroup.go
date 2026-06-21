@@ -16,7 +16,7 @@ import (
 
 type NodeGroupArgs struct {
 	ClusterName      pulumi.StringInput              `pulumi:"clusterName"`
-	ClusterVersion   pulumi.StringPtrInput           `pulumi:"-"`
+	ClusterVersion   pulumi.StringInput              `pulumi:"-"`
 	SubnetIds        pulumi.StringArrayInput         `pulumi:"subnetIds"`
 	CapacityType     *pulumi.StringInput             `pulumi:"capacityType"`
 	InstanceTypes    *pulumi.StringArrayInput        `pulumi:"instanceTypes"`
@@ -183,7 +183,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 			cluster := eks.LookupClusterOutput(ctx, eks.LookupClusterOutputArgs{
 				Name: args.ClusterName,
 			}, pulumi.Parent(component))
-			clusterVersion = cluster.Version().ToStringPtrOutput()
+			clusterVersion = cluster.Version()
 		}
 
 		amiPath := instanceTypes.ToStringArrayOutput().ApplyT(
