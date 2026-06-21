@@ -16,6 +16,7 @@ import (
 
 type NodeGroupArgs struct {
 	ClusterName      pulumi.StringInput              `pulumi:"clusterName"`
+	ClusterVersion   pulumi.StringInput              `pulumi:"-"`
 	SubnetIds        pulumi.StringArrayInput         `pulumi:"subnetIds"`
 	CapacityType     *pulumi.StringInput             `pulumi:"capacityType"`
 	InstanceTypes    *pulumi.StringArrayInput        `pulumi:"instanceTypes"`
@@ -177,9 +178,13 @@ func NewNodeGroup(ctx *pulumi.Context,
 	}
 
 	if args.ReleaseVersion == nil {
-		cluster := eks.LookupClusterOutput(ctx, eks.LookupClusterOutputArgs{
-			Name: args.ClusterName,
-		}, pulumi.Parent(component))
+		clusterVersion := args.ClusterVersion
+		if clusterVersion == nil {
+			cluster := eks.LookupClusterOutput(ctx, eks.LookupClusterOutputArgs{
+				Name: args.ClusterName,
+			}, pulumi.Parent(component))
+			clusterVersion = cluster.Version()
+		}
 
 		amiPath := instanceTypes.ToStringArrayOutput().ApplyT(
 			func(instanceTypes []string) (string, error) {
@@ -190,7 +195,7 @@ func NewNodeGroup(ctx *pulumi.Context,
 		amiMetadata := ssm.LookupParameterOutput(ctx, ssm.LookupParameterOutputArgs{
 			Name: pulumi.Sprintf(
 				"/aws/service/eks/optimized-ami/%s/%s/recommended",
-				cluster.Version(),
+				clusterVersion,
 				amiPath,
 			),
 		}, pulumi.Parent(component))

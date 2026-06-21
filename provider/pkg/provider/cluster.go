@@ -515,11 +515,12 @@ func NewCluster(ctx *pulumi.Context,
 	}
 
 	systemNodes, err := NewNodeGroup(ctx, fmt.Sprintf("%s-system", name), &NodeGroupArgs{
-		ClusterName:   controlPlane.Name,
-		SubnetIds:     args.SystemNodeSubnetIds,
-		InstanceTypes: &instanceTypes,
-		Labels:        systemNodeLabels,
-		Taints:        taints,
+		ClusterName:    controlPlane.Name,
+		ClusterVersion: controlPlane.Version,
+		SubnetIds:      args.SystemNodeSubnetIds,
+		InstanceTypes:  &instanceTypes,
+		Labels:         systemNodeLabels,
+		Taints:         taints,
 		ScalingConfig: eks.NodeGroupScalingConfigArgs{
 			MaxSize:     systemNodeMaxCount,
 			MinSize:     systemNodeMinCount,
