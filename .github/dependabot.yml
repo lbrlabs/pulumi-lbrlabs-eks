@@ -1,24 +1,64 @@
 version: 2
+
+multi-ecosystem-groups:
+  all-dependencies:
+    schedule:
+      interval: daily
+      time: "13:00"
+    labels:
+      - dependencies
+      - dependabot
+
 updates:
-- package-ecosystem: gomod
-  directory: "/provider"
-  schedule:
-    interval: daily
-    time: "13:00"
-  open-pull-requests-limit: 3
-  reviewers:
-  - jaxxstorm
-  labels:
-  - dependencies
-  - dependabot
-- package-ecosystem: gomod
-  directory: "/sdk"
-  schedule:
-    interval: daily
-    time: "13:00"
-  open-pull-requests-limit: 3
-  reviewers:
-  - jaxxstorm
-  labels:
-  - dependencies
-  - dependabot
+  - package-ecosystem: gomod
+    directories:
+      - "/provider"
+      - "/sdk"
+      - "/examples"
+      - "/examples/go"
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 3
+    reviewers:
+      - jaxxstorm
+
+  - package-ecosystem: npm
+    directories:
+      - "/sdk/nodejs"
+      - "/examples/ts"
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 3
+    reviewers:
+      - jaxxstorm
+
+  - package-ecosystem: pip
+    directory: "/examples/py"
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 3
+    reviewers:
+      - jaxxstorm
+
+  - package-ecosystem: nuget
+    directories:
+      - "/sdk/dotnet"
+      - "/examples/csharp"
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 3
+    reviewers:
+      - jaxxstorm
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 3
+    reviewers:
+      - jaxxstorm
