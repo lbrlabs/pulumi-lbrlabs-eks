@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -30,11 +31,19 @@ func emitSDK(language, outdir, schemaPath string) error {
 		return fmt.Errorf("unrecognized language %q", language)
 	}
 	var yarnConfig []byte
+	var yarnConfigMode os.FileMode
 	if language == "nodejs" {
-		var err error
-		yarnConfig, err = os.ReadFile(filepath.Join(outdir, ".yarnrc.yml"))
+		yarnConfigPath := filepath.Join(outdir, ".yarnrc.yml")
+		info, err := os.Stat(yarnConfigPath)
 		if err != nil && !os.IsNotExist(err) {
 			return fmt.Errorf("reading nodejs yarn configuration: %w", err)
+		}
+		if err == nil {
+			yarnConfig, err = os.ReadFile(yarnConfigPath)
+			if err != nil {
+				return fmt.Errorf("reading nodejs yarn configuration: %w", err)
+			}
+			yarnConfigMode = info.Mode()
 		}
 	}
 
@@ -44,7 +53,8 @@ func emitSDK(language, outdir, schemaPath string) error {
 	}
 
 	providerPath := filepath.Join(schemaDir, "bin", "pulumi-resource-lbrlabs-eks")
-	command := exec.Command("pulumi", "package", "gen-sdk", providerPath, "--language", language, "--out", filepath.Dir(outdir))
+	command := exec.Command("pulumi", "package", "gen-sdk", providerPath, "--language", language,
+		"--out", filepath.Dir(outdir), "--version", "0.0.0")
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 	if err := command.Run(); err != nil {
@@ -53,14 +63,14 @@ func emitSDK(language, outdir, schemaPath string) error {
 
 	if language == "nodejs" {
 		if yarnConfig != nil {
-			if err := os.WriteFile(filepath.Join(outdir, ".yarnrc.yml"), yarnConfig, 0600); err != nil {
+			if err := os.WriteFile(filepath.Join(outdir, ".yarnrc.yml"), yarnConfig, yarnConfigMode); err != nil {
 				return fmt.Errorf("restoring nodejs yarn configuration: %w", err)
 			}
 		}
 		return normalizeNodeJSPackage(outdir)
 	}
 
-	return nil
+	return normalizeSDKVersion(language, outdir)
 }
 
 func normalizeNodeJSPackage(outdir string) error {
@@ -79,13 +89,14 @@ func normalizeNodeJSPackage(outdir string) error {
 		Type: "git",
 		URL:  "git+https://github.com/lbrlabs/pulumi-lbrlabs-eks.git",
 	}
+	metadata.Version = "${VERSION}"
 	metadata.PackageManager = "yarn@1.22.22"
 
 	normalizedPackageJSON, err := json.MarshalIndent(metadata, "", "    ")
 	if err != nil {
 		return fmt.Errorf("marshalling nodejs package metadata: %w", err)
 	}
-	if err := os.WriteFile(packageJSONPath, append(normalizedPackageJSON, '\n'), 0600); err != nil {
+	if err := os.WriteFile(packageJSONPath, append(normalizedPackageJSON, '\n'), 0644); err != nil {
 		return fmt.Errorf("writing nodejs package metadata: %w", err)
 	}
 
@@ -113,4 +124,64 @@ type nodeJSPackagePulumi struct {
 	Resource bool   `json:"resource"`
 	Name     string `json:"name"`
 	Server   string `json:"server"`
+}
+
+func normalizeSDKVersion(language, outdir string) error {
+	pluginManifestPath := ""
+	switch language {
+	case "go":
+		pluginManifestPath = filepath.Join(outdir, "eks", "pulumi-plugin.json")
+		utilitiesPath := filepath.Join(outdir, "eks", "internal", "pulumiUtilities.go")
+		utilities, err := os.ReadFile(utilitiesPath)
+		if err != nil {
+			return fmt.Errorf("reading go sdk utilities: %w", err)
+		}
+
+		const generatedVersion = `semver.MustParse("0.0.0")`
+		if !strings.Contains(string(utilities), generatedVersion) {
+			return fmt.Errorf("go sdk utilities did not contain the generated version")
+		}
+		utilities = []byte(strings.ReplaceAll(string(utilities), generatedVersion, "SdkVersion"))
+		if err := os.WriteFile(utilitiesPath, utilities, 0644); err != nil {
+			return fmt.Errorf("writing go sdk utilities: %w", err)
+		}
+	case "python":
+		pluginManifestPath = filepath.Join(outdir, "lbrlabs_pulumi_eks", "pulumi-plugin.json")
+	case "dotnet":
+		pluginManifestPath = filepath.Join(outdir, "pulumi-plugin.json")
+		projectPath := filepath.Join(outdir, "Lbrlabs.PulumiPackage.Eks.csproj")
+		project, err := os.ReadFile(projectPath)
+		if err != nil {
+			return fmt.Errorf("reading dotnet project: %w", err)
+		}
+		project = []byte(strings.Replace(string(project), "    <Version>0.0.0</Version>\n", "", 1))
+		if err := os.WriteFile(projectPath, project, 0644); err != nil {
+			return fmt.Errorf("writing dotnet project: %w", err)
+		}
+	}
+
+	return normalizePluginManifest(pluginManifestPath)
+}
+
+func normalizePluginManifest(path string) error {
+	manifest, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("reading plugin manifest: %w", err)
+	}
+
+	var metadata map[string]interface{}
+	if err := json.Unmarshal(manifest, &metadata); err != nil {
+		return fmt.Errorf("unmarshalling plugin manifest: %w", err)
+	}
+	delete(metadata, "version")
+
+	normalizedManifest, err := json.MarshalIndent(metadata, "", "  ")
+	if err != nil {
+		return fmt.Errorf("marshalling plugin manifest: %w", err)
+	}
+	if err := os.WriteFile(path, append(normalizedManifest, '\n'), 0644); err != nil {
+		return fmt.Errorf("writing plugin manifest: %w", err)
+	}
+
+	return nil
 }
