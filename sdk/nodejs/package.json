@@ -1,6 +1,6 @@
 {
     "name": "@lbrlabs/pulumi-eks",
-    "version": "${VERSION}",
+    "version": "1.8.1+dirty",
     "keywords": [
         "eks",
         "kubernetes",

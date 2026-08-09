@@ -9,6 +9,7 @@
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/lbrlabs/pulumi-lbrlabs-eks</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
+    <Version>1.8.1+dirty</Version>
 
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>

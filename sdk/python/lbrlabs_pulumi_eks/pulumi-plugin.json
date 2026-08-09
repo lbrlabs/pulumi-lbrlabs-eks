@@ -1,5 +1,6 @@
 {
   "resource": true,
   "name": "lbrlabs-eks",
+  "version": "1.8.1+dirty",
   "server": "github://api.github.com/lbrlabs"
 }

@@ -35,7 +35,7 @@ provider:: install_plugins generate_schema # build the provider binary
 build_sdks:: install_plugins provider build_nodejs build_python build_go build_dotnet  # build all the sdks
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript | sed 's/^v//')
-build_nodejs:: install_plugins  # build the node sdk
+build_nodejs:: provider install_plugins  # build the node sdk
 	cd provider/cmd/${CODEGEN} && go run . nodejs ../../../sdk/nodejs ${SCHEMA_PATH}
 	cd sdk/nodejs/ && \
         yarn install && \
@@ -44,7 +44,7 @@ build_nodejs:: install_plugins  # build the node sdk
     	sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
 build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
-build_python:: install_plugins  # build the python sdk
+build_python:: provider install_plugins  # build the python sdk
 	cd provider/cmd/${CODEGEN} && go run . python ../../../sdk/python ${SCHEMA_PATH}
 	cp ${WORKING_DIR}/README.md sdk/python
 	cd sdk/python/ && \
@@ -55,11 +55,11 @@ build_python:: install_plugins  # build the python sdk
         rm ./bin/setup.py.bak && \
         cd ./bin && python3 setup.py build sdist
 
-build_go:: install_plugins  # build the go sdk
+build_go:: provider install_plugins  # build the go sdk
 	cd provider/cmd/${CODEGEN} && go run . go ../../../sdk/go ${SCHEMA_PATH}
 
 build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-build_dotnet:: install_plugins  # build the dotnet sdk
+build_dotnet:: provider install_plugins  # build the dotnet sdk
 	cd provider/cmd/${CODEGEN} && go run . dotnet ../../../sdk/dotnet ${SCHEMA_PATH}
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
