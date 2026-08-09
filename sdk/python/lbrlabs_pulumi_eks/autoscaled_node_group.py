@@ -21,19 +21,19 @@ __all__ = ['AutoscaledNodeGroupArgs', 'AutoscaledNodeGroup']
 @pulumi.input_type
 class AutoscaledNodeGroupArgs:
     def __init__(__self__, *,
-                 disk_size: Optional[pulumi.Input[_builtins.str]] = None,
+                 disk_size: pulumi.Input[Optional[_builtins.str]] = None,
                  node_role: pulumi.Input[_builtins.str],
                  requirements: pulumi.Input[Sequence[pulumi.Input['RequirementArgs']]],
                  security_group_ids: pulumi.Input[Sequence[pulumi.Input[_builtins.str]]],
                  subnet_ids: pulumi.Input[Sequence[pulumi.Input[_builtins.str]]],
-                 ami_family: Optional[pulumi.Input[_builtins.str]] = None,
-                 ami_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 disruption: Optional[pulumi.Input['DisruptionConfigArgs']] = None,
-                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 node_class_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 node_pool_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 taints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
+                 ami_family: pulumi.Input[Optional[_builtins.str]] = None,
+                 ami_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 annotations: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 disruption: pulumi.Input[Optional['DisruptionConfigArgs']] = None,
+                 labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 node_class_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 node_pool_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 taints: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]] = None):
         """
         The set of arguments for constructing a AutoscaledNodeGroup resource.
 
@@ -140,95 +140,95 @@ class AutoscaledNodeGroupArgs:
 
     @_builtins.property
     @pulumi.getter(name="amiFamily")
-    def ami_family(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ami_family(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         AMI family for the node group.
         """
         return pulumi.get(self, "ami_family")
 
     @ami_family.setter
-    def ami_family(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ami_family(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ami_family", value)
 
     @_builtins.property
     @pulumi.getter(name="amiId")
-    def ami_id(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ami_id(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         AMI ID for the node group.
         """
         return pulumi.get(self, "ami_id")
 
     @ami_id.setter
-    def ami_id(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ami_id(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ami_id", value)
 
     @_builtins.property
     @pulumi.getter
-    def annotations(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def annotations(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         Annotations to apply to the node group.
         """
         return pulumi.get(self, "annotations")
 
     @annotations.setter
-    def annotations(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def annotations(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "annotations", value)
 
     @_builtins.property
     @pulumi.getter
-    def disruption(self) -> Optional[pulumi.Input['DisruptionConfigArgs']]:
+    def disruption(self) -> pulumi.Input[Optional['DisruptionConfigArgs']]:
         return pulumi.get(self, "disruption")
 
     @disruption.setter
-    def disruption(self, value: Optional[pulumi.Input['DisruptionConfigArgs']]):
+    def disruption(self, value: pulumi.Input[Optional['DisruptionConfigArgs']]):
         pulumi.set(self, "disruption", value)
 
     @_builtins.property
     @pulumi.getter
-    def labels(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def labels(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
         """
         return pulumi.get(self, "labels")
 
     @labels.setter
-    def labels(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def labels(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "labels", value)
 
     @_builtins.property
     @pulumi.getter(name="nodeClassApiVersion")
-    def node_class_api_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def node_class_api_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Karpenter NodePool API version.
         """
         return pulumi.get(self, "node_class_api_version")
 
     @node_class_api_version.setter
-    def node_class_api_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def node_class_api_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "node_class_api_version", value)
 
     @_builtins.property
     @pulumi.getter(name="nodePoolApiVersion")
-    def node_pool_api_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def node_pool_api_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Karpenter NodePool API version.
         """
         return pulumi.get(self, "node_pool_api_version")
 
     @node_pool_api_version.setter
-    def node_pool_api_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def node_pool_api_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "node_pool_api_version", value)
 
     @_builtins.property
     @pulumi.getter
-    def taints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]:
+    def taints(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]:
         """
         Optional node taints.
         """
         return pulumi.get(self, "taints")
 
     @taints.setter
-    def taints(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]):
+    def taints(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_kubernetes.core.v1.TaintArgs']]]]):
         pulumi.set(self, "taints", value)
 
 
@@ -238,19 +238,19 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 ami_family: Optional[pulumi.Input[_builtins.str]] = None,
-                 ami_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 disk_size: Optional[pulumi.Input[_builtins.str]] = None,
-                 disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
-                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 node_class_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 node_pool_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 node_role: Optional[pulumi.Input[_builtins.str]] = None,
-                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
-                 security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
+                 ami_family: pulumi.Input[Optional[_builtins.str]] = None,
+                 ami_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 annotations: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 disk_size: pulumi.Input[Optional[_builtins.str]] = None,
+                 disruption: pulumi.Input[Optional[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
+                 labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 node_class_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 node_pool_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 node_role: pulumi.Input[Optional[_builtins.str]] = None,
+                 requirements: pulumi.Input[Optional[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
+                 security_group_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 taints: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
                  __props__=None):
         """
         Create a AutoscaledNodeGroup resource with the given unique name, props, and options.
@@ -294,19 +294,19 @@ class AutoscaledNodeGroup(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 ami_family: Optional[pulumi.Input[_builtins.str]] = None,
-                 ami_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 annotations: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 disk_size: Optional[pulumi.Input[_builtins.str]] = None,
-                 disruption: Optional[pulumi.Input[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
-                 labels: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 node_class_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 node_pool_api_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 node_role: Optional[pulumi.Input[_builtins.str]] = None,
-                 requirements: Optional[pulumi.Input[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
-                 security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 taints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
+                 ami_family: pulumi.Input[Optional[_builtins.str]] = None,
+                 ami_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 annotations: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 disk_size: pulumi.Input[Optional[_builtins.str]] = None,
+                 disruption: pulumi.Input[Optional[Union['DisruptionConfigArgs', 'DisruptionConfigArgsDict']]] = None,
+                 labels: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 node_class_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 node_pool_api_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 node_role: pulumi.Input[Optional[_builtins.str]] = None,
+                 requirements: pulumi.Input[Optional[Sequence[pulumi.Input[Union['RequirementArgs', 'RequirementArgsDict']]]]] = None,
+                 security_group_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 taints: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_kubernetes.core.v1.TaintArgs']]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):

@@ -90,11 +90,11 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["enableOtel"] = (args?.enableOtel) ?? false;
             resourceInputs["enabledClusterLogTypes"] = args?.enabledClusterLogTypes;
             resourceInputs["externalDNSVersion"] = args?.externalDNSVersion;
-            resourceInputs["ingressConfig"] = args ? (args.ingressConfig ? pulumi.output(args.ingressConfig).apply(inputs.ingressConfigArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["ingressConfig"] = args ? pulumi.output(args.ingressConfig).apply(v => v === undefined ? undefined : inputs.ingressConfigArgsProvideDefaults(v)) : undefined;
             resourceInputs["karpenterVersion"] = (args?.karpenterVersion) ?? "0.36.2";
             resourceInputs["lbType"] = (args?.lbType) ?? "nlb";
             resourceInputs["letsEncryptEmail"] = args?.letsEncryptEmail;
-            resourceInputs["nginxIngressConfig"] = args ? (args.nginxIngressConfig ? pulumi.output(args.nginxIngressConfig).apply(inputs.nginxIngressConfigArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["nginxIngressConfig"] = args ? pulumi.output(args.nginxIngressConfig).apply(v => v === undefined ? undefined : inputs.nginxIngressConfigArgsProvideDefaults(v)) : undefined;
             resourceInputs["nginxIngressRegistry"] = (args?.nginxIngressRegistry) ?? "registry.k8s.io";
             resourceInputs["nginxIngressTag"] = (args?.nginxIngressTag) ?? "v1.12.0";
             resourceInputs["nginxIngressVersion"] = args?.nginxIngressVersion;
@@ -135,32 +135,32 @@ export interface ClusterArgs {
     /**
      * The ARN of the AWS principal that should get admin access.
      */
-    adminAccessPrincipal?: pulumi.Input<string>;
+    adminAccessPrincipal?: pulumi.Input<string | undefined>;
     /**
      * The version of the cert-manager helm chart to deploy.
      */
-    certManagerVersion?: pulumi.Input<string>;
+    certManagerVersion?: pulumi.Input<string | undefined>;
     /**
      * The ARN of the certificate to use for the ingress controller.
      */
-    certificateArn?: pulumi.Input<string>;
+    certificateArn?: pulumi.Input<string | undefined>;
     /**
      * Indicates whether or not the Amazon EKS private API server endpoint is enabled.
      */
-    clusterEndpointPrivateAccess?: pulumi.Input<boolean>;
+    clusterEndpointPrivateAccess?: pulumi.Input<boolean | undefined>;
     /**
      * Indicates whether or not the Amazon EKS public API server endpoint is enabled.
      */
-    clusterEndpointPublicAccess?: pulumi.Input<boolean>;
+    clusterEndpointPublicAccess?: pulumi.Input<boolean | undefined>;
     clusterSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * The version of the EKS cluster to create.
      */
-    clusterVersion?: pulumi.Input<string>;
+    clusterVersion?: pulumi.Input<string | undefined>;
     /**
      * The version of the eks-iam-auth-controller helm chart to deploy.
      */
-    eksIamAuthControllerVersion?: pulumi.Input<string>;
+    eksIamAuthControllerVersion?: pulumi.Input<string | undefined>;
     /**
      * Whether to enable cert-manager with route 53 integration.
      */
@@ -189,23 +189,23 @@ export interface ClusterArgs {
      * Whether to enable the OTEL Distro for EKS.
      */
     enableOtel?: boolean;
-    enabledClusterLogTypes?: pulumi.Input<pulumi.Input<string>[]>;
+    enabledClusterLogTypes?: pulumi.Input<pulumi.Input<string>[] | undefined>;
     /**
      * The version of the external-dns helm chart to deploy.
      */
-    externalDNSVersion?: pulumi.Input<string>;
+    externalDNSVersion?: pulumi.Input<string | undefined>;
     /**
      * Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
      */
-    ingressConfig?: pulumi.Input<inputs.IngressConfigArgs>;
+    ingressConfig?: pulumi.Input<inputs.IngressConfigArgs | undefined>;
     /**
      * The version of karpenter to deploy.
      */
-    karpenterVersion?: pulumi.Input<string>;
+    karpenterVersion?: pulumi.Input<string | undefined>;
     /**
      * The type of loadbalancer to provision.
      */
-    lbType?: pulumi.Input<string>;
+    lbType?: pulumi.Input<string | undefined>;
     /**
      * The email address to use to issue certificates from Lets Encrypt.
      */
@@ -213,39 +213,39 @@ export interface ClusterArgs {
     /**
      * Configuration for the nginx ingress controllers.
      */
-    nginxIngressConfig?: pulumi.Input<inputs.NginxIngressConfigArgs>;
+    nginxIngressConfig?: pulumi.Input<inputs.NginxIngressConfigArgs | undefined>;
     /**
      * The container registry to pull images from.
      */
-    nginxIngressRegistry?: pulumi.Input<string>;
+    nginxIngressRegistry?: pulumi.Input<string | undefined>;
     /**
      * The tag to use for the nginx ingress controller images.
      */
-    nginxIngressTag?: pulumi.Input<string>;
+    nginxIngressTag?: pulumi.Input<string | undefined>;
     /**
      * The version of the nginx ingress controller helm chart to deploy.
      */
-    nginxIngressVersion?: pulumi.Input<string>;
+    nginxIngressVersion?: pulumi.Input<string | undefined>;
     /**
      * The initial number of nodes in the system autoscaling group.
      */
-    systemNodeDesiredCount?: pulumi.Input<number>;
-    systemNodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[]>;
+    systemNodeDesiredCount?: pulumi.Input<number | undefined>;
+    systemNodeInstanceTypes?: pulumi.Input<pulumi.Input<string>[] | undefined>;
     /**
      * The maximum number of nodes in the system autoscaling group.
      */
-    systemNodeMaxCount?: pulumi.Input<number>;
+    systemNodeMaxCount?: pulumi.Input<number | undefined>;
     /**
      * The minimum number of nodes in the system autoscaling group.
      */
-    systemNodeMinCount?: pulumi.Input<number>;
+    systemNodeMinCount?: pulumi.Input<number | undefined>;
     systemNodeSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Key-value map of tags to apply to the cluster.
      */
-    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
      * Configuration for the Amazon VPC CNI add-on, including optional network policy support.
      */
-    vpcCniConfig?: pulumi.Input<inputs.VpcCniConfigArgs>;
+    vpcCniConfig?: pulumi.Input<inputs.VpcCniConfigArgs | undefined>;
 }

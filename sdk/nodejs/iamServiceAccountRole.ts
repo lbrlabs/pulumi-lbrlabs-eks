@@ -83,5 +83,5 @@ export interface IamServiceAccountRoleArgs {
     /**
      * Key-value map of tags to apply to the service account.
      */
-    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
 }

@@ -23,13 +23,13 @@ class ClusterArgs:
     def __init__(__self__, *,
                  cluster_subnet_ids: pulumi.Input[Sequence[pulumi.Input[_builtins.str]]],
                  system_node_subnet_ids: pulumi.Input[Sequence[pulumi.Input[_builtins.str]]],
-                 admin_access_principal: Optional[pulumi.Input[_builtins.str]] = None,
-                 cert_manager_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 certificate_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 cluster_endpoint_private_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_endpoint_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 eks_iam_auth_controller_version: Optional[pulumi.Input[_builtins.str]] = None,
+                 admin_access_principal: pulumi.Input[Optional[_builtins.str]] = None,
+                 cert_manager_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 certificate_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 cluster_endpoint_private_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
                  enable_external_dns: Optional[_builtins.bool] = None,
@@ -37,22 +37,22 @@ class ClusterArgs:
                  enable_internal_ingress: Optional[_builtins.bool] = None,
                  enable_karpenter: Optional[_builtins.bool] = None,
                  enable_otel: Optional[_builtins.bool] = None,
-                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 external_dns_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 ingress_config: Optional[pulumi.Input['IngressConfigArgs']] = None,
-                 karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 lb_type: Optional[pulumi.Input[_builtins.str]] = None,
+                 enabled_cluster_log_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 external_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ingress_config: pulumi.Input[Optional['IngressConfigArgs']] = None,
+                 karpenter_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 lb_type: pulumi.Input[Optional[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
-                 nginx_ingress_config: Optional[pulumi.Input['NginxIngressConfigArgs']] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 system_node_max_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 vpc_cni_config: Optional[pulumi.Input['VpcCniConfigArgs']] = None):
+                 nginx_ingress_config: pulumi.Input[Optional['NginxIngressConfigArgs']] = None,
+                 nginx_ingress_registry: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 system_node_desired_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_instance_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 system_node_max_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_min_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: pulumi.Input[Optional['VpcCniConfigArgs']] = None):
         """
         The set of arguments for constructing a Cluster resource.
 
@@ -194,86 +194,86 @@ class ClusterArgs:
 
     @_builtins.property
     @pulumi.getter(name="adminAccessPrincipal")
-    def admin_access_principal(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def admin_access_principal(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The ARN of the AWS principal that should get admin access.
         """
         return pulumi.get(self, "admin_access_principal")
 
     @admin_access_principal.setter
-    def admin_access_principal(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def admin_access_principal(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "admin_access_principal", value)
 
     @_builtins.property
     @pulumi.getter(name="certManagerVersion")
-    def cert_manager_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def cert_manager_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of the cert-manager helm chart to deploy.
         """
         return pulumi.get(self, "cert_manager_version")
 
     @cert_manager_version.setter
-    def cert_manager_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def cert_manager_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "cert_manager_version", value)
 
     @_builtins.property
     @pulumi.getter(name="certificateArn")
-    def certificate_arn(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def certificate_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The ARN of the certificate to use for the ingress controller.
         """
         return pulumi.get(self, "certificate_arn")
 
     @certificate_arn.setter
-    def certificate_arn(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def certificate_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "certificate_arn", value)
 
     @_builtins.property
     @pulumi.getter(name="clusterEndpointPrivateAccess")
-    def cluster_endpoint_private_access(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def cluster_endpoint_private_access(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Indicates whether or not the Amazon EKS private API server endpoint is enabled.
         """
         return pulumi.get(self, "cluster_endpoint_private_access")
 
     @cluster_endpoint_private_access.setter
-    def cluster_endpoint_private_access(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def cluster_endpoint_private_access(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "cluster_endpoint_private_access", value)
 
     @_builtins.property
     @pulumi.getter(name="clusterEndpointPublicAccess")
-    def cluster_endpoint_public_access(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def cluster_endpoint_public_access(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Indicates whether or not the Amazon EKS public API server endpoint is enabled.
         """
         return pulumi.get(self, "cluster_endpoint_public_access")
 
     @cluster_endpoint_public_access.setter
-    def cluster_endpoint_public_access(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def cluster_endpoint_public_access(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "cluster_endpoint_public_access", value)
 
     @_builtins.property
     @pulumi.getter(name="clusterVersion")
-    def cluster_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def cluster_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of the EKS cluster to create.
         """
         return pulumi.get(self, "cluster_version")
 
     @cluster_version.setter
-    def cluster_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def cluster_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "cluster_version", value)
 
     @_builtins.property
     @pulumi.getter(name="eksIamAuthControllerVersion")
-    def eks_iam_auth_controller_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def eks_iam_auth_controller_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of the eks-iam-auth-controller helm chart to deploy.
         """
         return pulumi.get(self, "eks_iam_auth_controller_version")
 
     @eks_iam_auth_controller_version.setter
-    def eks_iam_auth_controller_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def eks_iam_auth_controller_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "eks_iam_auth_controller_version", value)
 
     @_builtins.property
@@ -362,59 +362,59 @@ class ClusterArgs:
 
     @_builtins.property
     @pulumi.getter(name="enabledClusterLogTypes")
-    def enabled_cluster_log_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def enabled_cluster_log_types(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "enabled_cluster_log_types")
 
     @enabled_cluster_log_types.setter
-    def enabled_cluster_log_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def enabled_cluster_log_types(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "enabled_cluster_log_types", value)
 
     @_builtins.property
     @pulumi.getter(name="externalDNSVersion")
-    def external_dns_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def external_dns_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of the external-dns helm chart to deploy.
         """
         return pulumi.get(self, "external_dns_version")
 
     @external_dns_version.setter
-    def external_dns_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def external_dns_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "external_dns_version", value)
 
     @_builtins.property
     @pulumi.getter(name="ingressConfig")
-    def ingress_config(self) -> Optional[pulumi.Input['IngressConfigArgs']]:
+    def ingress_config(self) -> pulumi.Input[Optional['IngressConfigArgs']]:
         """
         Configuration for the ingress controller. (deprecated, use nginxIngressConfig)
         """
         return pulumi.get(self, "ingress_config")
 
     @ingress_config.setter
-    def ingress_config(self, value: Optional[pulumi.Input['IngressConfigArgs']]):
+    def ingress_config(self, value: pulumi.Input[Optional['IngressConfigArgs']]):
         pulumi.set(self, "ingress_config", value)
 
     @_builtins.property
     @pulumi.getter(name="karpenterVersion")
-    def karpenter_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def karpenter_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of karpenter to deploy.
         """
         return pulumi.get(self, "karpenter_version")
 
     @karpenter_version.setter
-    def karpenter_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def karpenter_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "karpenter_version", value)
 
     @_builtins.property
     @pulumi.getter(name="lbType")
-    def lb_type(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def lb_type(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The type of loadbalancer to provision.
         """
         return pulumi.get(self, "lb_type")
 
     @lb_type.setter
-    def lb_type(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def lb_type(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "lb_type", value)
 
     @_builtins.property
@@ -431,119 +431,119 @@ class ClusterArgs:
 
     @_builtins.property
     @pulumi.getter(name="nginxIngressConfig")
-    def nginx_ingress_config(self) -> Optional[pulumi.Input['NginxIngressConfigArgs']]:
+    def nginx_ingress_config(self) -> pulumi.Input[Optional['NginxIngressConfigArgs']]:
         """
         Configuration for the nginx ingress controllers.
         """
         return pulumi.get(self, "nginx_ingress_config")
 
     @nginx_ingress_config.setter
-    def nginx_ingress_config(self, value: Optional[pulumi.Input['NginxIngressConfigArgs']]):
+    def nginx_ingress_config(self, value: pulumi.Input[Optional['NginxIngressConfigArgs']]):
         pulumi.set(self, "nginx_ingress_config", value)
 
     @_builtins.property
     @pulumi.getter(name="nginxIngressRegistry")
-    def nginx_ingress_registry(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def nginx_ingress_registry(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The container registry to pull images from.
         """
         return pulumi.get(self, "nginx_ingress_registry")
 
     @nginx_ingress_registry.setter
-    def nginx_ingress_registry(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def nginx_ingress_registry(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "nginx_ingress_registry", value)
 
     @_builtins.property
     @pulumi.getter(name="nginxIngressTag")
-    def nginx_ingress_tag(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def nginx_ingress_tag(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The tag to use for the nginx ingress controller images.
         """
         return pulumi.get(self, "nginx_ingress_tag")
 
     @nginx_ingress_tag.setter
-    def nginx_ingress_tag(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def nginx_ingress_tag(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "nginx_ingress_tag", value)
 
     @_builtins.property
     @pulumi.getter(name="nginxIngressVersion")
-    def nginx_ingress_version(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def nginx_ingress_version(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The version of the nginx ingress controller helm chart to deploy.
         """
         return pulumi.get(self, "nginx_ingress_version")
 
     @nginx_ingress_version.setter
-    def nginx_ingress_version(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def nginx_ingress_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "nginx_ingress_version", value)
 
     @_builtins.property
     @pulumi.getter(name="systemNodeDesiredCount")
-    def system_node_desired_count(self) -> Optional[pulumi.Input[_builtins.float]]:
+    def system_node_desired_count(self) -> pulumi.Input[Optional[_builtins.float]]:
         """
         The initial number of nodes in the system autoscaling group.
         """
         return pulumi.get(self, "system_node_desired_count")
 
     @system_node_desired_count.setter
-    def system_node_desired_count(self, value: Optional[pulumi.Input[_builtins.float]]):
+    def system_node_desired_count(self, value: pulumi.Input[Optional[_builtins.float]]):
         pulumi.set(self, "system_node_desired_count", value)
 
     @_builtins.property
     @pulumi.getter(name="systemNodeInstanceTypes")
-    def system_node_instance_types(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def system_node_instance_types(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "system_node_instance_types")
 
     @system_node_instance_types.setter
-    def system_node_instance_types(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def system_node_instance_types(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "system_node_instance_types", value)
 
     @_builtins.property
     @pulumi.getter(name="systemNodeMaxCount")
-    def system_node_max_count(self) -> Optional[pulumi.Input[_builtins.float]]:
+    def system_node_max_count(self) -> pulumi.Input[Optional[_builtins.float]]:
         """
         The maximum number of nodes in the system autoscaling group.
         """
         return pulumi.get(self, "system_node_max_count")
 
     @system_node_max_count.setter
-    def system_node_max_count(self, value: Optional[pulumi.Input[_builtins.float]]):
+    def system_node_max_count(self, value: pulumi.Input[Optional[_builtins.float]]):
         pulumi.set(self, "system_node_max_count", value)
 
     @_builtins.property
     @pulumi.getter(name="systemNodeMinCount")
-    def system_node_min_count(self) -> Optional[pulumi.Input[_builtins.float]]:
+    def system_node_min_count(self) -> pulumi.Input[Optional[_builtins.float]]:
         """
         The minimum number of nodes in the system autoscaling group.
         """
         return pulumi.get(self, "system_node_min_count")
 
     @system_node_min_count.setter
-    def system_node_min_count(self, value: Optional[pulumi.Input[_builtins.float]]):
+    def system_node_min_count(self, value: pulumi.Input[Optional[_builtins.float]]):
         pulumi.set(self, "system_node_min_count", value)
 
     @_builtins.property
     @pulumi.getter
-    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def tags(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         Key-value map of tags to apply to the cluster.
         """
         return pulumi.get(self, "tags")
 
     @tags.setter
-    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def tags(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
 
     @_builtins.property
     @pulumi.getter(name="vpcCniConfig")
-    def vpc_cni_config(self) -> Optional[pulumi.Input['VpcCniConfigArgs']]:
+    def vpc_cni_config(self) -> pulumi.Input[Optional['VpcCniConfigArgs']]:
         """
         Configuration for the Amazon VPC CNI add-on, including optional network policy support.
         """
         return pulumi.get(self, "vpc_cni_config")
 
     @vpc_cni_config.setter
-    def vpc_cni_config(self, value: Optional[pulumi.Input['VpcCniConfigArgs']]):
+    def vpc_cni_config(self, value: pulumi.Input[Optional['VpcCniConfigArgs']]):
         pulumi.set(self, "vpc_cni_config", value)
 
 
@@ -553,14 +553,14 @@ class Cluster(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 admin_access_principal: Optional[pulumi.Input[_builtins.str]] = None,
-                 cert_manager_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 certificate_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 cluster_endpoint_private_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_endpoint_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 cluster_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 eks_iam_auth_controller_version: Optional[pulumi.Input[_builtins.str]] = None,
+                 admin_access_principal: pulumi.Input[Optional[_builtins.str]] = None,
+                 cert_manager_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 certificate_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 cluster_endpoint_private_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
                  enable_external_dns: Optional[_builtins.bool] = None,
@@ -568,23 +568,23 @@ class Cluster(pulumi.ComponentResource):
                  enable_internal_ingress: Optional[_builtins.bool] = None,
                  enable_karpenter: Optional[_builtins.bool] = None,
                  enable_otel: Optional[_builtins.bool] = None,
-                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 external_dns_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 ingress_config: Optional[pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
-                 karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 lb_type: Optional[pulumi.Input[_builtins.str]] = None,
+                 enabled_cluster_log_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 external_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ingress_config: pulumi.Input[Optional[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
+                 karpenter_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 lb_type: pulumi.Input[Optional[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
-                 nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 system_node_max_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 vpc_cni_config: Optional[pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
+                 nginx_ingress_config: pulumi.Input[Optional[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
+                 nginx_ingress_registry: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 system_node_desired_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_instance_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 system_node_max_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_min_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: pulumi.Input[Optional[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
                  __props__=None):
         """
         Create a Cluster resource with the given unique name, props, and options.
@@ -644,14 +644,14 @@ class Cluster(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 admin_access_principal: Optional[pulumi.Input[_builtins.str]] = None,
-                 cert_manager_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 certificate_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 cluster_endpoint_private_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_endpoint_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
-                 cluster_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 cluster_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 eks_iam_auth_controller_version: Optional[pulumi.Input[_builtins.str]] = None,
+                 admin_access_principal: pulumi.Input[Optional[_builtins.str]] = None,
+                 cert_manager_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 certificate_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 cluster_endpoint_private_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
+                 cluster_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
                  enable_external_dns: Optional[_builtins.bool] = None,
@@ -659,23 +659,23 @@ class Cluster(pulumi.ComponentResource):
                  enable_internal_ingress: Optional[_builtins.bool] = None,
                  enable_karpenter: Optional[_builtins.bool] = None,
                  enable_otel: Optional[_builtins.bool] = None,
-                 enabled_cluster_log_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 external_dns_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 ingress_config: Optional[pulumi.Input[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
-                 karpenter_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 lb_type: Optional[pulumi.Input[_builtins.str]] = None,
+                 enabled_cluster_log_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 external_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ingress_config: pulumi.Input[Optional[Union['IngressConfigArgs', 'IngressConfigArgsDict']]] = None,
+                 karpenter_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 lb_type: pulumi.Input[Optional[_builtins.str]] = None,
                  lets_encrypt_email: Optional[_builtins.str] = None,
-                 nginx_ingress_config: Optional[pulumi.Input[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
-                 nginx_ingress_registry: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 nginx_ingress_version: Optional[pulumi.Input[_builtins.str]] = None,
-                 system_node_desired_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_instance_types: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 system_node_max_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_min_count: Optional[pulumi.Input[_builtins.float]] = None,
-                 system_node_subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 vpc_cni_config: Optional[pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
+                 nginx_ingress_config: pulumi.Input[Optional[Union['NginxIngressConfigArgs', 'NginxIngressConfigArgsDict']]] = None,
+                 nginx_ingress_registry: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 nginx_ingress_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 system_node_desired_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_instance_types: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 system_node_max_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_min_count: pulumi.Input[Optional[_builtins.float]] = None,
+                 system_node_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 vpc_cni_config: pulumi.Input[Optional[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):

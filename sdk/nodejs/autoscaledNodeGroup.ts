@@ -54,7 +54,7 @@ export class AutoscaledNodeGroup extends pulumi.ComponentResource {
             resourceInputs["amiId"] = args?.amiId;
             resourceInputs["annotations"] = args?.annotations;
             resourceInputs["diskSize"] = (args?.diskSize) ?? "20Gi";
-            resourceInputs["disruption"] = args ? (args.disruption ? pulumi.output(args.disruption).apply(inputs.disruptionConfigArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["disruption"] = args ? pulumi.output(args.disruption).apply(v => v === undefined ? undefined : inputs.disruptionConfigArgsProvideDefaults(v)) : undefined;
             resourceInputs["labels"] = args?.labels;
             resourceInputs["nodeClassApiVersion"] = (args?.nodeClassApiVersion) ?? "karpenter.k8s.aws/v1";
             resourceInputs["nodePoolApiVersion"] = (args?.nodePoolApiVersion) ?? "karpenter.sh/v1";
@@ -77,32 +77,32 @@ export interface AutoscaledNodeGroupArgs {
     /**
      * AMI family for the node group.
      */
-    amiFamily?: pulumi.Input<string>;
+    amiFamily?: pulumi.Input<string | undefined>;
     /**
      * AMI ID for the node group.
      */
-    amiId?: pulumi.Input<string>;
+    amiId?: pulumi.Input<string | undefined>;
     /**
      * Annotations to apply to the node group.
      */
-    annotations?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    annotations?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
      * Disk size for the node group.
      */
     diskSize: pulumi.Input<string>;
-    disruption?: pulumi.Input<inputs.DisruptionConfigArgs>;
+    disruption?: pulumi.Input<inputs.DisruptionConfigArgs | undefined>;
     /**
      * Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed.
      */
-    labels?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    labels?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
      * Karpenter NodePool API version.
      */
-    nodeClassApiVersion?: pulumi.Input<string>;
+    nodeClassApiVersion?: pulumi.Input<string | undefined>;
     /**
      * Karpenter NodePool API version.
      */
-    nodePoolApiVersion?: pulumi.Input<string>;
+    nodePoolApiVersion?: pulumi.Input<string | undefined>;
     /**
      * Node role for the node group.
      */
@@ -122,5 +122,5 @@ export interface AutoscaledNodeGroupArgs {
     /**
      * Optional node taints.
      */
-    taints?: pulumi.Input<pulumi.Input<pulumiKubernetes.types.input.core.v1.Taint>[]>;
+    taints?: pulumi.Input<pulumi.Input<pulumiKubernetes.types.input.core.v1.Taint>[] | undefined>;
 }

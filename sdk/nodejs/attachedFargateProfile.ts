@@ -75,5 +75,5 @@ export interface AttachedFargateProfileArgs {
     /**
      * Key-value map for tags to apply to Fargate Profile.
      */
-    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
 }
