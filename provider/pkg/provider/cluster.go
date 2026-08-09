@@ -84,6 +84,9 @@ type ClusterArgs struct {
 	SystemNodeMinCount           *pulumi.IntInput         `pulumi:"systemNodeMinCount"`
 	SystemNodeDesiredCount       *pulumi.IntInput         `pulumi:"systemNodeDesiredCount"`
 	ClusterVersion               pulumi.StringPtrInput    `pulumi:"clusterVersion"`
+	CoreDNSVersion               pulumi.StringInput       `pulumi:"coreDNSVersion"`
+	VpcCniVersion                pulumi.StringInput       `pulumi:"vpcCniVersion"`
+	EbsCsiVersion                pulumi.StringInput       `pulumi:"ebsCsiVersion"`
 	EnableOtel                   bool                     `pulumi:"enableOtel"`
 	EnableCloudWatchAgent        bool                     `pulumi:"enableCloudWatchAgent"`
 	EnableExternalDNS            bool                     `pulumi:"enableExternalDns"`
@@ -154,6 +157,30 @@ func hasVpcCniConfig(config *VpcCniConfig) bool {
 		config.NodeAgent.EnableCloudWatchLogs != nil ||
 		config.NodeAgent.MetricsBindAddr != nil ||
 		config.NodeAgent.HealthProbeBindAddr != nil
+}
+
+func resolveEKSAddonVersion(ctx *pulumi.Context, addonName string, kubernetesVersion pulumi.StringInput,
+	configuredVersion pulumi.StringInput, opts ...pulumi.InvokeOption) pulumi.StringPtrInput {
+	if version, ok := configuredVersion.(pulumi.String); ok && version != "latest" {
+		return version.ToStringPtrOutput()
+	}
+
+	mostRecent := configuredVersion.ToStringOutput().ApplyT(func(version string) bool {
+		return version == "latest"
+	}).(pulumi.BoolOutput).ToBoolPtrOutput()
+	resolvedVersion := eks.GetAddonVersionOutput(ctx, eks.GetAddonVersionOutputArgs{
+		AddonName:         pulumi.String(addonName),
+		KubernetesVersion: kubernetesVersion,
+		MostRecent:        mostRecent,
+	}, opts...).Version()
+
+	return pulumi.All(configuredVersion, resolvedVersion).ApplyT(func(values []interface{}) string {
+		version := values[0].(string)
+		if version == "latest" {
+			return values[1].(string)
+		}
+		return version
+	}).(pulumi.StringOutput).ToStringPtrOutput()
 }
 
 func marshalVpcCniConfig(config *VpcCniConfig) pulumi.StringPtrOutput {
@@ -406,6 +433,16 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error creating cluster control plane: %w", err)
 	}
 
+	addonKubernetesVersion := controlPlane.Version
+	if args.ClusterVersion != nil {
+		addonKubernetesVersion = args.ClusterVersion.ToStringPtrOutput().ApplyT(func(version *string) (string, error) {
+			if version == nil {
+				return "", fmt.Errorf("cluster version is nil")
+			}
+			return *version, nil
+		}).(pulumi.StringOutput)
+	}
+
 	accessEntry, err := eks.NewAccessEntry(ctx, fmt.Sprintf("%s-admin-access", name), &eks.AccessEntryArgs{
 		ClusterName:  controlPlane.Name,
 		Type:         pulumi.String("STANDARD"),
@@ -548,14 +585,19 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error marshalling coredns config: %w", err)
 	}
 
-	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), &eks.AddonArgs{
+	coreDNSAddonArgs := &eks.AddonArgs{
 		AddonName:                pulumi.String("coredns"),
 		ClusterName:              controlPlane.Name,
 		ResolveConflictsOnCreate: pulumi.String("OVERWRITE"),
 		ResolveConflictsOnUpdate: pulumi.String("PRESERVE"),
 		ConfigurationValues:      pulumi.String(coreDNSConfig),
 		Tags:                     tags,
-	}, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}
+	if args.CoreDNSVersion != nil {
+		coreDNSAddonArgs.AddonVersion = resolveEKSAddonVersion(ctx, "coredns", addonKubernetesVersion, args.CoreDNSVersion, pulumi.Parent(controlPlane))
+	}
+
+	_, err = eks.NewAddon(ctx, fmt.Sprintf("%s-coredns", name), coreDNSAddonArgs, pulumi.Parent(controlPlane), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing coredns: %w", err)
 	}
@@ -583,6 +625,9 @@ func NewCluster(ctx *pulumi.Context,
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: vpcCsiRole.Role.Arn,
 		Tags:                  tags,
+	}
+	if args.VpcCniVersion != nil {
+		vpcCniAddonArgs.AddonVersion = resolveEKSAddonVersion(ctx, "vpc-cni", addonKubernetesVersion, args.VpcCniVersion, pulumi.Parent(controlPlane))
 	}
 	if hasVpcCniConfig(args.VpcCniConfig) {
 		vpcCniAddonArgs.ConfigurationValues = marshalVpcCniConfig(args.VpcCniConfig)
@@ -628,13 +673,18 @@ func NewCluster(ctx *pulumi.Context,
 		return nil, fmt.Errorf("error marshalling EBS CSI config: %w", err)
 	}
 
-	ebsCsiAddon, err := eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), &eks.AddonArgs{
+	ebsCsiAddonArgs := &eks.AddonArgs{
 		AddonName:             pulumi.String("aws-ebs-csi-driver"),
 		ClusterName:           controlPlane.Name,
 		ServiceAccountRoleArn: ebsCsiRole.Role.Arn,
 		ConfigurationValues:   pulumi.String(ebsCsiConfig),
 		Tags:                  tags,
-	}, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
+	}
+	if args.EbsCsiVersion != nil {
+		ebsCsiAddonArgs.AddonVersion = resolveEKSAddonVersion(ctx, "aws-ebs-csi-driver", addonKubernetesVersion, args.EbsCsiVersion, pulumi.Parent(controlPlane))
+	}
+
+	ebsCsiAddon, err := eks.NewAddon(ctx, fmt.Sprintf("%s-ebs-csi", name), ebsCsiAddonArgs, pulumi.Parent(ebsCsiRole), pulumi.DependsOn([]pulumi.Resource{systemNodes}))
 	if err != nil {
 		return nil, fmt.Errorf("error installing EBS csi: %w", err)
 	}
