@@ -1,5 +1,5 @@
 {
-  "resource": true,
   "name": "lbrlabs-eks",
+  "resource": true,
   "server": "github://api.github.com/lbrlabs"
 }
