@@ -135,6 +135,18 @@ namespace Lbrlabs.PulumiPackage.Eks
         public Input<string>? ClusterVersion { get; set; }
 
         /// <summary>
+        /// The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        /// </summary>
+        [Input("coreDNSVersion")]
+        public Input<string>? CoreDNSVersion { get; set; }
+
+        /// <summary>
+        /// The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        /// </summary>
+        [Input("ebsCsiVersion")]
+        public Input<string>? EbsCsiVersion { get; set; }
+
+        /// <summary>
         /// The version of the eks-iam-auth-controller helm chart to deploy.
         /// </summary>
         [Input("eksIamAuthControllerVersion")]
@@ -295,6 +307,12 @@ namespace Lbrlabs.PulumiPackage.Eks
         /// </summary>
         [Input("vpcCniConfig")]
         public Input<Inputs.VpcCniConfigArgs>? VpcCniConfig { get; set; }
+
+        /// <summary>
+        /// The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        /// </summary>
+        [Input("vpcCniVersion")]
+        public Input<string>? VpcCniVersion { get; set; }
 
         public ClusterArgs()
         {
