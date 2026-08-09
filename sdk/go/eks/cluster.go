@@ -123,6 +123,10 @@ type clusterArgs struct {
 	ClusterSubnetIds            []string `pulumi:"clusterSubnetIds"`
 	// The version of the EKS cluster to create.
 	ClusterVersion *string `pulumi:"clusterVersion"`
+	// The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	CoreDNSVersion *string `pulumi:"coreDNSVersion"`
+	// The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	EbsCsiVersion *string `pulumi:"ebsCsiVersion"`
 	// The version of the eks-iam-auth-controller helm chart to deploy.
 	EksIamAuthControllerVersion *string `pulumi:"eksIamAuthControllerVersion"`
 	// Whether to enable cert-manager with route 53 integration.
@@ -170,6 +174,8 @@ type clusterArgs struct {
 	Tags map[string]string `pulumi:"tags"`
 	// Configuration for the Amazon VPC CNI add-on, including optional network policy support.
 	VpcCniConfig *VpcCniConfig `pulumi:"vpcCniConfig"`
+	// The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	VpcCniVersion *string `pulumi:"vpcCniVersion"`
 }
 
 // The set of arguments for constructing a Cluster resource.
@@ -187,6 +193,10 @@ type ClusterArgs struct {
 	ClusterSubnetIds            pulumi.StringArrayInput
 	// The version of the EKS cluster to create.
 	ClusterVersion pulumi.StringPtrInput
+	// The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	CoreDNSVersion pulumi.StringPtrInput
+	// The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	EbsCsiVersion pulumi.StringPtrInput
 	// The version of the eks-iam-auth-controller helm chart to deploy.
 	EksIamAuthControllerVersion pulumi.StringPtrInput
 	// Whether to enable cert-manager with route 53 integration.
@@ -234,6 +244,8 @@ type ClusterArgs struct {
 	Tags pulumi.StringMapInput
 	// Configuration for the Amazon VPC CNI add-on, including optional network policy support.
 	VpcCniConfig VpcCniConfigPtrInput
+	// The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+	VpcCniVersion pulumi.StringPtrInput
 }
 
 func (ClusterArgs) ElementType() reflect.Type {

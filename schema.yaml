@@ -214,9 +214,18 @@ resources:
       vpcCniConfig:
         "$ref": "#/types/lbrlabs-eks:index:VpcCniConfig"
         description: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+      vpcCniVersion:
+        type: string
+        description: The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
       clusterVersion:
         type: string
         description: The version of the EKS cluster to create.
+      coreDNSVersion:
+        type: string
+        description: The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+      ebsCsiVersion:
+        type: string
+        description: The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
       karpenterVersion:
         type: string
         description: The version of karpenter to deploy.

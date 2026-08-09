@@ -29,6 +29,8 @@ class ClusterArgs:
                  cluster_endpoint_private_access: pulumi.Input[Optional[_builtins.bool]] = None,
                  cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
                  cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 core_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ebs_csi_version: pulumi.Input[Optional[_builtins.str]] = None,
                  eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
@@ -52,7 +54,8 @@ class ClusterArgs:
                  system_node_max_count: pulumi.Input[Optional[_builtins.float]] = None,
                  system_node_min_count: pulumi.Input[Optional[_builtins.float]] = None,
                  tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 vpc_cni_config: pulumi.Input[Optional['VpcCniConfigArgs']] = None):
+                 vpc_cni_config: pulumi.Input[Optional['VpcCniConfigArgs']] = None,
+                 vpc_cni_version: pulumi.Input[Optional[_builtins.str]] = None):
         """
         The set of arguments for constructing a Cluster resource.
 
@@ -62,6 +65,8 @@ class ClusterArgs:
         :param pulumi.Input[_builtins.bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
         :param pulumi.Input[_builtins.bool] cluster_endpoint_public_access: Indicates whether or not the Amazon EKS public API server endpoint is enabled.
         :param pulumi.Input[_builtins.str] cluster_version: The version of the EKS cluster to create.
+        :param pulumi.Input[_builtins.str] core_dns_version: The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        :param pulumi.Input[_builtins.str] ebs_csi_version: The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
         :param pulumi.Input[_builtins.str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param _builtins.bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param _builtins.bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
@@ -84,6 +89,7 @@ class ClusterArgs:
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the cluster.
         :param pulumi.Input['VpcCniConfigArgs'] vpc_cni_config: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+        :param pulumi.Input[_builtins.str] vpc_cni_version: The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
         """
         pulumi.set(__self__, "cluster_subnet_ids", cluster_subnet_ids)
         pulumi.set(__self__, "system_node_subnet_ids", system_node_subnet_ids)
@@ -103,6 +109,10 @@ class ClusterArgs:
             pulumi.set(__self__, "cluster_endpoint_public_access", cluster_endpoint_public_access)
         if cluster_version is not None:
             pulumi.set(__self__, "cluster_version", cluster_version)
+        if core_dns_version is not None:
+            pulumi.set(__self__, "core_dns_version", core_dns_version)
+        if ebs_csi_version is not None:
+            pulumi.set(__self__, "ebs_csi_version", ebs_csi_version)
         if eks_iam_auth_controller_version is not None:
             pulumi.set(__self__, "eks_iam_auth_controller_version", eks_iam_auth_controller_version)
         if enable_cert_manager is None:
@@ -173,6 +183,8 @@ class ClusterArgs:
             pulumi.set(__self__, "tags", tags)
         if vpc_cni_config is not None:
             pulumi.set(__self__, "vpc_cni_config", vpc_cni_config)
+        if vpc_cni_version is not None:
+            pulumi.set(__self__, "vpc_cni_version", vpc_cni_version)
 
     @_builtins.property
     @pulumi.getter(name="clusterSubnetIds")
@@ -263,6 +275,30 @@ class ClusterArgs:
     @cluster_version.setter
     def cluster_version(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "cluster_version", value)
+
+    @_builtins.property
+    @pulumi.getter(name="coreDNSVersion")
+    def core_dns_version(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        """
+        return pulumi.get(self, "core_dns_version")
+
+    @core_dns_version.setter
+    def core_dns_version(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "core_dns_version", value)
+
+    @_builtins.property
+    @pulumi.getter(name="ebsCsiVersion")
+    def ebs_csi_version(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        """
+        return pulumi.get(self, "ebs_csi_version")
+
+    @ebs_csi_version.setter
+    def ebs_csi_version(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "ebs_csi_version", value)
 
     @_builtins.property
     @pulumi.getter(name="eksIamAuthControllerVersion")
@@ -546,6 +582,18 @@ class ClusterArgs:
     def vpc_cni_config(self, value: pulumi.Input[Optional['VpcCniConfigArgs']]):
         pulumi.set(self, "vpc_cni_config", value)
 
+    @_builtins.property
+    @pulumi.getter(name="vpcCniVersion")
+    def vpc_cni_version(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        """
+        return pulumi.get(self, "vpc_cni_version")
+
+    @vpc_cni_version.setter
+    def vpc_cni_version(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "vpc_cni_version", value)
+
 
 @pulumi.type_token("lbrlabs-eks:index:Cluster")
 class Cluster(pulumi.ComponentResource):
@@ -560,6 +608,8 @@ class Cluster(pulumi.ComponentResource):
                  cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
                  cluster_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 core_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ebs_csi_version: pulumi.Input[Optional[_builtins.str]] = None,
                  eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
@@ -585,6 +635,7 @@ class Cluster(pulumi.ComponentResource):
                  system_node_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_cni_config: pulumi.Input[Optional[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
+                 vpc_cni_version: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         """
         Create a Cluster resource with the given unique name, props, and options.
@@ -597,6 +648,8 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.bool] cluster_endpoint_private_access: Indicates whether or not the Amazon EKS private API server endpoint is enabled.
         :param pulumi.Input[_builtins.bool] cluster_endpoint_public_access: Indicates whether or not the Amazon EKS public API server endpoint is enabled.
         :param pulumi.Input[_builtins.str] cluster_version: The version of the EKS cluster to create.
+        :param pulumi.Input[_builtins.str] core_dns_version: The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+        :param pulumi.Input[_builtins.str] ebs_csi_version: The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
         :param pulumi.Input[_builtins.str] eks_iam_auth_controller_version: The version of the eks-iam-auth-controller helm chart to deploy.
         :param _builtins.bool enable_cert_manager: Whether to enable cert-manager with route 53 integration.
         :param _builtins.bool enable_cloud_watch_agent: Whether to enable cloudwatch container insights for EKS.
@@ -619,6 +672,7 @@ class Cluster(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.float] system_node_min_count: The minimum number of nodes in the system autoscaling group.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of tags to apply to the cluster.
         :param pulumi.Input[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']] vpc_cni_config: Configuration for the Amazon VPC CNI add-on, including optional network policy support.
+        :param pulumi.Input[_builtins.str] vpc_cni_version: The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
         """
         ...
     @overload
@@ -651,6 +705,8 @@ class Cluster(pulumi.ComponentResource):
                  cluster_endpoint_public_access: pulumi.Input[Optional[_builtins.bool]] = None,
                  cluster_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  cluster_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 core_dns_version: pulumi.Input[Optional[_builtins.str]] = None,
+                 ebs_csi_version: pulumi.Input[Optional[_builtins.str]] = None,
                  eks_iam_auth_controller_version: pulumi.Input[Optional[_builtins.str]] = None,
                  enable_cert_manager: Optional[_builtins.bool] = None,
                  enable_cloud_watch_agent: Optional[_builtins.bool] = None,
@@ -676,6 +732,7 @@ class Cluster(pulumi.ComponentResource):
                  system_node_subnet_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_cni_config: pulumi.Input[Optional[Union['VpcCniConfigArgs', 'VpcCniConfigArgsDict']]] = None,
+                 vpc_cni_version: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -700,6 +757,8 @@ class Cluster(pulumi.ComponentResource):
                 raise TypeError("Missing required property 'cluster_subnet_ids'")
             __props__.__dict__["cluster_subnet_ids"] = cluster_subnet_ids
             __props__.__dict__["cluster_version"] = cluster_version
+            __props__.__dict__["core_dns_version"] = core_dns_version
+            __props__.__dict__["ebs_csi_version"] = ebs_csi_version
             __props__.__dict__["eks_iam_auth_controller_version"] = eks_iam_auth_controller_version
             if enable_cert_manager is None:
                 enable_cert_manager = True
@@ -749,6 +808,7 @@ class Cluster(pulumi.ComponentResource):
             __props__.__dict__["system_node_subnet_ids"] = system_node_subnet_ids
             __props__.__dict__["tags"] = tags
             __props__.__dict__["vpc_cni_config"] = vpc_cni_config
+            __props__.__dict__["vpc_cni_version"] = vpc_cni_version
             __props__.__dict__["cluster_name"] = None
             __props__.__dict__["control_plane"] = None
             __props__.__dict__["karpenter_node_role"] = None

@@ -80,6 +80,8 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["clusterEndpointPublicAccess"] = (args?.clusterEndpointPublicAccess) ?? true;
             resourceInputs["clusterSubnetIds"] = args?.clusterSubnetIds;
             resourceInputs["clusterVersion"] = args?.clusterVersion;
+            resourceInputs["coreDNSVersion"] = args?.coreDNSVersion;
+            resourceInputs["ebsCsiVersion"] = args?.ebsCsiVersion;
             resourceInputs["eksIamAuthControllerVersion"] = args?.eksIamAuthControllerVersion;
             resourceInputs["enableCertManager"] = (args?.enableCertManager) ?? true;
             resourceInputs["enableCloudWatchAgent"] = (args?.enableCloudWatchAgent) ?? false;
@@ -105,6 +107,7 @@ export class Cluster extends pulumi.ComponentResource {
             resourceInputs["systemNodeSubnetIds"] = args?.systemNodeSubnetIds;
             resourceInputs["tags"] = args?.tags;
             resourceInputs["vpcCniConfig"] = args?.vpcCniConfig;
+            resourceInputs["vpcCniVersion"] = args?.vpcCniVersion;
             resourceInputs["clusterName"] = undefined /*out*/;
             resourceInputs["controlPlane"] = undefined /*out*/;
             resourceInputs["karpenterNodeRole"] = undefined /*out*/;
@@ -157,6 +160,14 @@ export interface ClusterArgs {
      * The version of the EKS cluster to create.
      */
     clusterVersion?: pulumi.Input<string | undefined>;
+    /**
+     * The version of the CoreDNS EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+     */
+    coreDNSVersion?: pulumi.Input<string | undefined>;
+    /**
+     * The version of the Amazon EBS CSI driver EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+     */
+    ebsCsiVersion?: pulumi.Input<string | undefined>;
     /**
      * The version of the eks-iam-auth-controller helm chart to deploy.
      */
@@ -248,4 +259,8 @@ export interface ClusterArgs {
      * Configuration for the Amazon VPC CNI add-on, including optional network policy support.
      */
     vpcCniConfig?: pulumi.Input<inputs.VpcCniConfigArgs | undefined>;
+    /**
+     * The version of the Amazon VPC CNI EKS add-on to deploy. Set to "latest" to use the most recent version compatible with the cluster's Kubernetes version.
+     */
+    vpcCniVersion?: pulumi.Input<string | undefined>;
 }
